@@ -1,15 +1,22 @@
-﻿internal class Program
+﻿using System;
+namespace Targil0
 {
-    private static void Main(string[] args)
-    {
-        Welcome3851();
-        Console.ReadKey();
-    }
 
-    private static void Welcome3851()
+    partial class Program
     {
-        Console.WriteLine("Enter your name: ");
-        string userName = Console.ReadLine();
-        Console.WriteLine("{0}, welcome to my first console appliacation", userName);
+        private static void Main(string[] args)
+        {
+            Welcome3851();
+            Welcome0181();
+            Console.ReadKey();
+        }
+
+        private static void Welcome3851()
+        {
+            Console.WriteLine("Enter your name: ");
+            string userName = Console.ReadLine();
+            Console.WriteLine("{0}, welcome to my first console appliacation", userName);
+        }
+        static partial void Welcome0181();
     }
 }
