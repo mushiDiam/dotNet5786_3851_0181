@@ -16,6 +16,7 @@ namespace Stage0
         {
             Console.WriteLine("Welcome to C#");
             Console.WriteLine("wassuppppp");
+            Console.WriteLine("Hallo every nyan");
         }
         
     }
