@@ -14,6 +14,7 @@ namespace Stage0
         static partial void Welcome0181() 
         {
             Console.WriteLine("Welcome to C#");
+            Console.WriteLine("Hallo every nyan");
         }
     }
 }
