@@ -1,4 +1,4 @@
-﻿namespace Dal;
+﻿namespace DO;
 
 /// <summary>
 /// Represents an order entity in the system.

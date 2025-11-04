@@ -1,6 +1,6 @@
 ﻿using DalApi;
 
-namespace Dal;
+namespace DO;
 
 /// <summary>
 /// Represents a delivery entity in the system,
@@ -124,23 +124,17 @@ internal class Delivery
 }
 
 /// <summary>
-/// Represents the mode of delivery (transportation method).
-/// </summary>
-internal enum DeliveryType
-{
-    Car,
-    Motorcycle,
-    Bicycle,
-    Walking,
-    Virtual // For "canceled" orders before assignment
-}
-
-/// <summary>
 /// Represents the result or outcome of a delivery.
 /// </summary>
-internal enum DeliveryCompletionType
-{
+internal enum DeliveryCompletionType{
     Delivered,
     Failed,
     Canceled
+}
+
+public enum DeliveryTransportaion { 
+    Car,
+    Motorcycle,
+    Bike,
+    Walking
 }

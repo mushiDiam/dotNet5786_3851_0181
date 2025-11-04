@@ -1,10 +1,10 @@
-﻿namespace Dal;
+﻿namespace DO;
 
 public enum DeliveryType
 {
-    Vehicle,
+    car,
     Motorcycle,
-    Bicycle,
+    Bike,
     Walking
 }
 
