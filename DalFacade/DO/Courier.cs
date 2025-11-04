@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Dal;
+﻿namespace Dal;
 
 public enum DeliveryType
 {
@@ -16,27 +14,22 @@ public class Courier
     /// Courier ID - unique identifier.
     /// Numeric value with a valid check digit.
     /// </summary>
-    [Key]
     public int Id;  // Cannot be updated
 
     /// <summary>
     /// Full name (first and last).
     /// </summary>
-    [Required]
     public string FullName { get; set; }  // Can be updated by manager or courier
 
     /// <summary>
     /// Valid mobile phone number (10 digits, starts with 0).
     /// </summary>
-    [Required]
-    [RegularExpression(@"^0\d{9}$", ErrorMessage = "Phone number must have exactly 10 digits and start with 0.")]
+    
     public string PhoneNumber { get; set; }  // Can be updated by manager or courier
 
     /// <summary>
     /// Valid email address (format checked at the logical layer).
     /// </summary>
-    [Required]
-    [EmailAddress]
     public string Email { get; set; }  // Can be updated by manager or courier
 
     /// <summary>
@@ -50,7 +43,6 @@ public class Courier
     /// Indicates whether the courier is active.
     /// Only a manager can change this.
     /// </summary>
-    [Required]
     public bool IsActive { get; private set; } // Can be updated only by manager
 
     /// <summary>
@@ -64,14 +56,12 @@ public class Courier
     /// Delivery type: Vehicle, Motorcycle, Bicycle, or Walking.
     /// Can be updated as long as the courier is not currently handling an order.
     /// </summary>
-    [Required]
     public DeliveryType DeliveryType { get; set; } // Can be updated by manager or courier
 
     /// <summary>
     /// The date and time the courier started working for the company.
     /// Automatically set when the courier entity is created.
     /// </summary>
-    [Required]
     public DateTime StartDateTime;  // Set at creation, cannot be updated
 
     // =======================
