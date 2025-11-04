@@ -7,17 +7,21 @@ internal class OrderImplementation : IOrder
 {
     public void Create(Order item)
     {
+
         throw new NotImplementedException();
     }
 
     public void Delete(int id)
     {
-        throw new NotImplementedException();
+        if(DataSource.Orders.Exists(o => o.Id == id))
+            DataSource.Orders.RemoveAll(o => o.Id == id);
+        else
+            throw new NotImplementedException("An object of type 'Order' with this ID doesn't exists");
     }
 
     public void DeleteAll()
     {
-        throw new NotImplementedException();
+        DataSource.Orders.Clear();
     }
 
     public Order? Read(int id)

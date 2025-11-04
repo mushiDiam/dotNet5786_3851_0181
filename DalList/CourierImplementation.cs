@@ -8,31 +8,41 @@ public class CourierImplementation : ICourier
 {
     public void Create(Courier item)
     {
-        throw new NotImplementedException();
+        if (DataSource.Couriers.Exists(c => c.Id == item.Id))
+            throw new NotImplementedException("An object of type 'Courier' with this ID already exists");
+        else
+            DataSource.Couriers.Add(item);
     }
 
     public void Delete(int id)
     {
-        throw new NotImplementedException();
+        if (DataSource.Couriers.Exists(c => c.Id == id))
+            DataSource.Couriers.RemoveAll(c => c.Id == id);
+        else
+            throw new NotImplementedException("An object of type 'Courier' with this ID doesn't exists");
     }
 
     public void DeleteAll()
     {
-        throw new NotImplementedException();
+        DataSource.Couriers.Clear();
     }
 
     public Courier? Read(int id)
     {
-        throw new NotImplementedException();
+        if (DataSource.Couriers.Exists(c => c.Id == id))
+            return DataSource.Couriers.Find(c => c.Id == id);
+        else
+            return null;
     }
 
     public List<Courier> ReadAll()
     {
-        throw new NotImplementedException();
+        return new List<Courier>(DataSource.Couriers);
     }
 
     public void Update(Courier item)
     {
-        throw new NotImplementedException();
+        Delete(item.Id);
+        DataSource.Couriers.Add(item);
     }
 }
