@@ -9,7 +9,7 @@ public class CourierImplementation : ICourier
     public void Create(Courier item)
     {
         if (DataSource.Couriers.Exists(c => c.Id == item.Id))
-            throw new NotImplementedException("An object of type 'Courier' with this ID already exists");
+            throw new Exception($"Courier with ID= {item.Id} doesn't exists");
         else
             DataSource.Couriers.Add(item);
     }
@@ -19,7 +19,7 @@ public class CourierImplementation : ICourier
         if (DataSource.Couriers.Exists(c => c.Id == id))
             DataSource.Couriers.RemoveAll(c => c.Id == id);
         else
-            throw new NotImplementedException("An object of type 'Courier' with this ID doesn't exists");
+            throw new Exception($"Courier with ID= {id} doesn't exists");
     }
 
     public void DeleteAll()
