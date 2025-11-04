@@ -25,7 +25,6 @@ internal class DeliveryImplementation : IDelivery
     public void DeleteAll()
     {
         DataSource.Deliveries.Clear();
-        throw new NotImplementedException();
     }
 
     public Delivery? Read(int id)
@@ -44,12 +43,7 @@ internal class DeliveryImplementation : IDelivery
 
     public void Update(Delivery item)
     {
-        if(DataSource.Deliveries.Exists(d => d.Id == item.Id))
-        {
-            Delete(item.Id);
-            Create(item);
-            return;
-        }
-        throw new NotImplementedException("An object of type 'Delivery' with this Id doesn't exist");
+        Delete(item.Id);
+        DataSource.Deliveries.Add(item);
     }
 }
