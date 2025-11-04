@@ -1,9 +1,8 @@
 ﻿namespace DalApi;
 using DO;
-using Dal;
 
 
-internal interface IDelivery
+public interface IDelivery
 {
     void Create(Delivery item); //Creates new entity object in DAL
     Delivery? Read(int id); //Reads entity object by its ID 
