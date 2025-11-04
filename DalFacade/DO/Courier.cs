@@ -1,8 +1,8 @@
-﻿namespace DO;
+﻿namespace Dal;
 
 public enum DeliveryType
 {
-    car,
+    Car,
     Motorcycle,
     Bike,
     Walking
@@ -24,7 +24,6 @@ public class Courier
     /// <summary>
     /// Valid mobile phone number (10 digits, starts with 0).
     /// </summary>
-    
     public string PhoneNumber { get; set; }  // Can be updated by manager or courier
 
     /// <summary>
