@@ -7,7 +7,9 @@ internal class OrderImplementation : IOrder
 {
     public void Create(Order item)
     {
-        throw new NotImplementedException();
+        if(DataSource.Orders.Exists(o => o.Id == item.Id))
+            throw new NotImplementedException("An object of type 'Order' with this Id already exists");
+        DataSource.Orders.Add(item);
     }
 
     public void Delete(int id)
@@ -22,16 +24,26 @@ internal class OrderImplementation : IOrder
 
     public Order? Read(int id)
     {
-        throw new NotImplementedException();
+        if(DataSource.Orders.Exists(o => o.Id == id))
+        {
+            return DataSource.Orders.Find(o => o.Id == id);
+        }
+        return null;
     }
 
     public List<Order> ReadAll()
     {
-        throw new NotImplementedException();
+        return new List<Order>(DataSource.Orders);
     }
 
     public void Update(Order item)
     {
-        throw new NotImplementedException();
+        if(DataSource.Orders.Exists(o => o.Id == item.Id))
+        {
+            Delete(item.Id);
+            Create(item);
+            return;
+        }
+        throw new NotImplementedException("An object of type 'Order' with this Id doesn't exist");
     }
 }

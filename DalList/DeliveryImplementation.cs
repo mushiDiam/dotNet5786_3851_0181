@@ -7,31 +7,49 @@ internal class DeliveryImplementation : IDelivery
 {
     public void Create(Delivery item)
     {
-        throw new NotImplementedException();
+        if(DataSource.Deliveries.Exists(d => d.Id == item.Id))
+            throw new NotImplementedException("An object of type 'Delivery' with this Id already exists");
+        DataSource.Deliveries.Add(item);
     }
 
     public void Delete(int id)
     {
-        throw new NotImplementedException();
+        if(DataSource.Deliveries.Exists(d => d.Id == id))
+        {
+            DataSource.Deliveries.RemoveAll(d => d.Id == id);
+            return;
+        }
+        throw new NotImplementedException("An object of type 'Delivery' with this Id doesn't exist");
     }
 
     public void DeleteAll()
     {
+        DataSource.Deliveries.Clear();
         throw new NotImplementedException();
     }
 
     public Delivery? Read(int id)
     {
-        throw new NotImplementedException();
+        if(DataSource.Deliveries.Exists(d => d.Id == id))
+        {
+            return DataSource.Deliveries.Find(d => d.Id == id);
+        }
+        return null;
     }
 
     public List<Delivery> ReadAll()
     {
-        throw new NotImplementedException();
+        return new List<Delivery>(DataSource.Deliveries);
     }
 
     public void Update(Delivery item)
     {
-        throw new NotImplementedException();
+        if(DataSource.Deliveries.Exists(d => d.Id == item.Id))
+        {
+            Delete(item.Id);
+            Create(item);
+            return;
+        }
+        throw new NotImplementedException("An object of type 'Delivery' with this Id doesn't exist");
     }
 }
