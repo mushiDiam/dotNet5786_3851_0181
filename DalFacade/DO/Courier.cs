@@ -23,9 +23,11 @@ public record Courier
     double? MaxDeliveryDistance,
     DateTime DeliveryTime,
     OrderType OrderType,
-    string Name = "",
-    string Phone = "",
-    string Email = "",
-    string Password = ""
+    string Name,
+    string Phone,
+    string Email,
+    string Password
 )
-{ }
+{
+    public Courier() : this(0, false, null, DateTime.MinValue, default, "", "", "", "") { }
+}
