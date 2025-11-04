@@ -9,7 +9,9 @@ internal class OrderImplementation : IOrder
     {
         if(DataSource.Orders.Exists(o => o.Id == item.Id))
             throw new NotImplementedException("An object of type 'Order' with this Id already exists");
-        DataSource.Orders.Add(item);
+        int id = Config.NextOrderId;
+        Order copy = item with { Id = id };
+        DataSource.Orders.Add(copy);
     }
 
     public void Delete(int id)

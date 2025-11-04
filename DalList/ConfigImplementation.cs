@@ -9,10 +9,9 @@ public class ConfigImplementation : IConfig
         get => Config.Clock;
         set => Config.Clock = value;
     }
-    public int MaxRange
+    public double? MaxDeliveryDistance
     {
-        get => Config.MaxRange;
-        set => Config.MaxRange = value;
+        get => Config.MaxDeliveryDistance;
     }
     //...
     public void Reset()

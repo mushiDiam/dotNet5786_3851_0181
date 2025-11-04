@@ -7,9 +7,11 @@ internal class DeliveryImplementation : IDelivery
 {
     public void Create(Delivery item)
     {
-        if(DataSource.Deliveries.Exists(d => d.Id == item.Id))
+        if (DataSource.Deliveries.Exists(d => d.Id == item.Id))
             throw new NotImplementedException("An object of type 'Delivery' with this Id already exists");
-        DataSource.Deliveries.Add(item);
+        int id = Config.NextDeliveryId;
+        Delivery copy = item with { Id = id };
+        DataSource.Deliveries.Add(copy);
     }
 
     public void Delete(int id)

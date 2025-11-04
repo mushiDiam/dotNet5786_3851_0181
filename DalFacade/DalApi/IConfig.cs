@@ -5,7 +5,7 @@ using DO;
 public interface IConfig
 {
     DateTime Clock { get; set; }
-    int MaxRange { get; set; }
+    double? MaxDeliveryDistance { get;}
 
     void Reset();
 }
