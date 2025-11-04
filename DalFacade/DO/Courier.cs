@@ -1,5 +1,4 @@
-﻿namespace Dal;
-using DO;
+﻿namespace DO;
 
 /// <summary>
 /// Represents a courier used for deliveries.

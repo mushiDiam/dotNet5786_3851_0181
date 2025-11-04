@@ -1,6 +1,5 @@
-﻿namespace Dal;
+﻿namespace DO;
 using DalApi;
-using DO;
 
 /// <summary>
 /// Student Entity represents a student with all its props
