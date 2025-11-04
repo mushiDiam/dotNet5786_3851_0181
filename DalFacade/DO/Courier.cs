@@ -8,7 +8,7 @@ public enum DeliveryType
     Walking
 }
 
-public class Courier
+public record Courier
 {
     /// <summary>
     /// Courier ID - unique identifier.
@@ -63,45 +63,6 @@ public class Courier
     /// </summary>
     public DateTime StartDateTime;  // Set at creation, cannot be updated
 
-    // =======================
-    // Constructors & Methods
-    // =======================
-
-    public Courier(int id, string fullName, string phoneNumber, string email, DeliveryType deliveryType)
-    {
-        Id = id;
-        FullName = fullName;
-        PhoneNumber = phoneNumber;
-        Email = email;
-        DeliveryType = deliveryType;
-        IsActive = true;
-        StartDateTime = DateTime.Now;
-    }
-
-    /// <summary>
-    /// Marks the courier as inactive (e.g., left the company).
-    /// </summary>
-    public void Deactivate()
-    {
-        IsActive = false;
-    }
-
-    /// <summary>
-    /// Reactivates the courier.
-    /// </summary>
-    public void Activate()
-    {
-        IsActive = true;
-    }
-
-    /// <summary>
-    /// Updates the encrypted password.
-    /// Password validation and encryption are handled in the logic layer.
-    /// </summary>
-    public void UpdatePassword(string newPasswordHash)
-    {
-        PasswordHash = newPasswordHash;
-    }
 
     public override string ToString()
     {
