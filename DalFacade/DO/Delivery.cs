@@ -123,6 +123,7 @@ internal class Delivery
     }
 }
 
+
 /// <summary>
 /// Represents the mode of delivery (transportation method).
 /// </summary>
