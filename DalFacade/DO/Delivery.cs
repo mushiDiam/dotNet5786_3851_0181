@@ -6,7 +6,7 @@ namespace Dal;
 /// Represents a delivery entity in the system,
 /// linking an order to the courier who handles it.
 /// </summary>
-internal class Delivery
+internal record Delivery
 {
     // ------------------------------
     // Identification
@@ -78,55 +78,9 @@ internal class Delivery
     /// </summary>
     public DeliveryCompletionType? CompletionType { get; private set; }
 
-    // ------------------------------
-    // Constructors
-    // ------------------------------
-
-    /// <summary>
-    /// Default constructor for serialization or initialization.
-    /// </summary>
-    public Delivery() { }
-
-    /// <summary>
-    /// Creates a new delivery entity.
-    /// Automatically retrieves the next delivery ID from Config.
-    /// </summary>
-    public Delivery(int orderId, int courierId, DeliveryType type)
-    {
-        Id = Config.GenerateNextDeliveryId();
-        OrderId = orderId;
-        CourierId = courierId;
-        Type = type;
-        StartTime = Config.Clock; // use the current system clock
-    }
-
-    // ------------------------------
-    // Logic-layer update methods
-    // ------------------------------
-
-    /// <summary>
-    /// Updates the actual distance once computed by the logic layer.
-    /// </summary>
-    public void SetActualDistance(double distanceKm)
-    {
-        ActualDistanceKm = distanceKm;
-    }
-
-    /// <summary>
-    /// Sets the completion type and updates the end time accordingly
-    /// based on the current system clock from Config.
-    /// </summary>
-    public void Complete(DeliveryCompletionType completionType)
-    {
-        CompletionType = completionType;
-        EndTime = Config.Clock;
-    }
-}
 
 
-/// <summary>
-/// Represents the mode of delivery (transportation method).
-/// </summary>
+
 
 
 /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace Dal;
+﻿using DO;
+
+namespace Dal;
 
 public record Courier
 (
@@ -6,6 +8,7 @@ public record Courier
     bool Active,
     double? MinDeliveryDistance,
     DateTime DeliveryTime,
+    OrderType OrderType,
     string Name = "",
     string Phone = "",
     string Email = "",
