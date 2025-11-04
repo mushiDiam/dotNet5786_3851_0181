@@ -1,3 +1,5 @@
 ﻿namespace DO;
 
-enum OrderType { Standard, Express, International, Other }     //Based on the company's scope of deliveries
+public enum OrderType {Car, Motorcycle, Bike, Walking}     //The vehicke used to deliver
+
+public enum EndOfOrder {Completed, Denied, Canceled, Unreached, Failed}     //The order's status
