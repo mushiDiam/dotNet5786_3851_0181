@@ -138,3 +138,10 @@ internal enum DeliveryCompletionType
     Failed,
     Canceled
 }
+
+public enum DeliviryTransportation{
+    Car,
+    Motorcycle,
+    Bike,
+    Walking
+}
