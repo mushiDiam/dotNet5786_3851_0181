@@ -1,5 +1,4 @@
 ﻿namespace DalApi;
-using Dal;
 using DO;
 
 internal interface ICourier

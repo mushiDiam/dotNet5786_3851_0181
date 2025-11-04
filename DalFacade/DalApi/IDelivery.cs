@@ -1,6 +1,5 @@
 ﻿namespace DalApi;
 using DO;
-using Dal;
 
 
 internal interface IDelivery
