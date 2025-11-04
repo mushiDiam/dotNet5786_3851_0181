@@ -9,7 +9,7 @@ public class CourierImplementation : ICourier
     public void Create(Courier item)
     {
         if (DataSource.Couriers.Exists(c => c.Id == item.Id))
-            throw new Exception($"Courier with ID= {item.Id} doesn't exists");
+            throw new Exception($"Courier with ID= {item.Id} already exists");
         else
             DataSource.Couriers.Add(item);
     }
