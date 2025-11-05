@@ -9,7 +9,7 @@
 /// Maximum delivery distance (in kilometers) the courier is willing or able to travel.
 /// A null value indicates no explicit distance limit.
 /// </param>
-/// <param name="DeliveryTime">Typical delivery time or timestamp associated with courier availability.</param>
+/// <param name="JoinDate">Typical delivery time or timestamp associated with courier availability.</param>
 /// <param name="OrderType">Preferred or supported order transport type (Car, Motorcycle, Bike, Walking).</param>
 /// <param name="Name">Full name of the courier. Defaults to an empty string if not provided.</param>
 /// <param name="Phone">Contact phone number for the courier. Defaults to an empty string if not provided.</param>
@@ -21,7 +21,7 @@ public record Courier
     int Id,
     bool Active,
     double? MaxDeliveryDistance,
-    DateTime DeliveryTime,
+    DateTime JoinDate,
     OrderType OrderType,
     string Name,
     string Phone,

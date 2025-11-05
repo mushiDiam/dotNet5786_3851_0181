@@ -1,6 +1,7 @@
 ﻿using System;
 using DalApi;
 using Dal;
+using DO;
 
 namespace DalTest
 {
@@ -174,27 +175,26 @@ namespace DalTest
                             return;
                         case EntityMenu.Create:
                             Console.WriteLine($"Creating new {entityName}...");
-                            HandleCreate(entityName);
+                            CreateEntity(entityName);
                             break;
                         case EntityMenu.Read:
-                            Console.WriteLine($"Reading {entityName} by ID...");
-                            // TODO: implement Read logic (D)
+                            ReadEntity(entityName);
                             break;
                         case EntityMenu.ReadAll:
                             Console.WriteLine($"Showing all {entityName}s...");
-                            // TODO: implement ReadAll logic
+                            ReadAllEntities(entityName);
                             break;
                         case EntityMenu.Update:
                             Console.WriteLine($"Updating {entityName}...");
-                            // TODO: implement Update logic
+                            UpdateEntity(entityName);
                             break;
                         case EntityMenu.Delete:
                             Console.WriteLine($"Deleting {entityName}...");
-                            // TODO: implement Delete logic
+                            DeleteEntity(entityName);
                             break;
                         case EntityMenu.DeleteAll:
                             Console.WriteLine($"Deleting all {entityName}s...");
-                            // TODO: implement DeleteAll logic
+                            DeleteAllEntities(entityName);
                             break;
                         default:
                             Console.WriteLine("Invalid choice.");
@@ -216,7 +216,7 @@ namespace DalTest
         // CREATE HANDLER & INPUT HELPERS
         // ===============================
 
-        private static void HandleCreate(string entityName)
+        private static void CreateEntity(string entityName)
         {
             try
             {
@@ -247,7 +247,7 @@ namespace DalTest
                     case "Courier":
                         {
                             // Id left as 0 to let DAL implementation assign if it does
-                            int id = 0;
+                            int id = ReadInt("Enter the courier's ID:");
                             bool active = ReadBool("Active (y/n): ");
                             double? maxDistance = ReadDouble("Max delivery distance (km) (empty = none): ", allowEmpty: true);
                             DateTime deliveryTime = s_dalConfig!.Clock;
@@ -293,6 +293,60 @@ namespace DalTest
             }
         }
 
+        private static void ReadEntity(string entityName)
+        {
+            Console.WriteLine($"Reading {entityName} by ID...");
+            {
+                int id = ReadInt("Enter ID: ");
+                try
+                {
+                    switch (entityName)
+                    {
+                        case "Order":
+                            var order = s_dalOrder!.Read(id);
+                            if (order is null)
+                            {
+                                Console.WriteLine($"Order with Id {id} not found.");
+                            }
+                            else
+                            {
+                                PrintOrder(order);
+                            }
+                            break;
+                        case "Courier":
+                            var courier = s_dalCourier!.Read(id);
+                            if (courier is null)
+                            {
+                                Console.WriteLine($"Courier with Id {id} not found.");
+                            }
+                            else
+                            {
+                                PrintCourier(courier);
+                            }
+                            break;
+                        case "Delivery":
+                            var delivery = s_dalDelivery!.Read(id);
+                            if (delivery is null)
+                            {
+                                Console.WriteLine($"Delivery with Id {id} not found.");
+                            }
+                            else
+                            {
+                                PrintDelivery(delivery);
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("Read not supported for this entity.");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error while reading entity:");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
         private static string ReadString(string prompt, bool allowEmpty = false)
         {
             while (true)
@@ -463,14 +517,367 @@ namespace DalTest
         // PLACEHOLDER METHODS
         // ===============================
 
-        private static void ShowAllData()
-        {
-            Console.WriteLine("TODO: Display all entities (orders, couriers, deliveries, config...)");
+        private static void ShowAllData(){
+            Console.WriteLine("Showing all data:");
+            Console.WriteLine("Couriers:");
+            List <Courier> listCourier =s_dalCourier.ReadAll();
+            foreach (var item in listCourier){
+                PrintCourier(item);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("Orders:");
+            List<Order> listOrder = s_dalOrder.ReadAll();
+            foreach (var item in listOrder){
+                PrintOrder(item);
+                Console.WriteLine();
+            }
+            Console.WriteLine("Deliveries:");
+            List<Delivery> listDelivery = s_dalDelivery.ReadAll();
+            foreach (var item in listDelivery){
+                PrintDelivery(item);
+                Console.WriteLine();
+            }
         }
 
-        private static void ResetAllData()
+        private static void ResetAllData(){
+            Console.WriteLine("Are you sure you want to reset all the data? (y/n)");
+            string? res = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(res) || !(res.Trim().ToLowerInvariant() == "y" || res.Trim().ToLowerInvariant() == "yes"))
+            {
+                Console.WriteLine("Aborted.");
+                return;
+            }
+            s_dalDelivery!.DeleteAll();
+            s_dalOrder!.DeleteAll();
+            s_dalCourier!.DeleteAll();
+            s_dalConfig!.Reset();
+            Console.WriteLine("All data reset successfully.");
+        }
+
+        // ===============================
+        // PRINT HELPERS
+        // ===============================
+
+        private static void PrintOrder(Order o)
         {
-            Console.WriteLine("TODO: Clear all tables and reset config values");
+            Console.WriteLine("=== Order ===");
+            Console.WriteLine($"Id: {o.Id}");
+            Console.WriteLine($"AddressOfOrder: {o.AdderssOfOrder}");
+            Console.WriteLine($"Latitude: {o.Latitude}");
+            Console.WriteLine($"Longtitude: {o.Longtitude}");
+            Console.WriteLine($"CustomerName: {o.CustomerName}");
+            Console.WriteLine($"CustomerPhone: {o.CustomerPhone}");
+            Console.WriteLine($"CreatedAt: {o.CreatedAt}");
+            Console.WriteLine($"Fragile: {o.Fragile}");
+            Console.WriteLine($"Weight: {o.Weight}");
+            Console.WriteLine($"Volume: {o.Volume}");
+            Console.WriteLine($"AdditionalDetails: {(string.IsNullOrWhiteSpace(o.AdditionalDetails) ? "(none)" : o.AdditionalDetails)}");
+            Console.WriteLine($"Description: {(string.IsNullOrWhiteSpace(o.Description) ? "(none)" : o.Description)}");
+        }
+
+        private static void PrintCourier(Courier c)
+        {
+            Console.WriteLine("=== Courier ===");
+            Console.WriteLine($"Id: {c.Id}");
+            Console.WriteLine($"Active: {c.Active}");
+            Console.WriteLine($"MaxAirDeliveryDistance: {(c.MaxDeliveryDistance.HasValue ? c.MaxDeliveryDistance.Value.ToString() : "(none)")}");
+            Console.WriteLine($"Joined the company at: {c.JoinDate}");
+            Console.WriteLine($"OrderType: {c.OrderType}");
+            Console.WriteLine($"Name: {c.Name}");
+            Console.WriteLine($"Phone: {c.Phone}");
+            Console.WriteLine($"Email: {c.Email}");
+            Console.WriteLine($"Password: {(string.IsNullOrEmpty(c.Password) ? "(none)" : c.Password)}");
+        }
+
+        private static void PrintDelivery(Delivery d)
+        {
+            Console.WriteLine("=== Delivery ===");
+            Console.WriteLine($"Id: {d.Id}");
+            Console.WriteLine($"OrderId: {d.OrderId}");
+            Console.WriteLine($"CourierId: {d.CourierId}");
+            Console.WriteLine($"OrderType: {d.OrderType}");
+            Console.WriteLine($"StartOfDelivery: {d.StartOfDelivery}");
+            Console.WriteLine($"ActualDistance: {(d.ActualDistance.HasValue ? d.ActualDistance.Value.ToString() : "(none)")}");
+            Console.WriteLine($"EndOfOrder: {(d.EndOfOrder.HasValue ? d.EndOfOrder.Value.ToString() : "(none)")}");
+            Console.WriteLine($"TimeOfDelivery: {(d.TimeOfDelivery.HasValue ? d.TimeOfDelivery.Value.ToString() : "(none)")}");
+        }
+        private static void ReadAllEntities(string entityName)
+        {
+            try
+            {
+                switch (entityName)
+                {
+                    case "Order":
+                        var orders = s_dalOrder!.ReadAll();
+                        if (orders == null || orders.Count == 0) Console.WriteLine("No orders found.");
+                        else foreach (var o in orders) { PrintOrder(o); Console.WriteLine(); }
+                        break;
+                    case "Courier":
+                        var couriers = s_dalCourier!.ReadAll();
+                        if (couriers == null || couriers.Count == 0) Console.WriteLine("No couriers found.");
+                        else foreach (var c in couriers) { PrintCourier(c); Console.WriteLine(); }
+                        break;
+                    case "Delivery":
+                        var deliveries = s_dalDelivery!.ReadAll();
+                        if (deliveries == null || deliveries.Count == 0) Console.WriteLine("No deliveries found.");
+                        else foreach (var d in deliveries) { PrintDelivery(d); Console.WriteLine(); }
+                        break;
+                    default:
+                        Console.WriteLine("ReadAll not supported for this entity.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error while reading all entities:");
+                Console.WriteLine(ex.Message);
+            }
+        }
+        private static void UpdateEntity(string entityName)
+        {
+            Console.WriteLine($"Updating {entityName} by ID...");
+            int id = ReadInt("Enter ID: ");
+            try
+            {
+                switch (entityName)
+                {
+                    case "Order":
+                        var existingOrder = s_dalOrder!.Read(id);
+                        if (existingOrder is null) { Console.WriteLine($"Order with Id {id} not found."); return; }
+                        PrintOrder(existingOrder);
+                        Console.WriteLine("--- Enter new values (empty = keep current) ---");
+
+                        string address = ReadString($"Address [{existingOrder.AdderssOfOrder}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(address)) address = existingOrder.AdderssOfOrder;
+
+                        double latitude = ReadNullableDouble($"Latitude [{existingOrder.Latitude}]: ", existingOrder.Latitude);
+                        double longitude = ReadNullableDouble($"Longitude [{existingOrder.Longtitude}]: ", existingOrder.Longtitude);
+
+                        string customerName = ReadString($"Customer name [{existingOrder.CustomerName}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(customerName)) customerName = existingOrder.CustomerName;
+
+                        string customerPhone = ReadString($"Customer phone [{existingOrder.CustomerPhone}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(customerPhone)) customerPhone = existingOrder.CustomerPhone;
+
+                        bool fragile = ReadNullableBool($"Fragile (y/n) [{(existingOrder.Fragile ? "y" : "n")}]: ", existingOrder.Fragile);
+                        int weight = ReadNullableInt($"Weight [{existingOrder.Weight}]: ", existingOrder.Weight);
+                        int volume = ReadNullableInt($"Volume [{existingOrder.Volume}]: ", existingOrder.Volume);
+
+                        string additional = ReadString($"Additional details [{(string.IsNullOrWhiteSpace(existingOrder.AdditionalDetails) ? "(none)" : existingOrder.AdditionalDetails)}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(additional)) additional = existingOrder.AdditionalDetails;
+
+                        string description = ReadString($"Description [{(string.IsNullOrWhiteSpace(existingOrder.Description) ? "(none)" : existingOrder.Description)}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(description)) description = existingOrder.Description;
+
+                        var updatedOrder = new Order(id, address, latitude, longitude, customerName, customerPhone, existingOrder.CreatedAt, fragile, weight, volume, additional, description);
+                        s_dalOrder.Update(updatedOrder);
+                        Console.WriteLine("Order updated.");
+                        break;
+
+                    case "Courier":
+                        var existingCourier = s_dalCourier!.Read(id);
+                        if (existingCourier is null) { Console.WriteLine($"Courier with Id {id} not found."); return; }
+                        PrintCourier(existingCourier);
+                        Console.WriteLine("--- Enter new values (empty = keep current) ---");
+
+                        bool active = ReadNullableBool($"Active (y/n) [{(existingCourier.Active ? "y" : "n")}]: ", existingCourier.Active);
+                        double? maxDistance = ReadNullableDoubleNullable($"Max delivery distance (km) [{(existingCourier.MaxDeliveryDistance.HasValue ? existingCourier.MaxDeliveryDistance.Value.ToString() : "(none)")}]: ", existingCourier.MaxDeliveryDistance);
+                        var orderType = ReadEnumKeepCurrent<OrderType>($"Order type ({string.Join("/", Enum.GetNames(typeof(OrderType)))}) [{existingCourier.OrderType}]: ", existingCourier.OrderType);
+                        string name = ReadString($"Name [{existingCourier.Name}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(name)) name = existingCourier.Name;
+                        string phone = ReadString($"Phone [{existingCourier.Phone}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(phone)) phone = existingCourier.Phone;
+                        string email = ReadString($"Email [{existingCourier.Email}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(email)) email = existingCourier.Email;
+                        string password = ReadString($"Password [{(string.IsNullOrEmpty(existingCourier.Password) ? "(none)" : existingCourier.Password)}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(password)) password = existingCourier.Password;
+
+                        var updatedCourier = new Courier(id, active, maxDistance, existingCourier.JoinDate, orderType, name, phone, email, password);
+                        s_dalCourier.Update(updatedCourier);
+                        Console.WriteLine("Courier updated.");
+                        break;
+
+                    case "Delivery":
+                        var existingDelivery = s_dalDelivery!.Read(id);
+                        if (existingDelivery is null) { Console.WriteLine($"Delivery with Id {id} not found."); return; }
+                        PrintDelivery(existingDelivery);
+                        Console.WriteLine("--- Enter new values (empty = keep current) ---");
+
+                        int orderId = ReadNullableInt($"Order Id [{existingDelivery.OrderId}]: ", existingDelivery.OrderId);
+                        int courierId = ReadNullableInt($"Courier Id [{existingDelivery.CourierId}]: ", existingDelivery.CourierId);
+                        var delOrderType = ReadEnumKeepCurrent<OrderType>($"Order type ({string.Join("/", Enum.GetNames(typeof(OrderType)))}) [{existingDelivery.OrderType}]: ", existingDelivery.OrderType);
+                        double? actualDistance = ReadNullableDoubleNullable($"Actual distance (km) [{(existingDelivery.ActualDistance.HasValue ? existingDelivery.ActualDistance.Value.ToString() : "(none)")}]: ", existingDelivery.ActualDistance);
+                        var endOfOrder = ReadEnumNullableKeepCurrent<EndOfOrder>($"End of order ({string.Join("/", Enum.GetNames(typeof(EndOfOrder)))}) [{(existingDelivery.EndOfOrder.HasValue ? existingDelivery.EndOfOrder.Value.ToString() : "(none)")}]: ", existingDelivery.EndOfOrder);
+                        DateTime? timeOfDelivery = ReadNullableDateTime($"Time of delivery (yyyy-MM-dd HH:mm) [{(existingDelivery.TimeOfDelivery.HasValue ? existingDelivery.TimeOfDelivery.Value.ToString("yyyy-MM-dd HH:mm") : "(none)")}]: ", existingDelivery.TimeOfDelivery);
+
+                        var updatedDelivery = new Delivery(id, orderId, courierId, delOrderType, existingDelivery.StartOfDelivery, actualDistance, endOfOrder, timeOfDelivery);
+                        s_dalDelivery.Update(updatedDelivery);
+                        Console.WriteLine("Delivery updated.");
+                        break;
+
+                    default:
+                        Console.WriteLine("Update not supported for this entity.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error updating entity:");
+                Console.WriteLine(ex.Message);
+            }
+
+            // Local helper functions for parsing/optional reads
+            int ReadNullableInt(string prompt, int current)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (int.TryParse(s, out var v)) return v;
+                    Console.WriteLine("Invalid integer.");
+                }
+            }
+
+            double ReadNullableDouble(string prompt, double current)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (double.TryParse(s, out var v)) return v;
+                    Console.WriteLine("Invalid number.");
+                }
+            }
+
+            double? ReadNullableDoubleNullable(string prompt, double? current)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (double.TryParse(s, out var v)) return v;
+                    Console.WriteLine("Invalid number.");
+                }
+            }
+
+            bool ReadNullableBool(string prompt, bool current)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    s = s.Trim().ToLowerInvariant();
+                    if (s == "y" || s == "yes" || s == "true" || s == "1") return true;
+                    if (s == "n" || s == "no" || s == "false" || s == "0") return false;
+                    Console.WriteLine("Invalid boolean. Enter y/n.");
+                }
+            }
+
+            DateTime? ReadNullableDateTime(string prompt, DateTime? current)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (DateTime.TryParse(s, out var dt)) return dt;
+                    Console.WriteLine("Invalid date/time. Use yyyy-MM-dd HH:mm or other valid format.");
+                }
+            }
+
+            T ReadEnumKeepCurrent<T>(string prompt, T current) where T : Enum
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (Enum.TryParse(typeof(T), s, true, out var val)) return (T)val!;
+                    Console.WriteLine($"Invalid value. Valid values: {string.Join(", ", Enum.GetNames(typeof(T)))}");
+                }
+            }
+
+            T? ReadEnumNullableKeepCurrent<T>(string prompt, T? current) where T : struct, Enum
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? s = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(s)) return current;
+                    if (Enum.TryParse(typeof(T), s, true, out var val)) return (T)val!;
+                    Console.WriteLine($"Invalid value. Valid values: {string.Join(", ", Enum.GetNames(typeof(T)))}");
+                }
+            }
+        }
+        private static void DeleteEntity(string entityName)
+        {
+            int id = ReadInt("Enter ID to delete: ");
+            try
+            {
+                switch (entityName)
+                {
+                    case "Order":
+                        s_dalOrder!.Delete(id);
+                        Console.WriteLine("Order deleted");
+                        break;
+                    case "Courier":
+                        s_dalCourier!.Delete(id);
+                        Console.WriteLine("Courier deleted");
+                        break;
+                    case "Delivery":
+                        s_dalDelivery!.Delete(id);
+                        Console.WriteLine("Delivery deleted");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error deleting entity:");
+                Console.WriteLine(ex.Message);
+            }
+        }
+        private static void DeleteAllEntities(string entityName)
+        {
+            Console.Write("Are you sure you want to permanently delete ALL records for this entity? (y/n): ");
+            string? res = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(res) || !(res.Trim().ToLowerInvariant() == "y" || res.Trim().ToLowerInvariant() == "yes"))
+            {
+                Console.WriteLine("Aborted.");
+                return;
+            }
+
+            try
+            {
+                switch (entityName)
+                {
+                    case "Order":
+                        s_dalOrder!.DeleteAll();
+                        Console.WriteLine("All orders deleted.");
+                        break;
+                    case "Courier":
+                        s_dalCourier!.DeleteAll();
+                        Console.WriteLine("All couriers deleted.");
+                        break;
+                    case "Delivery":
+                        s_dalDelivery!.DeleteAll();
+                        Console.WriteLine("All deliveries deleted.");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error deleting all entities:");
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
