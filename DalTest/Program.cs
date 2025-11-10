@@ -367,8 +367,10 @@ namespace DalTest
             {
                 Console.Write(prompt);
                 string? s = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(s) && defaultIfEmpty.HasValue) return defaultIfEmpty.Value;
-                if (int.TryParse(s, out var v)) return v;
+                if (string.IsNullOrWhiteSpace(s) && defaultIfEmpty.HasValue)
+                    return defaultIfEmpty.Value;
+                if (int.TryParse(s, out var v)) 
+                    return v;
                 Console.WriteLine("Invalid integer.");
             }
         }
@@ -381,12 +383,15 @@ namespace DalTest
                 string? s = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(s))
                 {
-                    if (allowEmpty) return defaultIfEmpty ?? double.NaN;
-                    if (defaultIfEmpty.HasValue) return defaultIfEmpty.Value;
+                    if (allowEmpty) 
+                        return defaultIfEmpty ?? double.NaN;
+                    if (defaultIfEmpty.HasValue)
+                        return defaultIfEmpty.Value;
                     Console.WriteLine("Value required.");
                     continue;
                 }
-                if (double.TryParse(s, out var v)) return v;
+                if (double.TryParse(s, out var v))
+                    return v;
                 Console.WriteLine("Invalid number.");
             }
         }
@@ -400,11 +405,13 @@ namespace DalTest
                 string? s = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(s))
                 {
-                    if (allowEmpty) return null;
+                    if (allowEmpty)
+                        return null;
                     Console.WriteLine("Value required.");
                     continue;
                 }
-                if (double.TryParse(s, out var v)) return v;
+                if (double.TryParse(s, out var v))
+                    return v;
                 Console.WriteLine("Invalid number.");
             }
         }
@@ -415,11 +422,15 @@ namespace DalTest
             {
                 Console.Write(prompt);
                 string? s = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(s) && defaultIfEmpty.HasValue) return defaultIfEmpty.Value;
-                if (string.IsNullOrWhiteSpace(s)) { Console.WriteLine("Value required."); continue; }
+                if (string.IsNullOrWhiteSpace(s) && defaultIfEmpty.HasValue) 
+                    return defaultIfEmpty.Value;
+                if (string.IsNullOrWhiteSpace(s)) { Console.WriteLine("Value required.");
+                    continue; }
                 s = s.Trim().ToLowerInvariant();
-                if (s == "y" || s == "yes" || s == "true" || s == "1") return true;
-                if (s == "n" || s == "no" || s == "false" || s == "0") return false;
+                if (s == "y" || s == "yes" || s == "true" || s == "1") 
+                    return true;
+                if (s == "n" || s == "no" || s == "false" || s == "0")
+                    return false;
                 Console.WriteLine("Invalid boolean. Enter y/n.");
             }
         }

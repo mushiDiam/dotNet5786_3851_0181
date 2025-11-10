@@ -46,13 +46,10 @@ internal static class Config
     internal static TimeSpan MaxDeliveryTime { get; private set; }
     internal static TimeSpan RiskRange { get; private set; }
     internal static TimeSpan InactiveTime { get; private set; }
-    internal static void Reset()
-    {
+    internal static void Reset(){
         nextDeliveryId = StartDeliveryId;
         nextOrderId = StartOrderId;
         Clock = DateTime.Now;
         ManagerPassword = "";
     }
-
-
 }

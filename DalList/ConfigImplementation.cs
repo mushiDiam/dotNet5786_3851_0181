@@ -36,8 +36,7 @@ internal class ConfigImplementation : IConfig
     public TimeSpan InactiveTime { get; private set; }
 
     // Reset method
-    public void Reset()
-    {
+    public void Reset(){
         nextDeliveryId = StartDeliveryId;
         nextOrderId = StartOrderId;
         Clock = DateTime.Now;
