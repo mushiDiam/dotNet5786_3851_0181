@@ -15,7 +15,7 @@
 /// <param name="Phone">Contact phone number for the courier. Defaults to an empty string if not provided.</param>
 /// <param name="Email">Contact email for the courier. Defaults to an empty string if not provided.</param>
 /// <param name="Password">Courier authentication password or password hash. Defaults to an empty string if not provided.
-/// Note: store passwords securely (hashed + salted) in production systems; plain text is discouraged.</param>
+/// Note: store  passwords securely (hashed + salted) in production systems; plain text is discouraged.</param>
 public record Courier
 (
     int Id,
