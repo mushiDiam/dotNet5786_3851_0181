@@ -9,7 +9,7 @@ internal class CourierImplementation : ICourier
     public void Create(Courier item)
     {
         if (DataSource.Couriers.Exists(c => c.Id == item.Id))
-            throw new Exception($"Courier with ID= {item.Id} already exists");
+            throw new DalAlreadyExistsException($"Courier with ID= {item.Id} already exists");
         else
             DataSource.Couriers.Add(item);
     }
@@ -19,7 +19,7 @@ internal class CourierImplementation : ICourier
         if (DataSource.Couriers.Exists(c => c.Id == id))
             DataSource.Couriers.RemoveAll(c => c.Id == id);
         else
-            throw new Exception($"Courier with ID= {id} doesn't exists");
+            throw new DalDoesNotExistException($"Courier with ID= {id} doesn't exists");
     }
 
     public void DeleteAll()

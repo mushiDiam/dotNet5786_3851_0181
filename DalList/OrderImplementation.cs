@@ -8,7 +8,7 @@ internal class OrderImplementation : IOrder
     public void Create(Order item)
     {
         if (DataSource.Orders.Exists(o => o.Id == item.Id))
-            throw new NotImplementedException($"Order with ID= {item.Id} already exists");
+            throw new DalAlreadyExistsException($"Order with ID= {item.Id} already exists");
         int id = Config.NextOrderId;
         Order copy = item with { Id = id };
         DataSource.Orders.Add(copy);
@@ -19,7 +19,7 @@ internal class OrderImplementation : IOrder
         if (DataSource.Orders.Exists(o => o.Id == id))
             DataSource.Orders.RemoveAll(o => o.Id == id);
         else
-            throw new NotImplementedException($"Order with ID= {id} doesn't exists");
+            throw new DalDoesNotExistException($"Order with ID= {id} doesn't exists");
     }
 
     public void DeleteAll()

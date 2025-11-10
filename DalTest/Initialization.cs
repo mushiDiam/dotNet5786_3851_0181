@@ -19,7 +19,7 @@ internal static class Initialization
         s_dalDelivery = _delivery ?? throw new NullReferenceException("DAL Delivery cannot be null!");
         s_dalOrder = _order ?? throw new NullReferenceException("DAL Order cannot be null!");
         s_dalCourier = _courier ?? throw new NullReferenceException("DAL Courier cannot be null!");*/
-        s_dal = dal ?? throw new NullReferenceException("DAL object cannot be null!");
+        s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
         var orders = DataSource.Orders;
 
         s_dal.resetDB();
