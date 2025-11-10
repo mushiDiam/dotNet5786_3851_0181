@@ -7,8 +7,6 @@ internal class OrderImplementation : IOrder
 {
     public void Create(Order item)
     {
-        if (DataSource.Orders.Exists(o => o.Id == item.Id))
-            throw new DalAlreadyExistsException($"Order with ID= {item.Id} already exists");
         int id = Config.NextOrderId;
         Order copy = item with { Id = id };
         DataSource.Orders.Add(copy);

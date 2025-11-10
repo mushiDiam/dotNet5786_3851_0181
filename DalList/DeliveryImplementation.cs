@@ -7,8 +7,6 @@ internal class DeliveryImplementation : IDelivery
 {
     public void Create(Delivery item)
     {
-        if (DataSource.Deliveries.Exists(d => d.Id == item.Id))
-            throw new DalAlreadyExistsException($"Delivery with ID= {item.Id} already exists");
         int id = Config.NextDeliveryId;
         Delivery copy = item with { Id = id };
         DataSource.Deliveries.Add(copy);
