@@ -1,6 +1,6 @@
 ﻿namespace Dal;
 using DalApi;
-public sealed class DalList : IDal
+sealed public class DalList : IDal
 {
     public IOrder Order { get; } = new OrderImplementation();
 
