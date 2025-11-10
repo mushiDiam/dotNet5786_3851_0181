@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DalApi;
 using DO;
 
-public class CourierImplementation : ICourier
+internal class CourierImplementation : ICourier
 {
     public void Create(Courier item)
     {

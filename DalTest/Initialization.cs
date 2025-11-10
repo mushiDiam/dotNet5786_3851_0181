@@ -1,32 +1,4 @@
-﻿/*namespace DalTest;
-using DalApi;
-using DO;
-
-public static class Initialization
-{
-    private static IConfig? s_dalConfig;
-    private static ICourier? s_dalCourier;
-    private static IDelivery? s_dalDelivery;
-    private static IOrder? s_dalOrder;
-
-    private static readonly Random s_rand = new();
-    private static void createCouriers()
-    {
-    }
-
-    private static void createDeliveries()
-    {
-    }
-
-    private static void createOrders()
-    {
-    }
-
-}
-*/
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DalApi;
@@ -36,17 +8,20 @@ namespace Dal;
 
 internal static class Initialization
 {
-    private static IConfig? s_dalConfig;
+    /*private static IConfig? s_dalConfig;
     private static IDelivery? s_dalDelivery;
     private static IOrder? s_dalOrder;
-    private static ICourier? s_dalCourier;
-    public static  void Do(IConfig _config, IDelivery _delivery, IOrder _order, ICourier _courier)
+    private static ICourier? s_dalCourier;*/
+    private static IDal? s_dal;
+    public static  void Do(IDal dal)
     {
-        s_dalConfig = _config ?? throw new NullReferenceException("DAL Config cannot be null!");
+        /*s_dalConfig = _config ?? throw new NullReferenceException("DAL Config cannot be null!");
         s_dalDelivery = _delivery ?? throw new NullReferenceException("DAL Delivery cannot be null!");
         s_dalOrder = _order ?? throw new NullReferenceException("DAL Order cannot be null!");
-        s_dalCourier = _courier ?? throw new NullReferenceException("DAL Courier cannot be null!");
-    
+        s_dalCourier = _courier ?? throw new NullReferenceException("DAL Courier cannot be null!");*/
+        s_dal = dal ?? throw new NullReferenceException("DAL object cannot be null!");
+
+        s_dal.resetDB();
 
     }
     private static readonly Random s_rand = new();
@@ -96,7 +71,7 @@ internal static class Initialization
                 "1234"
             );
 
-            s_dalCourier.Create(courier);
+            s_dal!.Courier.Create(courier);
         }
     }
 
@@ -141,7 +116,7 @@ internal static class Initialization
                 Volume: s_rand.Next(1, 10)
             );
 
-            s_dalOrder.Create(order);
+            s_dal!.Order.Create(order);
         }
     }
 
@@ -172,7 +147,7 @@ internal static class Initialization
                 TimeOfDelivery: end
             );
 
-            s_dalDelivery.Create(delivery);
+            s_dal!.Delivery.Create(delivery);
         }
     }
 

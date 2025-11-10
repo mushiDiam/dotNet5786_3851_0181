@@ -2,7 +2,7 @@
 using DalApi;
 
 
-public class ConfigImplementation : IConfig
+internal class ConfigImplementation : IConfig
 {
     // IDs
     private const int StartDeliveryId = 1;
