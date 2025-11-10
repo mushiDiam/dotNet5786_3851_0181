@@ -13,7 +13,7 @@ internal class ConfigImplementation : IConfig
     private int nextOrderId = StartOrderId;
     public int NextOrderId => nextOrderId++;
 
-    // Time and manager info
+    // Time and manager info 
     public DateTime Clock { get; set; } = DateTime.Now;
     public int ManagerId { get; private set; }
     public string ManagerPassword { get; private set; } = "";
