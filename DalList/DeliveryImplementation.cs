@@ -31,17 +31,18 @@ internal class DeliveryImplementation : IDelivery
 
     public Delivery? Read(int id)
     {
-        if(DataSource.Deliveries.Exists(d => d.Id == id))
-        {
-            return DataSource.Deliveries.Find(d => d.Id == id);
-        }
-        return null;
+        return DataSource.Deliveries.FirstOrDefault(item => item.Id == id);
     }
 
-    public List<Delivery> ReadAll()
+    public Delivery? Read(Func<Delivery, bool> filter)
     {
-        return new List<Delivery>(DataSource.Deliveries);
+        return DataSource.Deliveries.FirstOrDefault(filter);
     }
+
+    public IEnumerable<Delivery> ReadAll(Func<Delivery, bool>? filter = null) //stage 2
+       => filter == null
+           ? DataSource.Deliveries.Select(item => item)
+           : DataSource.Deliveries.Where(filter);
 
     public void Update(Delivery item)
     {

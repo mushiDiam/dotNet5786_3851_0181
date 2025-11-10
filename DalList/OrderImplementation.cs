@@ -29,17 +29,19 @@ internal class OrderImplementation : IOrder
 
     public Order? Read(int id)
     {
-        if (DataSource.Orders.Exists(o => o.Id == id))
-        {
-            return DataSource.Orders.Find(o => o.Id == id);
-        }
-        return null;
+        return DataSource.Orders.FirstOrDefault(item => item.Id == id);
     }
 
-    public List<Order> ReadAll()
+    public Order? Read(Func<Order, bool> filter)
     {
-        return new List<Order>(DataSource.Orders);
+        return DataSource.Orders.FirstOrDefault(filter);
     }
+
+    public IEnumerable<Order> ReadAll(Func<Order, bool>? filter = null) //stage 2
+        => filter == null
+            ? DataSource.Orders.Select(item => item)
+            : DataSource.Orders.Where(filter);
+
 
     public void Update(Order item)
     {

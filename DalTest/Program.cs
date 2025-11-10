@@ -7,10 +7,7 @@ namespace DalTest
 {
     internal class Program
     {
-        private static IConfig? s_dalConfig = new ConfigImplementation();        // stage 1
-        private static IDelivery? s_dalDelivery = new DeliveryImplementation();  // stage 1
-        private static IOrder? s_dalOrder = new OrderImplementation();           // stage 1
-        private static ICourier? s_dalCourier = new CourierImplementation();     // stage 1
+        static readonly IDal s_dal = new DalList();
 
         // ===============================
         // ENUM DEFINITIONS
@@ -59,12 +56,13 @@ namespace DalTest
             try
             {
 
-                Initialization.Do(s_dalConfig, s_dalDelivery, s_dalOrder, s_dalCourier);
+                // Initialization.Do(s_dalConfig, s_dalDelivery, s_dalOrder, s_dalCourier); //Stage 1
+                Initialization.Do(s_dal);
                 RunMainMenu();
-                s_dalConfig!.Reset();
-                s_dalCourier!.DeleteAll();
-                s_dalOrder!.DeleteAll();
-                s_dalDelivery!.DeleteAll();
+                //s_dalConfig!.Reset();
+                //s_dalCourier!.DeleteAll();
+               // s_dalOrder!.DeleteAll();
+               // s_dalDelivery!.DeleteAll();
             }
             catch (Exception ex)
             {
@@ -224,13 +222,13 @@ namespace DalTest
                 {
                     case "Order":
                         {
-                            int id = s_dalConfig!.NextOrderId;
+                            int id = s_dal.Config.NextOrderId;
                             string address = ReadString("Address of order: ");
                             double lat = ReadDouble("Latitude: ");
                             double lon = ReadDouble("Longitude: ");
                             string customerName = ReadString("Customer name: ");
                             string customerPhone = ReadString("Customer phone: ");
-                            DateTime createdAt = s_dalConfig.Clock;
+                            DateTime createdAt = s_dal.Config.Clock;
                             bool fragile = ReadBool("Fragile (y/n): ");
                             int weight = ReadInt("Weight (integer): ");
                             int volume = ReadInt("Volume (integer): ");
@@ -240,7 +238,7 @@ namespace DalTest
                             if (string.IsNullOrWhiteSpace(description)) description = null;
 
                             var order = new Order(id, address, lat, lon, customerName, customerPhone, createdAt, fragile, weight, volume, additional, description);
-                            s_dalOrder!.Create(order);
+                            s_dal.Order!.Create(order);
                             Console.WriteLine($"Order created with Id: {id}");
                             break;
                         }
@@ -250,7 +248,7 @@ namespace DalTest
                             int id = ReadInt("Enter the courier's ID:");
                             bool active = ReadBool("Active (y/n): ");
                             double? maxDistance = ReadDouble("Max delivery distance (km) (empty = none): ", allowEmpty: true);
-                            DateTime deliveryTime = s_dalConfig!.Clock;
+                            DateTime deliveryTime = s_dal.Config!.Clock;
                             var orderType = ReadEnumOptional<OrderType>("Order type (Car/Motorcycle/Bike/Walking): ");
                             string name = ReadString("Name: ");
                             string phone = ReadString("Phone: ");
@@ -258,17 +256,17 @@ namespace DalTest
                             string password = ReadString("Password: ");
 
                             var courier = new Courier(id, active, maxDistance, deliveryTime, orderType, name, phone, email, password);
-                            s_dalCourier!.Create(courier);
+                            s_dal.Courier!.Create(courier);
                             Console.WriteLine("Courier created.");
                             break;
                         }
                     case "Delivery":
                         {
-                            int id = s_dalConfig!.NextDeliveryId;
+                            int id = s_dal.Config!.NextDeliveryId;
                             int orderId = ReadInt("Order Id: ");
                             int courierId = ReadInt("Courier Id: ");
                             var orderType = ReadEnumOptional<OrderType>("Order type (Car/Motorcycle/Bike/Walking): ");
-                            DateTime start = s_dalConfig.Clock;
+                            DateTime start = s_dal.Config.Clock;
                             double? actualDistance = ReadDouble("Actual distance (km) (empty = none): ", allowEmpty: true);
                             var endOfOrder = ReadEnumOptional<EndOfOrder>("End of order (Delivered/Cancelled/Failed) (empty = none): ");
                             DateTime? timeOfDelivery = null;
@@ -277,7 +275,7 @@ namespace DalTest
                                 timeOfDelivery = parsed;
 
                             var delivery = new Delivery(id, orderId, courierId, orderType, start, actualDistance, endOfOrder, timeOfDelivery);
-                            s_dalDelivery!.Create(delivery);
+                            s_dal.Delivery!.Create(delivery);
                             Console.WriteLine($"Delivery created with Id: {id}");
                             break;
                         }
@@ -303,7 +301,7 @@ namespace DalTest
                     switch (entityName)
                     {
                         case "Order":
-                            var order = s_dalOrder!.Read(id);
+                            var order = s_dal.Order!.Read(id);
                             if (order is null)
                             {
                                 Console.WriteLine($"Order with Id {id} not found.");
@@ -314,7 +312,7 @@ namespace DalTest
                             }
                             break;
                         case "Courier":
-                            var courier = s_dalCourier!.Read(id);
+                            var courier = s_dal.Courier!.Read(id);
                             if (courier is null)
                             {
                                 Console.WriteLine($"Courier with Id {id} not found.");
@@ -325,7 +323,7 @@ namespace DalTest
                             }
                             break;
                         case "Delivery":
-                            var delivery = s_dalDelivery!.Read(id);
+                            var delivery = s_dal.Delivery!.Read(id);
                             if (delivery is null)
                             {
                                 Console.WriteLine($"Delivery with Id {id} not found.");
@@ -477,15 +475,15 @@ namespace DalTest
                         case ConfigMenu.Exit:
                             return;
                         case ConfigMenu.AdvanceClockMinute:
-                            s_dalConfig!.Clock = s_dalConfig.Clock.AddMinutes(1);
+                            s_dal.Config!.Clock = s_dal.Config.Clock.AddMinutes(1);
                             Console.WriteLine("Clock advanced by 1 minute.");
                             break;
                         case ConfigMenu.AdvanceClockHour:
-                            s_dalConfig!.Clock = s_dalConfig.Clock.AddHours(1);
+                            s_dal.Config!.Clock = s_dal.Config.Clock.AddHours(1);
                             Console.WriteLine("Clock advanced by 1 hour.");
                             break;
                         case ConfigMenu.ShowClock:
-                            Console.WriteLine($"Current Clock: {s_dalConfig!.Clock}");
+                            Console.WriteLine($"Current Clock: {s_dal.Config!.Clock}");
                             break;
                         case ConfigMenu.SetConfigValue:
                             Console.WriteLine("TODO: Set specific config value");
@@ -494,7 +492,7 @@ namespace DalTest
                             Console.WriteLine("TODO: Show specific config value");
                             break;
                         case ConfigMenu.ResetConfig:
-                            s_dalConfig!.Reset();
+                            s_dal.Config!.Reset();
                             Console.WriteLine("Configuration reset successfully.");
                             break;
                         default:
@@ -520,20 +518,20 @@ namespace DalTest
         private static void ShowAllData(){
             Console.WriteLine("Showing all data:");
             Console.WriteLine("Couriers:");
-            List <Courier> listCourier =s_dalCourier.ReadAll();
+            List <Courier> listCourier = (List<Courier>)s_dal.Courier.ReadAll();
             foreach (var item in listCourier){
                 PrintCourier(item);
                 Console.WriteLine();
             }
 
             Console.WriteLine("Orders:");
-            List<Order> listOrder = s_dalOrder.ReadAll();
+            List<Order> listOrder = (List<Order>)s_dal.Order.ReadAll();
             foreach (var item in listOrder){
                 PrintOrder(item);
                 Console.WriteLine();
             }
             Console.WriteLine("Deliveries:");
-            List<Delivery> listDelivery = s_dalDelivery.ReadAll();
+            List<Delivery> listDelivery = (List<Delivery>)s_dal.Delivery.ReadAll();
             foreach (var item in listDelivery){
                 PrintDelivery(item);
                 Console.WriteLine();
@@ -548,10 +546,10 @@ namespace DalTest
                 Console.WriteLine("Aborted.");
                 return;
             }
-            s_dalDelivery!.DeleteAll();
-            s_dalOrder!.DeleteAll();
-            s_dalCourier!.DeleteAll();
-            s_dalConfig!.Reset();
+            s_dal.Delivery!.DeleteAll();
+            s_dal.Order!.DeleteAll();
+            s_dal.Courier!.DeleteAll();
+            s_dal.Config!.Reset();
             Console.WriteLine("All data reset successfully.");
         }
 
@@ -609,18 +607,18 @@ namespace DalTest
                 switch (entityName)
                 {
                     case "Order":
-                        var orders = s_dalOrder!.ReadAll();
-                        if (orders == null || orders.Count == 0) Console.WriteLine("No orders found.");
+                        var orders = s_dal.Order!.ReadAll();
+                        if (orders == null || orders.Count() == 0) Console.WriteLine("No orders found.");
                         else foreach (var o in orders) { PrintOrder(o); Console.WriteLine(); }
                         break;
                     case "Courier":
-                        var couriers = s_dalCourier!.ReadAll();
-                        if (couriers == null || couriers.Count == 0) Console.WriteLine("No couriers found.");
+                        var couriers = s_dal.Courier!.ReadAll();
+                        if (couriers == null || couriers.Count() == 0) Console.WriteLine("No couriers found.");
                         else foreach (var c in couriers) { PrintCourier(c); Console.WriteLine(); }
                         break;
                     case "Delivery":
-                        var deliveries = s_dalDelivery!.ReadAll();
-                        if (deliveries == null || deliveries.Count == 0) Console.WriteLine("No deliveries found.");
+                        var deliveries = s_dal.Delivery!.ReadAll();
+                        if (deliveries == null || deliveries.Count() == 0) Console.WriteLine("No deliveries found.");
                         else foreach (var d in deliveries) { PrintDelivery(d); Console.WriteLine(); }
                         break;
                     default:
@@ -643,7 +641,7 @@ namespace DalTest
                 switch (entityName)
                 {
                     case "Order":
-                        var existingOrder = s_dalOrder!.Read(id);
+                        var existingOrder = s_dal.Order!.Read(id);
                         if (existingOrder is null) { Console.WriteLine($"Order with Id {id} not found."); return; }
                         PrintOrder(existingOrder);
                         Console.WriteLine("--- Enter new values (empty = keep current) ---");
@@ -671,12 +669,12 @@ namespace DalTest
                         if (string.IsNullOrWhiteSpace(description)) description = existingOrder.Description;
 
                         var updatedOrder = new Order(id, address, latitude, longitude, customerName, customerPhone, existingOrder.CreatedAt, fragile, weight, volume, additional, description);
-                        s_dalOrder.Update(updatedOrder);
+                        s_dal.Order.Update(updatedOrder);
                         Console.WriteLine("Order updated.");
                         break;
 
                     case "Courier":
-                        var existingCourier = s_dalCourier!.Read(id);
+                        var existingCourier = s_dal.Courier!.Read(id);
                         if (existingCourier is null) { Console.WriteLine($"Courier with Id {id} not found."); return; }
                         PrintCourier(existingCourier);
                         Console.WriteLine("--- Enter new values (empty = keep current) ---");
@@ -694,12 +692,12 @@ namespace DalTest
                         if (string.IsNullOrWhiteSpace(password)) password = existingCourier.Password;
 
                         var updatedCourier = new Courier(id, active, maxDistance, existingCourier.JoinDate, orderType, name, phone, email, password);
-                        s_dalCourier.Update(updatedCourier);
+                        s_dal.Courier.Update(updatedCourier);
                         Console.WriteLine("Courier updated.");
                         break;
 
                     case "Delivery":
-                        var existingDelivery = s_dalDelivery!.Read(id);
+                        var existingDelivery = s_dal.Delivery!.Read(id);
                         if (existingDelivery is null) { Console.WriteLine($"Delivery with Id {id} not found."); return; }
                         PrintDelivery(existingDelivery);
                         Console.WriteLine("--- Enter new values (empty = keep current) ---");
@@ -712,7 +710,7 @@ namespace DalTest
                         DateTime? timeOfDelivery = ReadNullableDateTime($"Time of delivery (yyyy-MM-dd HH:mm) [{(existingDelivery.TimeOfDelivery.HasValue ? existingDelivery.TimeOfDelivery.Value.ToString("yyyy-MM-dd HH:mm") : "(none)")}]: ", existingDelivery.TimeOfDelivery);
 
                         var updatedDelivery = new Delivery(id, orderId, courierId, delOrderType, existingDelivery.StartOfDelivery, actualDistance, endOfOrder, timeOfDelivery);
-                        s_dalDelivery.Update(updatedDelivery);
+                        s_dal.Delivery.Update(updatedDelivery);
                         Console.WriteLine("Delivery updated.");
                         break;
 
@@ -822,15 +820,15 @@ namespace DalTest
                 switch (entityName)
                 {
                     case "Order":
-                        s_dalOrder!.Delete(id);
+                        s_dal.Order!.Delete(id);
                         Console.WriteLine("Order deleted");
                         break;
                     case "Courier":
-                        s_dalCourier!.Delete(id);
+                        s_dal.Courier!.Delete(id);
                         Console.WriteLine("Courier deleted");
                         break;
                     case "Delivery":
-                        s_dalDelivery!.Delete(id);
+                        s_dal.Delivery!.Delete(id);
                         Console.WriteLine("Delivery deleted");
                         break;
                     default:
@@ -858,15 +856,15 @@ namespace DalTest
                 switch (entityName)
                 {
                     case "Order":
-                        s_dalOrder!.DeleteAll();
+                        s_dal.Order!.DeleteAll();
                         Console.WriteLine("All orders deleted.");
                         break;
                     case "Courier":
-                        s_dalCourier!.DeleteAll();
+                        s_dal.Courier!.DeleteAll();
                         Console.WriteLine("All couriers deleted.");
                         break;
                     case "Delivery":
-                        s_dalDelivery!.DeleteAll();
+                        s_dal.Delivery!.DeleteAll();
                         Console.WriteLine("All deliveries deleted.");
                         break;
                     default:
