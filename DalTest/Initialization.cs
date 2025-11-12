@@ -123,15 +123,14 @@ internal static class Initialization
 
     private static void createDeliveries()
     {
-        foreach (var order in s_dal!.Order.ReadAll().ToList())
+        foreach (var order in s_dal!.Order.ReadAll())
         {
-            var availableCouriers = s_dal!.Courier.ReadAll().ToList(); 
-            //.Where(c => Distance(order.Latitude, order.Longtitude, 32.0853, 34.7818) <= (c.MaxDeliveryDistance ?? 10))
-            //.ToList();
+            var availableCouriers = s_dal!.Courier.ReadAll(); 
 
             if (!availableCouriers.Any()) continue;
-
-            var courier = availableCouriers[s_rand.Next(availableCouriers.Count)];
+            
+            int count = s_rand.Next(availableCouriers.Count());
+            var courier = availableCouriers.ElementAt(count);
 
             DateTime start = order.CreatedAt.AddHours(s_rand.Next(1, 48));
             bool finished = s_rand.NextDouble() < 0.6;
