@@ -13,6 +13,7 @@ internal static class Initialization
     private static IOrder? s_dalOrder;
     private static ICourier? s_dalCourier;*/
     private static IDal? s_dal;
+
     public static  void Do(IDal dal)
     {
         /*s_dalConfig = _config ?? throw new NullReferenceException("DAL Config cannot be null!");
@@ -20,7 +21,6 @@ internal static class Initialization
         s_dalOrder = _order ?? throw new NullReferenceException("DAL Order cannot be null!");
         s_dalCourier = _courier ?? throw new NullReferenceException("DAL Courier cannot be null!");*/
         s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
-        var orders = DataSource.Orders;
 
         s_dal.resetDB();
 
@@ -123,11 +123,11 @@ internal static class Initialization
 
     private static void createDeliveries()
     {
-        foreach (var order in DataSource.Orders)
+        foreach (var order in s_dal!.Order.ReadAll().ToList())
         {
-            var availableCouriers = DataSource.Couriers
-                .Where(c => Distance(order.Latitude, order.Longtitude, 32.0853, 34.7818) <= (c.MaxDeliveryDistance ?? 10))
-                .ToList();
+            var availableCouriers = s_dal!.Courier.ReadAll().ToList(); 
+            //.Where(c => Distance(order.Latitude, order.Longtitude, 32.0853, 34.7818) <= (c.MaxDeliveryDistance ?? 10))
+            //.ToList();
 
             if (!availableCouriers.Any()) continue;
 
