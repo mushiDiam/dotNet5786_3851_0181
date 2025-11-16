@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ArrayOfDeliveries>
+<ArrayOfDeliverys>
 	<Delivery>
 		<OrderId>1</OrderId>
 		<CourierId>200124055</CourierId>
@@ -186,4 +186,4 @@
 		<OrderType>Bike</OrderType>
 		<StartOfDelivery>2024-05-09T13:13:00</StartOfDelivery>
 	</Delivery>
-</ArrayOfDeliveries>
+</ArrayOfDeliverys>
