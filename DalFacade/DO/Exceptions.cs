@@ -1,4 +1,6 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace DO;
 
 [Serializable]
@@ -18,4 +20,9 @@ public class DalDoesNotExistException : Exception
 public class  DalCannotBeNullException: Exception
 {
     public DalCannotBeNullException(string? message) : base(message) { }
+}
+[Serializable]
+public class DalXMLFileLoadCreateException : Exception
+{
+    public DalXMLFileLoadCreateException(string? message) : base(message) { }
 }
