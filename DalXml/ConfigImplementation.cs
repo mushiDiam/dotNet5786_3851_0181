@@ -26,8 +26,8 @@ internal class ConfigImplementation : IConfig
     }
 
     // Company details
-    public string? CompanyAdress{
-        get => Config.CompanyAdress;
+    public string? CompanyAddress{
+        get => Config.CompanyAddress;
     }
     public double? CompanyLatitude{
         get => Config.CompanyLatitude;

@@ -16,46 +16,59 @@ namespace DalTest
 
         private enum MainMenu
         {
-            Exit = 0,
-            DeliveryMenu = 1,
-            OrderMenu = 2,
-            CourierMenu = 3,
-            InitializeData = 4,
-            ShowAllData = 5,
-            ConfigMenu = 6,
-            ResetDatabase = 7
+            Exit,
+            DeliveryMenu,
+            OrderMenu,
+            CourierMenu,
+            InitializeData,
+            ShowAllData,
+            ConfigMenu,
+            ResetDatabase
         }
-
         private enum EntityMenu
         {
-            Exit = 0,
-            Create = 1,
-            Read = 2,
-            ReadAll = 3,
-            Update = 4,
-            Delete = 5,
-            DeleteAll = 6
+            Exit,
+            Create,
+            Read,
+            ReadAll,
+            Update,
+            Delete,
+            DeleteAll
         }
-
         private enum ConfigMenu
         {
-            Exit = 0,
-            AdvanceClockMinute = 1,
-            AdvanceClockHour = 2,
-            ShowClock = 3,
-            SetConfigValue = 4,
-            ShowConfigValue = 5,
-            ResetConfig = 6
+            Exit,
+            AdvanceClockMinute,
+            AdvanceClockHour,
+            ShowClock,
+            SetConfigValue,
+            ShowConfigValue,
+            ResetConfig
+        }
+        private enum SetConfigMenu
+        {
+            Exit,
+            CompanyAddress,
+            CompanyLatitude,
+            CompanyLongitude,
+            MaxDeliveryDistance,
+            AverageCarSpeed,
+            AverageMotorcyleSpeed,
+            AverageBicycleSpeed,
+            AverageWalkingSpeed,
+            MaxDeliveryTime,
+            RiskRange,
+            InactiveTime,
+            ManagerId,
+            ManagerPassword,
         }
 
         // ===============================
         // MAIN ENTRY POINT
         // ===============================
 
-        static void Main(string[] args)
-        {
-            try
-            {
+        static void Main(string[] args){
+            try{
 
                 // Initialization.Do(s_dalConfig, s_dalDelivery, s_dalOrder, s_dalCourier); //Stage 1
                 Initialization.Do(s_dal);
@@ -65,8 +78,7 @@ namespace DalTest
                // s_dalOrder!.DeleteAll();
                // s_dalDelivery!.DeleteAll();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 Console.WriteLine("Unexpected error in Main:");
                 Console.WriteLine(ex);
             }
@@ -76,10 +88,8 @@ namespace DalTest
         // MAIN MENU
         // ===============================
 
-        private static void RunMainMenu()
-        {
-            while (true)
-            {
+        private static void RunMainMenu(){
+            while (true){
                 Console.Clear();
                 Console.WriteLine("=== MAIN MENU ===");
                 Console.WriteLine("0. Exit");
@@ -92,16 +102,13 @@ namespace DalTest
                 Console.WriteLine("7. Reset Database");
                 Console.Write("\nChoose an option: ");
 
-                if (!Enum.TryParse(Console.ReadLine(), out MainMenu choice))
-                {
+                if (!Enum.TryParse(Console.ReadLine(), out MainMenu choice)){
                     Console.WriteLine("Invalid input.");
                     continue;
                 }
 
-                try
-                {
-                    switch (choice)
-                    {
+                try{
+                    switch (choice){
                         case MainMenu.Exit:
                             return;
                         case MainMenu.DeliveryMenu:
@@ -130,8 +137,7 @@ namespace DalTest
                             break;
                     }
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex){
                     Console.WriteLine("Error in main menu:");
                     Console.WriteLine(ex);
                 }
@@ -461,6 +467,17 @@ namespace DalTest
 
         private static void RunConfigMenu()
         {
+            Console.WriteLine("Enter Manager Password");
+            string PW;
+            do
+            {
+                PW = Console.ReadLine();
+                if (PW != s_dal.Config!.ManagerPassword)
+                {
+                        Console.WriteLine("Incorrect Password, try again");
+                }
+
+            } while (PW != s_dal.Config!.ManagerPassword);
             while (true)
             {
                 Console.Clear();
@@ -498,10 +515,73 @@ namespace DalTest
                             Console.WriteLine($"Current Clock: {s_dal.Config!.Clock}");
                             break;
                         case ConfigMenu.SetConfigValue:
-                            Console.WriteLine("TODO: Set specific config value");
+                            //Console.WriteLine("TODO: Set specific config value");
+                            Console.WriteLine("Select variable to set:");
+                            Console.WriteLine("0. Exit");
+                            Console.WriteLine("1. Company Address");
+                            Console.WriteLine("2. Company Latitude");
+                            Console.WriteLine("3. Company Longitude");
+                            Console.WriteLine("4. Max Delivery Distance");
+                            Console.WriteLine("5. Average Car Speed");
+                            Console.WriteLine("6. Average Motorcyle Speed ");
+                            Console.WriteLine("7. Average Bike Speed");
+                            Console.WriteLine("8. Average Walking Speed");
+                            Console.WriteLine("9. Max Delivery Time");
+                            Console.WriteLine("10. Risk Range");
+                            Console.WriteLine("11. Inactive Time");
+                            Console.WriteLine("12. Manager Id");
+                            Console.WriteLine("13. Manager Password");
+                            if (!Enum.TryParse(Console.ReadLine(), out SetConfigMenu SetConfigChoice))
+                            {
+                                Console.WriteLine("Invalid input.");
+                                continue;
+                            }
+                            switch (SetConfigChoice)
+                            {
+                                case SetConfigMenu.Exit:
+                                    break;
+                                case SetConfigMenu.CompanyAddress:
+                                    Console.WriteLine("Enter new Company Address:");
+                                    string? newAddress = Console.ReadLine();
+                                    break;
+                                case SetConfigMenu.CompanyLatitude:
+                                    break;
+                                case SetConfigMenu.CompanyLongitude:
+                                    break;
+                                case SetConfigMenu.MaxDeliveryDistance:
+                                    break;
+                                case SetConfigMenu.AverageCarSpeed:
+                                    break;
+                                case SetConfigMenu.AverageMotorcyleSpeed:
+                                    break;
+                                case SetConfigMenu.AverageBicycleSpeed:
+                                    break;
+                                case SetConfigMenu.AverageWalkingSpeed:
+                                    break;
+                                case SetConfigMenu.MaxDeliveryTime:
+                                    break;
+                                case SetConfigMenu.RiskRange:
+                                    break;
+                                case SetConfigMenu.InactiveTime:
+                                    break;
+                                case SetConfigMenu.ManagerId:
+                                    break;
+                                case SetConfigMenu.ManagerPassword:
+                                    break;
+                                default:
+                                    break;
+                            }
+
+
+
+
+
+
+
                             break;
                         case ConfigMenu.ShowConfigValue:
-                            Console.WriteLine("TODO: Show specific config value");
+                            Console.WriteLine("Showing all configuration values: ");
+                            Console.WriteLine();
                             break;
                         case ConfigMenu.ResetConfig:
                             s_dal.Config!.Reset();

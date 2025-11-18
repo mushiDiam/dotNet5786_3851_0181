@@ -19,7 +19,7 @@ internal class ConfigImplementation : IConfig
     public string ManagerPassword { get; private set; } = "";
 
     // Company details
-    public string? CompanyAdress { get; private set; }
+    public string? CompanyAddress { get; private set; }
     public double? CompanyLatitude { get; private set; }
     public double? CompanyLongitude { get; private set; }
     public double? MaxDeliveryDistance { get; private set; }

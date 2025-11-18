@@ -2,10 +2,10 @@
 <config>
   <NextOrderId>51</NextOrderId>
   <NextDeliveryId>51</NextDeliveryId>
-  <Clock>2025-11-17T00:17:59.0860992+02:00</Clock>
+  <Clock>2025-11-18T23:12:33.0264352+02:00</Clock>
   <ManagerId>0</ManagerId>
   <ManagerPassword></ManagerPassword>
-  <CompanyAdress></CompanyAdress>
+  <CompanyAddress></CompanyAddress>
   <CompanyLatitude></CompanyLatitude>
   <CompanyLongitude></CompanyLongitude>
   <MaxDeliveryDistance></MaxDeliveryDistance>

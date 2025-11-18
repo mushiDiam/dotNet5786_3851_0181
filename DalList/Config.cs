@@ -11,7 +11,7 @@
 /// <param name="Clock">Current time</param>
 /// <param name="ManagerId">Id for the manager</param>
 /// <param name="ManagerPassword">Password for the manager</param>
-/// <param name="CompanyAdress">The company's adress</param>
+/// <param name="CompanyAddress">The company's address</param>
 /// <param name="CompanyLatitude">The company's latitude</param>
 /// <param name="CompanyLongitude">The company's longitude</param>
 /// <param name="MaxDeliveryDistance">Maximun delivery distance the company is capable of</param>
@@ -35,7 +35,7 @@ internal static class Config
     internal static DateTime Clock { get; set; } = DateTime.Now;
     internal static int ManagerId { get; private set ; }
     internal static string ManagerPassword { get; private set; } = "";
-    internal static string? CompanyAdress { get; private set; }
+    internal static string? CompanyAddress { get; private set; }
     internal static double? CompanyLatitude { get; private set; }
     internal static double? CompanyLongitude { get; private set; }
     internal static double? MaxDeliveryDistance { get; private set; }

@@ -6,57 +6,49 @@ using System.Collections.Generic;
 
 internal class DeliveryImplementation : IDelivery
 {
-    public void Create(Delivery item)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+    public void Create(Delivery item){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
         int id = Config.NextDeliveryId;
         Delivery copy = item with { Id = id };
-        Deliveries.Add(copy);
+        Deliverys.Add(copy);
+        XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
     }
 
-    public void Delete(int id)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        if (Deliveries.Exists(d => d.Id == id))
-        {
-            Deliveries.RemoveAll(d => d.Id == id);
+    public void Delete(int id){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+        if (Deliverys.Exists(d => d.Id == id)){
+            Deliverys.RemoveAll(d => d.Id == id);
+            XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
             return;
         }
         throw new DalDoesNotExistException($"Delivery with ID= {id} doesn't exists");
-    }
-
-    public void DeleteAll()
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        Deliveries.Clear();
-    }
-
-    public Delivery? Read(int id)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        return Deliveries.FirstOrDefault(item => item.Id == id);
 
     }
 
-    public Delivery? Read(Func<Delivery, bool> filter)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        return Deliveries.FirstOrDefault(filter);
-
+    public void DeleteAll(){
+        XMLTools.SaveListToXMLSerializer<Delivery>(new List<Delivery>(), Config.s_deliveries_xml);
     }
 
-    public IEnumerable<Delivery> ReadAll(Func<Delivery, bool>? filter = null)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        return filter == null ? Deliveries : Deliveries.Where(filter);
-
+    public Delivery? Read(int id){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+        return Deliverys.FirstOrDefault(item => item.Id == id);
     }
 
-    public void Update(Delivery item)
-    {
-        List<Delivery> Deliveries = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+    public Delivery? Read(Func<Delivery, bool> filter){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+        return Deliverys.FirstOrDefault(filter);
+    }
+
+    public IEnumerable<Delivery> ReadAll(Func<Delivery, bool>? filter = null){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
+        return filter == null ? Deliverys : Deliverys.Where(filter);
+    }
+
+    public void Update(Delivery item){
+        List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
         Delete(item.Id);
-        Deliveries.Add(item);
+        Deliverys.Add(item);
+        XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
     }
 }
 

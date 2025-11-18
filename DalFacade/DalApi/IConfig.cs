@@ -14,7 +14,7 @@ public interface IConfig
     string ManagerPassword { get; }
 
     // Company details
-    string? CompanyAdress { get; }
+    string? CompanyAddress { get; }
     double? CompanyLatitude { get; }
     double? CompanyLongitude { get; }
     double? MaxDeliveryDistance { get; }

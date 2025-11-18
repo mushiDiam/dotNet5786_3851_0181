@@ -1,554 +1,603 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ArrayOfOrder>
-	<Order>
-		<AdderssOfOrder>"Rothschild Blvd 1, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.770</Longitude>
-		<CustomerName>"Noa Tal"</CustomerName>
-		<CustomerPhone>"0505238491"</CustomerPhone>
-		<CreatedAt>2024-06-15T10:30:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>12</Weight>
-		<Volume>5</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Ibn Gabirol 50, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.081</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Avi Gold"</CustomerName>
-		<CustomerPhone>"0508643912"</CustomerPhone>
-		<CreatedAt>2024-02-18T09:12:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>47</Weight>
-		<Volume>22</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Dizengoff 150, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Dana Regev"</CustomerName>
-		<CustomerPhone>"0507312059"</CustomerPhone>
-		<CreatedAt>2024-11-03T14:05:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>68</Weight>
-		<Volume>40</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Namir 122, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.095</Latitude>
-		<Longitude>34.789</Longitude>
-		<CustomerName>"Itai Mor"</CustomerName>
-		<CustomerPhone>"0502984710"</CustomerPhone>
-		<CreatedAt>2025-03-21T08:45:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>23</Weight>
-		<Volume>11</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Yigal Alon 90, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.794</Longitude>
-		<CustomerName>"Yasmin Levi"</CustomerName>
-		<CustomerPhone>"0504179023"</CustomerPhone>
-		<CreatedAt>2024-08-09T17:20:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>55</Weight>
-		<Volume>29</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Arlozorov 100, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.084</Latitude>
-		<Longitude>34.782</Longitude>
-		<CustomerName>"Yossi Bar"</CustomerName>
-		<CustomerPhone>"0506903318"</CustomerPhone>
-		<CreatedAt>2024-01-30T12:10:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>9</Weight>
-		<Volume>3</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaYarkon 200, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.769</Longitude>
-		<CustomerName>"Roni Katz"</CustomerName>
-		<CustomerPhone>"0503829946"</CustomerPhone>
-		<CreatedAt>2024-05-11T19:05:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>32</Weight>
-		<Volume>8</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Allenby 40, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.063</Latitude>
-		<Longitude>34.771</Longitude>
-		<CustomerName>"Adi Ben"</CustomerName>
-		<CustomerPhone>"0502198745"</CustomerPhone>
-		<CreatedAt>2025-07-02T07:30:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>76</Weight>
-		<Volume>51</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"King George 30, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Eli Rahamim"</CustomerName>
-		<CustomerPhone>"0509941207"</CustomerPhone>
-		<CreatedAt>2024-09-14T13:50:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>14</Weight>
-		<Volume>6</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaMasger 9, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Nitzan Tzur"</CustomerName>
-		<CustomerPhone>"0506587321"</CustomerPhone>
-		<CreatedAt>2024-12-01T11:11:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>81</Weight>
-		<Volume>60</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Rothschild Blvd 1, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.770</Longitude>
-		<CustomerName>"Noa Tal"</CustomerName>
-		<CustomerPhone>"0507832156"</CustomerPhone>
-		<CreatedAt>2024-03-08T09:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>29</Weight>
-		<Volume>14</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Ibn Gabirol 50, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.081</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Avi Gold"</CustomerName>
-		<CustomerPhone>"0504321987"</CustomerPhone>
-		<CreatedAt>2024-04-22T16:40:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>65</Weight>
-		<Volume>37</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Dizengoff 150, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Dana Regev"</CustomerName>
-		<CustomerPhone>"0501122339"</CustomerPhone>
-		<CreatedAt>2025-01-05T10:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>50</Weight>
-		<Volume>27</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Namir 122, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.095</Latitude>
-		<Longitude>34.789</Longitude>
-		<CustomerName>"Itai Mor"</CustomerName>
-		<CustomerPhone>"0506674890"</CustomerPhone>
-		<CreatedAt>2024-10-10T21:30:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>7</Weight>
-		<Volume>2</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Yigal Alon 90, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.794</Longitude>
-		<CustomerName>"Yasmin Levi"</CustomerName>
-		<CustomerPhone>"0509081723"</CustomerPhone>
-		<CreatedAt>2024-07-30T08:15:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>39</Weight>
-		<Volume>18</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Arlozorov 100, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.084</Latitude>
-		<Longitude>34.782</Longitude>
-		<CustomerName>"Yossi Bar"</CustomerName>
-		<CustomerPhone>"0503057764"</CustomerPhone>
-		<CreatedAt>2024-02-05T06:50:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>58</Weight>
-		<Volume>33</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaYarkon 200, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.769</Longitude>
-		<CustomerName>"Roni Katz"</CustomerName>
-		<CustomerPhone>"0504478899"</CustomerPhone>
-		<CreatedAt>2024-09-29T12:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>21</Weight>
-		<Volume>9</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Allenby 40, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.063</Latitude>
-		<Longitude>34.771</Longitude>
-		<CustomerName>"Adi Ben"</CustomerName>
-		<CustomerPhone>"0502213345"</CustomerPhone>
-		<CreatedAt>2025-05-12T15:25:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>90</Weight>
-		<Volume>72</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"King George 30, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Eli Rahamim"</CustomerName>
-		<CustomerPhone>"0507784120"</CustomerPhone>
-		<CreatedAt>2024-11-20T18:40:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>11</Weight>
-		<Volume>4</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaMasger 9, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Nitzan Tzur"</CustomerName>
-		<CustomerPhone>"0503345567"</CustomerPhone>
-		<CreatedAt>2024-06-22T07:00:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>63</Weight>
-		<Volume>35</Volume>
-	</Order>
-
-	<Order>
-		<AdderssOfOrder>"Rothschild Blvd 1, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.770</Longitude>
-		<CustomerName>"Noa Tal"</CustomerName>
-		<CustomerPhone>"0509812345"</CustomerPhone>
-		<CreatedAt>2025-02-14T10:10:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>5</Weight>
-		<Volume>1</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Ibn Gabirol 50, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.081</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Avi Gold"</CustomerName>
-		<CustomerPhone>"0506027182"</CustomerPhone>
-		<CreatedAt>2024-08-05T09:55:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>72</Weight>
-		<Volume>44</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Dizengoff 150, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Dana Regev"</CustomerName>
-		<CustomerPhone>"0504763990"</CustomerPhone>
-		<CreatedAt>2024-03-03T22:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>33</Weight>
-		<Volume>20</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Namir 122, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.095</Latitude>
-		<Longitude>34.789</Longitude>
-		<CustomerName>"Itai Mor"</CustomerName>
-		<CustomerPhone>"0502903344"</CustomerPhone>
-		<CreatedAt>2024-04-01T08:05:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>28</Weight>
-		<Volume>13</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Yigal Alon 90, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.794</Longitude>
-		<CustomerName>"Yasmin Levi"</CustomerName>
-		<CustomerPhone>"0507770012"</CustomerPhone>
-		<CreatedAt>2024-12-24T11:30:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>99</Weight>
-		<Volume>80</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Arlozorov 100, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.084</Latitude>
-		<Longitude>34.782</Longitude>
-		<CustomerName>"Yossi Bar"</CustomerName>
-		<CustomerPhone>"0505532189"</CustomerPhone>
-		<CreatedAt>2024-05-06T13:13:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>46</Weight>
-		<Volume>25</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaYarkon 200, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.769</Longitude>
-		<CustomerName>"Roni Katz"</CustomerName>
-		<CustomerPhone>"0509994432"</CustomerPhone>
-		<CreatedAt>2024-07-13T20:15:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>52</Weight>
-		<Volume>30</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Allenby 40, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.063</Latitude>
-		<Longitude>34.771</Longitude>
-		<CustomerName>"Adi Ben"</CustomerName>
-		<CustomerPhone>"0501425786"</CustomerPhone>
-		<CreatedAt>2024-10-02T05:45:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>17</Weight>
-		<Volume>7</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"King George 30, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Eli Rahamim"</CustomerName>
-		<CustomerPhone>"0503141592"</CustomerPhone>
-		<CreatedAt>2025-04-18T14:40:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>36</Weight>
-		<Volume>21</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaMasger 9, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Nitzan Tzur"</CustomerName>
-		<CustomerPhone>"0502257788"</CustomerPhone>
-		<CreatedAt>2024-01-10T09:09:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>44</Weight>
-		<Volume>26</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Rothschild Blvd 1, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.770</Longitude>
-		<CustomerName>"Noa Tal"</CustomerName>
-		<CustomerPhone>"0506182735"</CustomerPhone>
-		<CreatedAt>2024-03-27T12:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>79</Weight>
-		<Volume>48</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Ibn Gabirol 50, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.081</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Avi Gold"</CustomerName>
-		<CustomerPhone>"0504306677"</CustomerPhone>
-		<CreatedAt>2024-06-01T07:30:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>60</Weight>
-		<Volume>36</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Dizengoff 150, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Dana Regev"</CustomerName>
-		<CustomerPhone>"0508043312"</CustomerPhone>
-		<CreatedAt>2024-08-17T18:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>18</Weight>
-		<Volume>10</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Namir 122, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.095</Latitude>
-		<Longitude>34.789</Longitude>
-		<CustomerName>"Itai Mor"</CustomerName>
-		<CustomerPhone>"0507720019"</CustomerPhone>
-		<CreatedAt>2024-11-01T09:45:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>26</Weight>
-		<Volume>12</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Yigal Alon 90, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.794</Longitude>
-		<CustomerName>"Yasmin Levi"</CustomerName>
-		<CustomerPhone>"0505559022"</CustomerPhone>
-		<CreatedAt>2024-05-19T20:20:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>41</Weight>
-		<Volume>24</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Arlozorov 100, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.084</Latitude>
-		<Longitude>34.782</Longitude>
-		<CustomerName>"Yossi Bar"</CustomerName>
-		<CustomerPhone>"0502119988"</CustomerPhone>
-		<CreatedAt>2025-06-10T06:00:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>30</Weight>
-		<Volume>16</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaYarkon 200, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.769</Longitude>
-		<CustomerName>"Roni Katz"</CustomerName>
-		<CustomerPhone>"0503664120"</CustomerPhone>
-		<CreatedAt>2024-09-05T15:15:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>70</Weight>
-		<Volume>45</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Allenby 40, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.063</Latitude>
-		<Longitude>34.771</Longitude>
-		<CustomerName>"Adi Ben"</CustomerName>
-		<CustomerPhone>"0501678234"</CustomerPhone>
-		<CreatedAt>2024-02-28T11:11:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>13</Weight>
-		<Volume>6</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"King George 30, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Eli Rahamim"</CustomerName>
-		<CustomerPhone>"0509023476"</CustomerPhone>
-		<CreatedAt>2024-04-14T07:40:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>84</Weight>
-		<Volume>58</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaMasger 9, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Nitzan Tzur"</CustomerName>
-		<CustomerPhone>"0504781122"</CustomerPhone>
-		<CreatedAt>2024-06-05T10:05:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>57</Weight>
-		<Volume>31</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Rothschild Blvd 1, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.770</Longitude>
-		<CustomerName>"Noa Tal"</CustomerName>
-		<CustomerPhone>"0503094455"</CustomerPhone>
-		<CreatedAt>2024-01-18T08:00:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>22</Weight>
-		<Volume>9</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Ibn Gabirol 50, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.081</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Avi Gold"</CustomerName>
-		<CustomerPhone>"0506857741"</CustomerPhone>
-		<CreatedAt>2024-08-29T13:30:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>37</Weight>
-		<Volume>19</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Dizengoff 150, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Dana Regev"</CustomerName>
-		<CustomerPhone>"0509512376"</CustomerPhone>
-		<CreatedAt>2024-03-12T12:12:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>44</Weight>
-		<Volume>28</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Namir 122, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.095</Latitude>
-		<Longitude>34.789</Longitude>
-		<CustomerName>"Itai Mor"</CustomerName>
-		<CustomerPhone>"0507662299"</CustomerPhone>
-		<CreatedAt>2025-03-02T09:09:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>15</Weight>
-		<Volume>5</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Yigal Alon 90, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.794</Longitude>
-		<CustomerName>"Yasmin Levi"</CustomerName>
-		<CustomerPhone>"0504433880"</CustomerPhone>
-		<CreatedAt>2024-09-01T18:18:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>27</Weight>
-		<Volume>15</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Arlozorov 100, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.084</Latitude>
-		<Longitude>34.782</Longitude>
-		<CustomerName>"Yossi Bar"</CustomerName>
-		<CustomerPhone>"0507123459"</CustomerPhone>
-		<CreatedAt>2024-05-24T10:20:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>62</Weight>
-		<Volume>34</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaYarkon 200, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.089</Latitude>
-		<Longitude>34.769</Longitude>
-		<CustomerName>"Roni Katz"</CustomerName>
-		<CustomerPhone>"0508879001"</CustomerPhone>
-		<CreatedAt>2024-11-11T11:11:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>49</Weight>
-		<Volume>23</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"Allenby 40, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.063</Latitude>
-		<Longitude>34.771</Longitude>
-		<CustomerName>"Adi Ben"</CustomerName>
-		<CustomerPhone>"0501346792"</CustomerPhone>
-		<CreatedAt>2024-07-04T07:07:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>34</Weight>
-		<Volume>17</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"King George 30, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.072</Latitude>
-		<Longitude>34.776</Longitude>
-		<CustomerName>"Eli Rahamim"</CustomerName>
-		<CustomerPhone>"0509087766"</CustomerPhone>
-		<CreatedAt>2024-02-20T14:20:00</CreatedAt>
-		<Fragile>false</Fragile>
-		<Weight>73</Weight>
-		<Volume>39</Volume>
-	</Order>
-	<Order>
-		<AdderssOfOrder>"HaMasger 9, Tel Aviv"</AdderssOfOrder>
-		<Latitude>32.062</Latitude>
-		<Longitude>34.781</Longitude>
-		<CustomerName>"Nitzan Tzur"</CustomerName>
-		<CustomerPhone>"0506231199"</CustomerPhone>
-		<CreatedAt>2024-10-28T09:30:00</CreatedAt>
-		<Fragile>true</Fragile>
-		<Weight>20</Weight>
-		<Volume>10</Volume>
-	</Order>
+<ArrayOfOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Order>
+    <Id>1</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-9866635</CustomerPhone>
+    <CreatedAt>2025-08-30T23:12:39.8871154+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>3</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>2</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-4721203</CustomerPhone>
+    <CreatedAt>2025-10-28T23:12:39.8949999+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>15</Weight>
+    <Volume>8</Volume>
+  </Order>
+  <Order>
+    <Id>3</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-1215013</CustomerPhone>
+    <CreatedAt>2025-10-28T23:12:39.92629+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>3</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>4</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-5451766</CustomerPhone>
+    <CreatedAt>2025-10-01T23:12:39.9578941+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>11</Weight>
+    <Volume>3</Volume>
+  </Order>
+  <Order>
+    <Id>5</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-6610978</CustomerPhone>
+    <CreatedAt>2025-10-05T23:12:39.9917833+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>3</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>6</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Nitzan Tzur</CustomerName>
+    <CustomerPhone>052-9128898</CustomerPhone>
+    <CreatedAt>2025-09-20T23:12:40.0242766+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>9</Weight>
+    <Volume>3</Volume>
+  </Order>
+  <Order>
+    <Id>7</Id>
+    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-2605723</CustomerPhone>
+    <CreatedAt>2025-09-30T23:12:40.0578735+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>18</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>8</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-5615688</CustomerPhone>
+    <CreatedAt>2025-11-11T23:12:40.0890419+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>15</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>9</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-7579387</CustomerPhone>
+    <CreatedAt>2025-11-12T23:12:40.1215563+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>1</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>10</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Roni Katz</CustomerName>
+    <CustomerPhone>052-9256374</CustomerPhone>
+    <CreatedAt>2025-11-01T23:12:40.1544212+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>2</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>11</Id>
+    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-3596557</CustomerPhone>
+    <CreatedAt>2025-09-19T23:12:40.1873729+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>15</Weight>
+    <Volume>3</Volume>
+  </Order>
+  <Order>
+    <Id>12</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-2572565</CustomerPhone>
+    <CreatedAt>2025-10-03T23:12:40.2196612+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>15</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>13</Id>
+    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-3029165</CustomerPhone>
+    <CreatedAt>2025-10-13T23:12:40.2587097+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>19</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>14</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Eli Rahamim</CustomerName>
+    <CustomerPhone>052-9128487</CustomerPhone>
+    <CreatedAt>2025-11-04T23:12:40.2957698+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>1</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>15</Id>
+    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.081</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-7875572</CustomerPhone>
+    <CreatedAt>2025-08-27T23:12:40.3279521+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>16</Weight>
+    <Volume>9</Volume>
+  </Order>
+  <Order>
+    <Id>16</Id>
+    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.081</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-5604808</CustomerPhone>
+    <CreatedAt>2025-09-09T23:12:40.3620613+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>9</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>17</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-3324375</CustomerPhone>
+    <CreatedAt>2025-10-04T23:12:40.3932612+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>16</Weight>
+    <Volume>9</Volume>
+  </Order>
+  <Order>
+    <Id>18</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-3019759</CustomerPhone>
+    <CreatedAt>2025-11-14T23:12:40.4172089+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>9</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>19</Id>
+    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-9366918</CustomerPhone>
+    <CreatedAt>2025-11-12T23:12:40.4479247+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>7</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>20</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-1340961</CustomerPhone>
+    <CreatedAt>2025-10-24T23:12:40.4808697+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>15</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>21</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-6362765</CustomerPhone>
+    <CreatedAt>2025-09-14T23:12:40.5118149+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>18</Weight>
+    <Volume>9</Volume>
+  </Order>
+  <Order>
+    <Id>22</Id>
+    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.084</Latitude>
+    <Longtitude>34.782</Longtitude>
+    <CustomerName>Avi Gold</CustomerName>
+    <CustomerPhone>052-9027318</CustomerPhone>
+    <CreatedAt>2025-11-10T23:12:40.5415982+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>18</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>23</Id>
+    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-8683010</CustomerPhone>
+    <CreatedAt>2025-09-29T23:12:40.575191+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>14</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>24</Id>
+    <AdderssOfOrder>King George 30, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-4479232</CustomerPhone>
+    <CreatedAt>2025-10-05T23:12:40.6088652+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>18</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>25</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-1368163</CustomerPhone>
+    <CreatedAt>2025-11-14T23:12:40.6346764+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>5</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>26</Id>
+    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.769</Longtitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-9599250</CustomerPhone>
+    <CreatedAt>2025-09-10T23:12:40.6703733+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>3</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>27</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Avi Gold</CustomerName>
+    <CustomerPhone>052-7978759</CustomerPhone>
+    <CreatedAt>2025-10-01T23:12:40.6953877+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>3</Weight>
+    <Volume>3</Volume>
+  </Order>
+  <Order>
+    <Id>28</Id>
+    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Dana Regev</CustomerName>
+    <CustomerPhone>052-1257018</CustomerPhone>
+    <CreatedAt>2025-10-17T23:12:40.7264215+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>5</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>29</Id>
+    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.084</Latitude>
+    <Longtitude>34.782</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-9868335</CustomerPhone>
+    <CreatedAt>2025-10-20T23:12:40.7513753+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>11</Weight>
+    <Volume>4</Volume>
+  </Order>
+  <Order>
+    <Id>30</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-8010915</CustomerPhone>
+    <CreatedAt>2025-10-07T23:12:40.7761817+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>15</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>31</Id>
+    <AdderssOfOrder>King George 30, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-6343604</CustomerPhone>
+    <CreatedAt>2025-10-17T23:12:40.8097778+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>12</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>32</Id>
+    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.769</Longtitude>
+    <CustomerName>Roni Katz</CustomerName>
+    <CustomerPhone>052-1241354</CustomerPhone>
+    <CreatedAt>2025-10-14T23:12:40.8362957+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>16</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>33</Id>
+    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.769</Longtitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-1346706</CustomerPhone>
+    <CreatedAt>2025-08-26T23:12:40.8737059+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>8</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>34</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Eli Rahamim</CustomerName>
+    <CustomerPhone>052-9778476</CustomerPhone>
+    <CreatedAt>2025-09-02T23:12:40.9072368+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>7</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>35</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Roni Katz</CustomerName>
+    <CustomerPhone>052-5318888</CustomerPhone>
+    <CreatedAt>2025-11-10T23:12:40.9323324+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>15</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>36</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-5177334</CustomerPhone>
+    <CreatedAt>2025-11-13T23:12:40.9566937+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>1</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>37</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Nitzan Tzur</CustomerName>
+    <CustomerPhone>052-8945307</CustomerPhone>
+    <CreatedAt>2025-08-30T23:12:40.98967+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>5</Weight>
+    <Volume>4</Volume>
+  </Order>
+  <Order>
+    <Id>38</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-6266006</CustomerPhone>
+    <CreatedAt>2025-09-14T23:12:41.021091+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>3</Weight>
+    <Volume>4</Volume>
+  </Order>
+  <Order>
+    <Id>39</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-1246573</CustomerPhone>
+    <CreatedAt>2025-09-21T23:12:41.0457999+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>8</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>40</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Roni Katz</CustomerName>
+    <CustomerPhone>052-2295502</CustomerPhone>
+    <CreatedAt>2025-10-23T23:12:41.069495+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>15</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>41</Id>
+    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.072</Latitude>
+    <Longtitude>34.794</Longtitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-8405399</CustomerPhone>
+    <CreatedAt>2025-08-21T23:12:41.0985096+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>2</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>42</Id>
+    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.776</Longtitude>
+    <CustomerName>Noa Tal</CustomerName>
+    <CustomerPhone>052-5160703</CustomerPhone>
+    <CreatedAt>2025-10-24T23:12:41.1233859+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>18</Weight>
+    <Volume>1</Volume>
+  </Order>
+  <Order>
+    <Id>43</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-4254598</CustomerPhone>
+    <CreatedAt>2025-11-06T23:12:41.1550339+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>2</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>44</Id>
+    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.095</Latitude>
+    <Longtitude>34.789</Longtitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-6179396</CustomerPhone>
+    <CreatedAt>2025-10-03T23:12:41.1858055+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>8</Weight>
+    <Volume>3</Volume>
+  </Order>
+  <Order>
+    <Id>45</Id>
+    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.081</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Roni Katz</CustomerName>
+    <CustomerPhone>052-5496442</CustomerPhone>
+    <CreatedAt>2025-10-26T23:12:41.2141924+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>14</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>46</Id>
+    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Nitzan Tzur</CustomerName>
+    <CustomerPhone>052-6498526</CustomerPhone>
+    <CreatedAt>2025-10-30T23:12:41.2457918+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>9</Weight>
+    <Volume>5</Volume>
+  </Order>
+  <Order>
+    <Id>47</Id>
+    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longtitude>34.769</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-7447531</CustomerPhone>
+    <CreatedAt>2025-09-02T23:12:41.2755901+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>14</Weight>
+    <Volume>2</Volume>
+  </Order>
+  <Order>
+    <Id>48</Id>
+    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.063</Latitude>
+    <Longtitude>34.771</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-6443008</CustomerPhone>
+    <CreatedAt>2025-08-30T23:12:41.300664+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>1</Weight>
+    <Volume>6</Volume>
+  </Order>
+  <Order>
+    <Id>49</Id>
+    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.781</Longtitude>
+    <CustomerName>Itai Mor</CustomerName>
+    <CustomerPhone>052-1869444</CustomerPhone>
+    <CreatedAt>2025-10-23T23:12:41.3342218+03:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>19</Weight>
+    <Volume>7</Volume>
+  </Order>
+  <Order>
+    <Id>50</Id>
+    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.062</Latitude>
+    <Longtitude>34.77</Longtitude>
+    <CustomerName>Yasmin Levi</CustomerName>
+    <CustomerPhone>052-4207125</CustomerPhone>
+    <CreatedAt>2025-09-17T23:12:41.3653117+03:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>19</Weight>
+    <Volume>7</Volume>
+  </Order>
 </ArrayOfOrder>
