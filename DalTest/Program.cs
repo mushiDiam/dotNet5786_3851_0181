@@ -75,8 +75,8 @@ namespace DalTest
                 RunMainMenu();
                 //s_dalConfig!.Reset();
                 //s_dalCourier!.DeleteAll();
-               // s_dalOrder!.DeleteAll();
-               // s_dalDelivery!.DeleteAll();
+                //s_dalOrder!.DeleteAll();
+                //s_dalDelivery!.DeleteAll();
             }
             catch (Exception ex){
                 Console.WriteLine("Unexpected error in Main:");
