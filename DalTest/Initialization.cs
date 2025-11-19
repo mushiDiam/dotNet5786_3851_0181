@@ -14,20 +14,22 @@ internal static class Initialization
     private static ICourier? s_dalCourier;*/
     private static IDal? s_dal;
 
-    public static  void Do(IDal dal)
+    //public static  void Do(IDal dal)
+    public static void Do() //stage 4
+
     {
         /*s_dalConfig = _config ?? throw new NullReferenceException("DAL Config cannot be null!");
         s_dalDelivery = _delivery ?? throw new NullReferenceException("DAL Delivery cannot be null!");
         s_dalOrder = _order ?? throw new NullReferenceException("DAL Order cannot be null!");
         s_dalCourier = _courier ?? throw new NullReferenceException("DAL Courier cannot be null!");*/
-        s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
-
+        //s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
+        s_dal = DalApi.Factory.Get; //stage 4
         s_dal.resetDB();
 
     }
     private static readonly Random s_rand = new();
 
-    internal static void Do()
+    internal static void DataInit()
     {
         createCouriers();
         createOrders();

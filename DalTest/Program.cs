@@ -8,7 +8,8 @@ namespace DalTest
     internal class Program
     {
         //static readonly IDal s_dal = new DalList(); //stage 2
-        static readonly IDal s_dal = new DalXml(); //stage 3
+        //static readonly IDal s_dal = new DalXml(); //stage 3
+        static readonly IDal s_dal = Factory.Get; //stage 4
 
         // ===============================
         // ENUM DEFINITIONS
@@ -71,7 +72,8 @@ namespace DalTest
             try{
 
                 // Initialization.Do(s_dalConfig, s_dalDelivery, s_dalOrder, s_dalCourier); //Stage 1
-                Initialization.Do(s_dal);
+                //Initialization.Do(s_dal);
+                Initialization.Do(); //stage 4
                 RunMainMenu();
                 //s_dalConfig!.Reset();
                 //s_dalCourier!.DeleteAll();
@@ -121,7 +123,7 @@ namespace DalTest
                             RunEntityMenu("Courier");
                             break;
                         case MainMenu.InitializeData:
-                            Initialization.Do();
+                            Initialization.DataInit();
                             break;
                         case MainMenu.ShowAllData:
                             ShowAllData();
@@ -610,20 +612,20 @@ namespace DalTest
         private static void ShowAllData(){
             Console.WriteLine("Showing all data:");
             Console.WriteLine("Couriers:");
-            List <Courier> listCourier = (List<Courier>)s_dal.Courier.ReadAll();
+            List <Courier> listCourier = (List<Courier>)s_dal.Courier.ReadAll().ToList();
             foreach (var item in listCourier){
                 PrintCourier(item);
                 Console.WriteLine();
             }
 
             Console.WriteLine("Orders:");
-            List<Order> listOrder = (List<Order>)s_dal.Order.ReadAll();
+            List<Order> listOrder = (List<Order>)s_dal.Order.ReadAll().ToList();
             foreach (var item in listOrder){
                 PrintOrder(item);
                 Console.WriteLine();
             }
             Console.WriteLine("Deliveries:");
-            List<Delivery> listDelivery = (List<Delivery>)s_dal.Delivery.ReadAll();
+            List<Delivery> listDelivery = (List<Delivery>)s_dal.Delivery.ReadAll().ToList();
             foreach (var item in listDelivery){
                 PrintDelivery(item);
                 Console.WriteLine();
