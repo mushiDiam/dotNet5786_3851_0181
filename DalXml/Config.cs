@@ -13,11 +13,11 @@ internal static class Config
     internal static int NextOrderId{
         //get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextOrderId");
         get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextOrderId");
-        private set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextOrderId", value);
+        set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextOrderId", value);
     }
     internal static int NextDeliveryId{
         get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextDeliveryId");
-        private set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextDeliveryId", value);
+        set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextDeliveryId", value);
     }
 
     // --- small helpers that mirror the missing Get/Set string helpers from the old XMLTools ---
@@ -50,7 +50,7 @@ internal static class Config
 
     internal static int ManagerId{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToIntNullable("ManagerId") ?? 0;
-        private set => SetConfigStringVal(s_data_config_xml, "ManagerId", value.ToString());
+        set => SetConfigStringVal(s_data_config_xml, "ManagerId", value.ToString());
     }
 
     internal static string ManagerPassword{
@@ -58,47 +58,47 @@ internal static class Config
             var s = GetConfigStringVal(s_data_config_xml, "ManagerPassword");
             return s ?? string.Empty;
         }
-        private set => SetConfigStringVal(s_data_config_xml, "ManagerPassword", value ?? string.Empty);
+        set => SetConfigStringVal(s_data_config_xml, "ManagerPassword", value ?? string.Empty);
     }
 
     internal static string? CompanyAddress{
         get => GetConfigStringVal(s_data_config_xml, "CompanyAddress");
-        private set => SetConfigStringVal(s_data_config_xml, "CompanyAddress", value);
+        set => SetConfigStringVal(s_data_config_xml, "CompanyAddress", value);
     }
 
     internal static double? CompanyLatitude{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("CompanyLatitude");
-        private set => SetConfigStringVal(s_data_config_xml, "CompanyLatitude", value?.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "CompanyLatitude", value?.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double? CompanyLongitude{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("CompanyLongitude");
-        private set => SetConfigStringVal(s_data_config_xml, "CompanyLongitude", value?.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "CompanyLongitude", value?.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double? MaxDeliveryDistance{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("MaxDeliveryDistance");
-        private set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryDistance", value?.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryDistance", value?.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double AverageCarSpeed{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageCarSpeed") ?? 0.0;
-        private set => SetConfigStringVal(s_data_config_xml, "AverageCarSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "AverageCarSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double AverageMotorcycleSpeed{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageMotorcycleSpeed") ?? 0.0;
-        private set => SetConfigStringVal(s_data_config_xml, "AverageMotorcycleSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "AverageMotorcycleSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double AverageBikeSpeed{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageBikeSpeed") ?? 0.0;
-        private set => SetConfigStringVal(s_data_config_xml, "AverageBikeSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "AverageBikeSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static double AverageWalkingSpeed{
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageWalkingSpeed") ?? 0.0;
-        private set => SetConfigStringVal(s_data_config_xml, "AverageWalkingSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set => SetConfigStringVal(s_data_config_xml, "AverageWalkingSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
     internal static TimeSpan MaxDeliveryTime{
@@ -108,7 +108,7 @@ internal static class Config
                 return ts;
             return TimeSpan.Zero;
         }
-        private set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryTime", value.ToString());
+        set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryTime", value.ToString());
     }
 
     internal static TimeSpan RiskRange{
@@ -118,7 +118,7 @@ internal static class Config
                 return ts;
             return TimeSpan.Zero;
         }
-        private set => SetConfigStringVal(s_data_config_xml, "RiskRange", value.ToString());
+        set => SetConfigStringVal(s_data_config_xml, "RiskRange", value.ToString());
     }
 
     internal static TimeSpan InactiveTime{
@@ -128,7 +128,7 @@ internal static class Config
                 return ts;
             return TimeSpan.Zero;
         }
-        private set => SetConfigStringVal(s_data_config_xml, "InactiveTime", value.ToString());
+        set => SetConfigStringVal(s_data_config_xml, "InactiveTime", value.ToString());
     }
     internal static void Reset(){
         //NextDeliveryId = 1;

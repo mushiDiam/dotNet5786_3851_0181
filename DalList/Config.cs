@@ -33,19 +33,19 @@ internal static class Config
     private static int nextOrderId = StartOrderId;
     internal static int NextOrderId { get => nextOrderId++; } 
     internal static DateTime Clock { get; set; } = DateTime.Now;
-    internal static int ManagerId { get; private set ; }
-    internal static string ManagerPassword { get; private set; } = "";
-    internal static string? CompanyAddress { get; private set; }
-    internal static double? CompanyLatitude { get; private set; }
-    internal static double? CompanyLongitude { get; private set; }
-    internal static double? MaxDeliveryDistance { get; private set; }
-    internal static double AverageCarSpeed { get; private set; }
-    internal static double AverageMotorcycleSpeed { get; private set; }
-    internal static double AverageBikeSpeed { get; private set; }
-    internal static double AverageWalkingSpeed { get; private set; }
-    internal static TimeSpan MaxDeliveryTime { get; private set; }
-    internal static TimeSpan RiskRange { get; private set; }
-    internal static TimeSpan InactiveTime { get; private set; }
+    internal static int ManagerId { get; set; }
+    internal static string ManagerPassword { get; set; } = "";
+    internal static string? CompanyAddress { get; set; }
+    internal static double? CompanyLatitude { get; set; }
+    internal static double? CompanyLongitude { get; set; }
+    internal static double? MaxDeliveryDistance { get; set; }
+    internal static double AverageCarSpeed { get; set; }
+    internal static double AverageMotorcycleSpeed { get; set; }
+    internal static double AverageBikeSpeed { get; set; }
+    internal static double AverageWalkingSpeed { get; set; }
+    internal static TimeSpan MaxDeliveryTime { get; set; }
+    internal static TimeSpan RiskRange { get; set; }
+    internal static TimeSpan InactiveTime { get; set; }
     internal static void Reset(){
         nextDeliveryId = StartDeliveryId;
         nextOrderId = StartOrderId;
