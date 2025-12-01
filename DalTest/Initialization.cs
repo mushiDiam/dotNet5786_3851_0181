@@ -4,9 +4,9 @@ using System.Linq;
 using DalApi;
 using DO;
 
-namespace Dal;
+namespace DalTest;
 
-internal static class Initialization
+public static class Initialization
 {
     /*private static IConfig? s_dalConfig;
     private static IDelivery? s_dalDelivery;

@@ -1,4 +1,5 @@
-﻿namespace BO;
+﻿using Helpers;
+namespace BO;
 /// <param name="Id">Courier identifier.</param>
 /// <param name="FullName">Full name of the courier (first + last).</param>
 /// <param name="IsActive">Indicates if the courier is active.</param>

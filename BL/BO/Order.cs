@@ -1,5 +1,5 @@
 ﻿using DO;
-
+using Helpers;
 namespace BO;
 /// <param name="Id">Sequential identifier of the order.</param>
 /// <param name="OrderType">Type of the order.</param>
@@ -42,6 +42,6 @@ public class Order
     public TimeSpan RemainingTime { get; set; }
     public List<DeliveryPerOrderInList>? Deliveries { get; set; }
     public override string ToString(){
-        return Tools.ToStringProperty<Order(this);
+        return Tools.ToStringProperty<Order>(this);
     }
 }

@@ -10,25 +10,25 @@ public interface IConfig
 
     // Time and manager info
     DateTime Clock { get; set; }
-    int ManagerId { get; }
-    string ManagerPassword { get; }
+    int ManagerId { get; set; }
+    string ManagerPassword { get; set; }
 
     // Company details
-    string? CompanyAddress { get; }
-    double? CompanyLatitude { get; }
-    double? CompanyLongitude { get; }
-    double? MaxDeliveryDistance { get; }
+    string? CompanyAddress { get; set; }
+    double? CompanyLatitude { get; set; }
+    double? CompanyLongitude { get; set; }
+    double? MaxDeliveryDistance { get; set; }
 
     // Speed settings
-    double AverageCarSpeed { get; }
-    double AverageMotorcycleSpeed { get; }
-    double AverageBikeSpeed { get; }
-    double AverageWalkingSpeed { get; }
+    double AverageCarSpeed { get; set; }
+    double AverageMotorcycleSpeed { get; set; }
+    double AverageBikeSpeed { get; set; }
+    double AverageWalkingSpeed { get; set; }
 
     // Time constraints
-    TimeSpan MaxDeliveryTime { get; }
-    TimeSpan RiskRange { get; }
-    TimeSpan InactiveTime { get; }
+    TimeSpan MaxDeliveryTime { get; set; }
+    TimeSpan RiskRange { get; set; }
+    TimeSpan InactiveTime { get; set; }
 
     // Methods
     void Reset();

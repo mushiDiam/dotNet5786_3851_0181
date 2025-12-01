@@ -1,4 +1,5 @@
-﻿namespace BO;
+﻿using Helpers;
+namespace BO;
 /// <param name="DeliveryId">Unique identifier of the delivery (not shown in UI).</param>
 /// <param name="OrderId">Sequential identifier of the order.</param>
 /// <param name="OrderType">The type of the order.</param>
