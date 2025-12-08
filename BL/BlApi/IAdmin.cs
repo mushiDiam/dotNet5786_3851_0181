@@ -3,7 +3,7 @@
 namespace BlApi;
 
 public interface IAdmin{
-    void ResedtDB();
+    void ResetDB();
     void InitializeDB();
     DateTime GetClock();
     void ForwardClock(Times T);
