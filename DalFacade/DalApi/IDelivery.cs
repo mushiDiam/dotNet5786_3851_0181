@@ -1,4 +1,4 @@
-﻿namespace DalApi;
+﻿amespace DalApi;
 using DO;
 
 

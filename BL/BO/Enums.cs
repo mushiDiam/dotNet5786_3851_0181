@@ -18,7 +18,7 @@ public enum ScheduleStatuses{
 public enum EndTypes{
     Completed, Denied, Canceled, Unreached, Failed
 }
-public enum Transportaion{
+public enum Transportation{
     Car, Motorcycle, Bike, Walking
 }
 
@@ -30,8 +30,8 @@ public enum OrderOptions{
     Id, Type, Latitude, Longitude , AirDistance , Weight, Volume, Fragile, CreatedAt, ExpectedDeliveryTime, MaxDeliveryTime, OrderStatus, ScheduleStatus, RemainingTime
 }
 
-public enum CourierOptions{
-    Id ,FullName , PhoneNumber ,Email ,Password ,IsActive , MaxDistancePreference, Transport , JoinDate, DeliveryCountOnTime, DeliveryCountLate,
+public enum CourierInListOptions{
+    Id, FullName, IsActive, DeliveryType, JoinDate, OrdersOnTime, OrdersLate, CurrentOrderId
 }
 
 public enum  Times{

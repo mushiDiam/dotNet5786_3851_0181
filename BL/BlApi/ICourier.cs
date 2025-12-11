@@ -5,7 +5,7 @@ namespace BlApi;
 public interface ICourier{
 
     JobTypes EnterProgram(int id);
-    IEnumerable<BO.CourierInList> GetCouriers(int id, bool? includeInactive, CourierOptions? sort);
+    IEnumerable<BO.CourierInList> GetCouriers(int id, bool? includeInactive, CourierInListOptions? sort);
     BO.Courier Details(int id , int courierId);
     void UpdateDetails(int id, BO.Courier C);
     void Delete(int id , int courierId);

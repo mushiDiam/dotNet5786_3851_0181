@@ -1,6 +1,6 @@
 ﻿namespace BlApi;
 
-public interface IBI{
+public interface IBl{
     IAdmin Admin { get; }
     ICourier Courier { get; }
     IOrder Order { get; }

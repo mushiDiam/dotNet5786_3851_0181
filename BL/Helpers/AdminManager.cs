@@ -263,6 +263,10 @@ internal static class AdminManager //stage 4
             catch (ThreadInterruptedException) { }
         }
     }
+    public static bool IsAdmin(int id) 
+    {
+        return id == s_dal.Config.ManagerId;
+    }
 
     #endregion Stage 7 base
 }

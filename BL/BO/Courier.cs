@@ -9,7 +9,7 @@ public class Courier
     public string Password { get; set; }
     public bool IsActive { get; set; }
     public double MaxDistancePreference { get; set; }
-    public Transportaion Transport { get; set; }
+    public Transportation Transport { get; set; }
     public DateTime JoinDate { get; init; }
     public int DeliveryCountOnTime { get; }
     public int DeliveryCountLate { get; set; }
