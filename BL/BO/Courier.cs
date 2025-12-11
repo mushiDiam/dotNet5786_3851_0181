@@ -11,7 +11,7 @@ public class Courier
     public double MaxDistancePreference { get; set; }
     public Transportation Transport { get; set; }
     public DateTime JoinDate { get; init; }
-    public int DeliveryCountOnTime { get; }
+    public int DeliveryCountOnTime { get; set; }
     public int DeliveryCountLate { get; set; }
     public OrderInProgress? ActiveOrder { get; set; }
     public override string ToString(){

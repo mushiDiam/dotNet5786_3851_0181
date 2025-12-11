@@ -115,6 +115,7 @@ public static class Initialization
                 CustomerPhone: "052-" + s_rand.Next(1000000, 9999999),
                 CreatedAt: createdAt,
                 Fragile: s_rand.Next(2) == 0,
+                OrderType: (OrderType)s_rand.Next(0, 4),
                 Weight: s_rand.Next(1, 20),
                 Volume: s_rand.Next(1, 10)
             );

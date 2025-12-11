@@ -16,7 +16,7 @@ public class DeliveryPerOrderInList
     public string CourierName { get; set; }
     public DeliveryTypes DeliveryType { get; set; }
     public DateTime StartTime { get; init; }
-    public EndTypes? EndType { get; set; }
+    public OrderStatuses? OrderStatus { get; set; }
     public DateTime? EndTime { get; set; }
     public override string ToString(){
         return Tools.ToStringProperty<DeliveryPerOrderInList>(this);

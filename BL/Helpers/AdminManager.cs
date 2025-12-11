@@ -187,6 +187,10 @@ internal static class AdminManager //stage 4
         }
     }
 
+    internal static bool VerifyManager(int id)
+    {
+        return id == s_dal.Config.ManagerId;
+    }
     #endregion Stage 4-7
 
     #region Stage 7 base

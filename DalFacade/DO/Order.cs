@@ -33,9 +33,10 @@ public record Order
     bool Fragile,
     int Weight,
     int Volume,
+    OrderType OrderType,
     string? AdditionalDetails = null,
     string? Description = null
 )
 {
-public Order() : this(0, "", 0, 0, "", "", DateTime.Now, false, 0, 0) { }
+public Order() : this(0, "", 0, 0, "", "", DateTime.Now, false,0, 0, 0) { }
 }

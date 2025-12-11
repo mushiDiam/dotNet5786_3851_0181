@@ -239,6 +239,7 @@ namespace DalTest
                             string customerPhone = ReadString("Customer phone: ");
                             DateTime createdAt = s_dal.Config.Clock;
                             bool fragile = ReadBool("Fragile (y/n): ");
+                            OrderType orderType = ReadEnumOptional<OrderType>("Order type (Car/Motorcycle/Bike/Walking): ");
                             int weight = ReadInt("Weight (integer): ");
                             int volume = ReadInt("Volume (integer): ");
                             string additional = ReadString("Additional details (empty = none): ", allowEmpty: true);
@@ -246,7 +247,7 @@ namespace DalTest
                             string description = ReadString("Description (empty = none): ", allowEmpty: true);
                             if (string.IsNullOrWhiteSpace(description)) description = null;
 
-                            var order = new Order(id, address, lat, lon, customerName, customerPhone, createdAt, fragile, weight, volume, additional, description);
+                            var order = new Order(id, address, lat, lon, customerName, customerPhone, createdAt, fragile, weight, volume, orderType, additional, description);
                             s_dal.Order!.Create(order);
                             Console.WriteLine($"Order created with Id: {id}");
                             break;
@@ -755,14 +756,14 @@ namespace DalTest
                         bool fragile = ReadNullableBool($"Fragile (y/n) [{(existingOrder.Fragile ? "y" : "n")}]: ", existingOrder.Fragile);
                         int weight = ReadNullableInt($"Weight [{existingOrder.Weight}]: ", existingOrder.Weight);
                         int volume = ReadNullableInt($"Volume [{existingOrder.Volume}]: ", existingOrder.Volume);
-
+                        OrderType orderType = ReadEnumKeepCurrent<OrderType>($"Order type ({string.Join("/", Enum.GetNames(typeof(OrderType)))}) [{existingOrder.OrderType}]: ", existingOrder.OrderType);
                         string additional = ReadString($"Additional details [{(string.IsNullOrWhiteSpace(existingOrder.AdditionalDetails) ? "(none)" : existingOrder.AdditionalDetails)}]: ", allowEmpty: true);
                         if (string.IsNullOrWhiteSpace(additional)) additional = existingOrder.AdditionalDetails;
 
                         string description = ReadString($"Description [{(string.IsNullOrWhiteSpace(existingOrder.Description) ? "(none)" : existingOrder.Description)}]: ", allowEmpty: true);
                         if (string.IsNullOrWhiteSpace(description)) description = existingOrder.Description;
 
-                        var updatedOrder = new Order(id, address, latitude, longitude, customerName, customerPhone, existingOrder.CreatedAt, fragile, weight, volume, additional, description);
+                        var updatedOrder = new Order(id, address, latitude, longitude, customerName, customerPhone, existingOrder.CreatedAt, fragile, weight, volume,orderType, additional, description);
                         s_dal.Order.Update(updatedOrder);
                         Console.WriteLine("Order updated.");
                         break;
@@ -775,7 +776,7 @@ namespace DalTest
 
                         bool active = ReadNullableBool($"Active (y/n) [{(existingCourier.Active ? "y" : "n")}]: ", existingCourier.Active);
                         double? maxDistance = ReadNullableDoubleNullable($"Max delivery distance (km) [{(existingCourier.MaxDeliveryDistance.HasValue ? existingCourier.MaxDeliveryDistance.Value.ToString() : "(none)")}]: ", existingCourier.MaxDeliveryDistance);
-                        var orderType = ReadEnumKeepCurrent<OrderType>($"Order type ({string.Join("/", Enum.GetNames(typeof(OrderType)))}) [{existingCourier.OrderType}]: ", existingCourier.OrderType);
+                        var orderTypeC = ReadEnumKeepCurrent<OrderType>($"Order type ({string.Join("/", Enum.GetNames(typeof(OrderType)))}) [{existingCourier.OrderType}]: ", existingCourier.OrderType);
                         string name = ReadString($"Name [{existingCourier.Name}]: ", allowEmpty: true);
                         if (string.IsNullOrWhiteSpace(name)) name = existingCourier.Name;
                         string phone = ReadString($"Phone [{existingCourier.Phone}]: ", allowEmpty: true);
@@ -785,7 +786,7 @@ namespace DalTest
                         string password = ReadString($"Password [{(string.IsNullOrEmpty(existingCourier.Password) ? "(none)" : existingCourier.Password)}]: ", allowEmpty: true);
                         if (string.IsNullOrWhiteSpace(password)) password = existingCourier.Password;
 
-                        var updatedCourier = new Courier(id, active, maxDistance, existingCourier.JoinDate, orderType, name, phone, email, password);
+                        var updatedCourier = new Courier(id, active, maxDistance, existingCourier.JoinDate, orderTypeC, name, phone, email, password);
                         s_dal.Courier.Update(updatedCourier);
                         Console.WriteLine("Courier updated.");
                         break;

@@ -2,5 +2,5 @@
 using DO;
 
 public interface ICourier : ICrud<Courier>
-{ 
+{
 }

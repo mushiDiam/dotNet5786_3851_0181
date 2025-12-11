@@ -7,15 +7,15 @@ public enum OrderTypes  {
     Food, Gifts, Health, Supplies, Pets
 }
 
-public enum OrderStatuses{
+public enum EndTypes{
     InProgress, Completed, Cancelled
 }
 
 public enum ScheduleStatuses{
-    OnTime, Late, Early
+    OnTime, Late, AtRisk
 }
 
-public enum EndTypes{
+public enum OrderStatuses{
     Completed, Denied, Canceled, Unreached, Failed
 }
 public enum Transportation{
@@ -36,5 +36,4 @@ public enum CourierInListOptions{
 
 public enum  Times{
     Minute, Hour, Day , Month , Year
-
 }

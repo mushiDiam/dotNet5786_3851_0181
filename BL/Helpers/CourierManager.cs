@@ -4,7 +4,8 @@ using DO;
 using System.Linq.Expressions;
 namespace Helpers;
 
-internal static class CourierManager{
+internal static class CourierManager
+{
     private static IDal s_dal = Factory.Get;
 
     internal static void Create(BO.Courier courier){

@@ -19,7 +19,7 @@ public class ClosedDeliveryInList
     public DeliveryTypes DeliveryType { get; set; }
     public double? ActualDistance { get; set; }
     public TimeSpan CompletionTime { get; set; }
-    public EndTypes? EndType { get; set; }
+    public OrderStatuses? OrderStatus { get; set; }
     public override string ToString(){
         return Tools.ToStringProperty<ClosedDeliveryInList>(this);
     }
