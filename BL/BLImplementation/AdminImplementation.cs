@@ -1,13 +1,13 @@
-﻿namespace BLImplementation;
+﻿namespace BlImplementation;
+
+using System;
 using BlApi;
 using BO;
 using Helpers;
-using System;
 
 internal class AdminImplementation : IAdmin
 {
-    public void ForwardClock(Times T)
-    {
+    public void ForwardClock(Times T){
         switch (T)
         {
             case Times.Minute:
@@ -28,25 +28,22 @@ internal class AdminImplementation : IAdmin
             default:
                 break;
         }
+
     }
 
-    public DateTime GetClock()
-    {
+    public DateTime GetClock(){
         return AdminManager.Now;
     }
 
-    public void InitializeDB()
-    {
-        AdminManager.ResetDB();
+    public void InitializeDB(){
+        ResetDB();
         AdminManager.InitializeDB();
     }
 
-    public void ResedtDB()
-    {
+    public void ResetDB(){
         AdminManager.ResetDB();
     }
 
-    public Config GetConfig() => AdminManager.GetConfig();
-
-    public void SetConfig(Config configuration) => AdminManager.SetConfig(configuration);
+    public BO.Config GetConfig() => AdminManager.GetConfig();
+    public void SetConfig(BO.Config configuration) => AdminManager.SetConfig(configuration);
 }

@@ -1,7 +1,8 @@
-﻿namespace BLImplementation;
+﻿namespace BlImplementation;
+
+using System.Collections.Generic;
 using BlApi;
 using BO;
-using System.Collections.Generic;
 
 internal class OrderImplementation : IOrder
 {
