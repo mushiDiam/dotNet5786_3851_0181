@@ -110,7 +110,7 @@ public static class Initialization
                 Id: 0,
                 AdderssOfOrder: addr.Address,
                 Latitude: addr.Lat,
-                Longtitude: addr.Lon,
+                Longitude: addr.Lon,
                 CustomerName: cust,
                 CustomerPhone: "052-" + s_rand.Next(1000000, 9999999),
                 CreatedAt: createdAt,
@@ -128,10 +128,10 @@ public static class Initialization
     {
         foreach (var order in s_dal!.Order.ReadAll())
         {
-            var availableCouriers = s_dal!.Courier.ReadAll(); 
+            var availableCouriers = s_dal!.Courier.ReadAll();
 
             if (!availableCouriers.Any()) continue;
-            
+
             int count = s_rand.Next(availableCouriers.Count());
             var courier = availableCouriers.ElementAt(count);
 
@@ -145,7 +145,7 @@ public static class Initialization
                 CourierId: courier.Id,
                 OrderType: courier.OrderType,
                 StartOfDelivery: start,
-                ActualDistance: Distance(order.Latitude, order.Longtitude, 32.0853, 34.7818),
+                ActualDistance: Distance(order.Latitude, order.Longitude, 32.0853, 34.7818),
                 EndOfOrder: finished ? (EndOfOrder?)s_rand.Next(0, 5) : null,
                 TimeOfDelivery: end
             );

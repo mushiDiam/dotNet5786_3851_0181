@@ -37,8 +37,8 @@ public class Order
     public DateTime CreatedAt { get; init; }
     public DateTime? ExpectedDeliveryTime { get; init; }
     public DateTime MaxDeliveryTime { get; set; }
-    public EndTypes EndType { get; set; }
-    public ScheduleStatuses ScheduleStatus { get; set; }
+    public OrderStatus OrderStatus{ get; set; }
+    public ScheduleStatus ScheduleStatus { get; set; }
     public TimeSpan RemainingTime { get; set; }
     public List<DeliveryPerOrderInList>? Deliveries { get; set; }
     public override string ToString(){

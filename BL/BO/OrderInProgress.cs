@@ -32,8 +32,8 @@ public class OrderInProgress
     public DateTime StartDeliveryTime { get; set; }
     public DateTime ExpectedDeliveryTime { get; set; }
     public DateTime MaxiumDeliveryTime { get; set; }
-    public EndTypes EndType { get; set; }
-    public ScheduleStatuses ScheduleStatus { get; set; }
+    public OrderStatus OrderStatus { get; set; }
+    public ScheduleStatus ScheduleStatus { get; set; }
     public TimeSpan TimeLeftForDelivery { get; set; }
     public override string ToString(){
         return Tools.ToStringProperty<OrderInProgress>(this);

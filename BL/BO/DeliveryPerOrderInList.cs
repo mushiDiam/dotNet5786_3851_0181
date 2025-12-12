@@ -7,7 +7,9 @@ namespace BO;
 /// <param name="CourierName">Full name of the courier.</param>
 /// <param name="DeliveryType">Type of delivery.</param>
 /// <param name="StartTime">Start time of the delivery.</param>
-/// <param name="EndType">Delivery completion type (nullable).</param>
+/// <param name="
+/// 
+/// ">Delivery completion type (nullable).</param>
 /// <param name="EndTime">Delivery completion time (nullable).</param>
 public class DeliveryPerOrderInList
 {
@@ -16,7 +18,7 @@ public class DeliveryPerOrderInList
     public string CourierName { get; set; }
     public DeliveryTypes DeliveryType { get; set; }
     public DateTime StartTime { get; init; }
-    public OrderStatuses? OrderStatus { get; set; }
+    public OrderStatus? OrderStatus { get; set; }
     public DateTime? EndTime { get; set; }
     public override string ToString(){
         return Tools.ToStringProperty<DeliveryPerOrderInList>(this);

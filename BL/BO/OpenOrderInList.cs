@@ -27,7 +27,7 @@ public class OpenOrderInList
     public double AirDistance { get; set; }
     public double? ActualDistance { get; set; }
     public TimeSpan? EstimatedTime { get; init; }
-    public ScheduleStatuses ScheduleStatus { get; set; }
+    public ScheduleStatus ScheduleStatus { get; set; }
     public TimeSpan RemainingTime { get; set; }
     public DateTime MaxDeliveryTime { get; init; }
     public override string ToString(){

@@ -11,12 +11,12 @@ public enum EndTypes{
     InProgress, Completed, Cancelled
 }
 
-public enum ScheduleStatuses{
-    OnTime, Late, AtRisk
+public enum ScheduleStatus{
+    OnTime, Late, InRisk
 }
 
-public enum OrderStatuses{
-    Completed, Denied, Canceled, Unreached, Failed
+public enum OrderStatus{
+    Open, InProgress, Closed, Denied, Cancelled
 }
 public enum Transportation{
     Car, Motorcycle, Bike, Walking
@@ -26,8 +26,8 @@ public enum JobTypes{
     Courier , Manager
 }
 
-public enum OrderOptions{
-    Id, Type, Latitude, Longitude , AirDistance , Weight, Volume, Fragile, CreatedAt, ExpectedDeliveryTime, MaxDeliveryTime, OrderStatus, ScheduleStatus, RemainingTime
+public enum OrderInListOptions{
+    DeliveryId, OrderId, OrderType, AirDistance, OrderStatus, ScheduleStatus, RemainingTime, CompletionTime, DeliveryCount
 }
 
 public enum CourierInListOptions{

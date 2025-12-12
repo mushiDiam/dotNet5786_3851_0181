@@ -5,7 +5,7 @@
 ///  <param name="Id">Personal unique ID of the order </param>
 ///  <param name="AdderssOfOrder"> Where to ship the items </param>
 ///  <param name="Latitude">Coordinates </param>
-///  <param name="Longtitude">Coordinates </param>
+///  <param name="Longitude">Coordinates </param>
 ///  <param name="CustomerName">The name of the customer</param>
 ///  <param name="CustomerPhone">Phone number of the customer </param>
 ///  <param name="CreatedAt">When was the order created </param>
@@ -22,7 +22,7 @@ public record Order
     //Shipment
     string AdderssOfOrder,                                    
     double Latitude,                                            
-    double Longtitude,
+    double Longitude,
 
     //Contact
     string CustomerName,

@@ -18,6 +18,16 @@ public class BlCannotBeNullException : Exception
 {
     public BlCannotBeNullException(string? message) : base(message) { }
 }
+[Serializable]
+public class BlInvalidOperationException : Exception
+{
+    public BlInvalidOperationException(string? message) : base(message) { }
+}
+[Serializable]
+public class BlOrderCanceledExeption : Exception
+{
+    public BlOrderCanceledExeption(string? message) : base(message) { }
+}
 
 public class BlXmlFileLoadCreateException : Exception
 {
@@ -34,4 +44,8 @@ public class  BlNullPropertyException : Exception
 public class BlUnauthorizedAccessException : Exception
 {
     public BlUnauthorizedAccessException(string? message) : base(message) { }
+}
+public class BLInvalidValueException : Exception
+{
+    public BLInvalidValueException(string? message) : base(message) { }
 }

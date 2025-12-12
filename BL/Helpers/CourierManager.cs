@@ -8,7 +8,7 @@ internal static class CourierManager
 {
     private static IDal s_dal = Factory.Get;
 
-    internal static void Create(BO.Courier courier){
+    internal static void CreateCourier(BO.Courier courier){
         try
         {
             DO.Courier DALCourier = ConvertToDal(courier);
@@ -32,7 +32,20 @@ internal static class CourierManager
         }
     }
 
-   
+   internal static CourierInList ConvertToCourierInList(BO.Courier courier)
+    {
+        return new CourierInList()
+        {
+            Id = courier.Id,
+            FullName = courier.FullName,
+            IsActive = courier.IsActive,
+            DeliveryType = (DeliveryTypes)courier.Transport,
+            JoinDate = courier.JoinDate,
+            OrdersOnTime = courier.DeliveryCountOnTime,
+            OrdersLate = courier.DeliveryCountLate,
+            CurrentOrderId = courier.ActiveOrder?.OrderId
+        };
+    }
 
     internal static IEnumerable<DO.Courier> ReadAll()
     {

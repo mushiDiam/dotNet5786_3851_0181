@@ -9,7 +9,9 @@ namespace BO;
 /// <param name="DeliveryType">Type of delivery.</param>
 /// <param name="ActualDistance">Actual delivery distance (nullable).</param>
 /// <param name="CompletionTime">Time to complete delivery.</param>
-/// <param name="EndType">Delivery completion type (nullable).</param>
+/// <param name="
+/// 
+/// ">Delivery completion type (nullable).</param>
 public class ClosedDeliveryInList
 {
     public int DeliveryId { get; init; }
@@ -19,7 +21,7 @@ public class ClosedDeliveryInList
     public DeliveryTypes DeliveryType { get; set; }
     public double? ActualDistance { get; set; }
     public TimeSpan CompletionTime { get; set; }
-    public OrderStatuses? OrderStatus { get; set; }
+    public OrderStatus? OrderStatus { get; set; }
     public override string ToString(){
         return Tools.ToStringProperty<ClosedDeliveryInList>(this);
     }

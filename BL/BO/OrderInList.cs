@@ -17,8 +17,8 @@ public class OrderInList
     public int OrderId { get; init; }
     public OrderTypes OrderType { get; set; }
     public double AirDistance { get; set; }
-    public EndTypes EndType { get; set; }
-    public ScheduleStatuses ScheduleStatus { get; set; }
+    public OrderStatus OrderStatus { get; set; }
+    public ScheduleStatus ScheduleStatus { get; set; }
     public TimeSpan RemainingTime { get; set; }
     public TimeSpan CompletionTime { get; set; }
     public int DeliveryCount { get; set; }

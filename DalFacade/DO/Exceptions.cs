@@ -9,6 +9,11 @@ public class DalAlreadyExistsException : Exception
     public DalAlreadyExistsException(string? message) : base(message) { }
 
 }
+[Serializable]
+public class DalEmptyListException : Exception
+{
+    public DalEmptyListException(string? message) : base(message) { }
+}
 
 [Serializable]
 public class DalDoesNotExistException : Exception

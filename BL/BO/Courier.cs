@@ -17,6 +17,4 @@ public class Courier
     public override string ToString(){
         return Tools.ToStringProperty<Courier>(this);
     }
-
-
 }
