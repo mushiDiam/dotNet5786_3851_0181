@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using BlApi;
-using BLImplementation;
+using BlImplementation;
 using BO;
 using DalApi;
 using DO;
@@ -52,7 +52,7 @@ internal class OrderImplementation : BlApi.IOrder
         List<BO.Order> orders = OrderManager.ReadAll().ToList();
         if (orders.Count == 0)
         {
-            throw new DO.DalEmptyListException("No orders in the system");
+            throw new BlEmptyListException("No orders in the system");
         }
         int[] result = new int[Enum.GetValues(typeof(BO.ScheduleStatus)).Length + Enum.GetValues(typeof(BO.OrderStatus)).Length];
         Array schedules = Enum.GetValues(typeof(BO.ScheduleStatus));
@@ -76,9 +76,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void Delete(int id, int orderId)
     {
-        if(!AdminManager.IsAdmin(id))
-            throw new BlUnauthorizedAccessException("Only an admin can delete orders");
-        OrderManager.Delete(orderId);
+            throw new BlInvalidOperationException("Cannot delete an order");
     }
 
     public BO.Order? Details(int id, int orderId)
@@ -210,7 +208,7 @@ internal class OrderImplementation : BlApi.IOrder
                 fragile = o.Fragile,
                 FullAddress = o.FullAddress,
                 AirDistance = o.AirDistance,
-                ActualDistance = OrderManager.GetActualDistance(o.Latitude, o.Longitude, courier.Transport),
+                ActualDistance = OrderManager.GetActualDistanceAsync(o.Latitude, o.Longitude, courier.Transport).GetAwaiter().GetResult(),
                 EstimatedTime = o.ExpectedDeliveryTime.HasValue ? o.ExpectedDeliveryTime.Value - DateTime.Now : null,
                 ScheduleStatus = o.ScheduleStatus, // 1:1 copy
                 RemainingTime = o.RemainingTime,

@@ -18,7 +18,15 @@ internal static class DeliveryManager{
         return orders;
     }
     public static Delivery GetDelivery(int orderId)
-    { 
+    {
+        try
+        {
+            s_dal.Delivery.Read(d => d.OrderId == orderId);
+        }
+        catch(DalDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException("Delivery not found", ex);
+        }
         return s_dal.Delivery.Read(d => d.OrderId == orderId);
     }
 
@@ -62,5 +70,34 @@ internal static class DeliveryManager{
             EndOfOrder = null // Or whatever the nullable enum/status field is named
         };
         s_dal.Delivery.Create(delivery);
+    }
+    internal static void CreateMockDeliveryForCancellation(int orderId, DO.OrderType type)
+    {
+        DO.Delivery canceledDelivery = new DO.Delivery
+        {
+            OrderId = orderId,
+            CourierId = 0,
+            StartOfDelivery = DateTime.Now,
+            TimeOfDelivery = DateTime.Now,
+            EndOfOrder = DO.EndOfOrder.Canceled,
+            ActualDistance = 0,
+            OrderType = type
+        };
+        s_dal.Delivery.Create(canceledDelivery);
+    }
+
+    internal static void CancelActiveDelivery(int orderId)
+    {
+        // Logic specific to finding the active delivery is HIDDEN here
+        // Note: Use d.Id if you have the delivery ID, or query by OrderId if that's the flow
+        DO.Delivery delivery = s_dal.Delivery.Read(d => d.OrderId == orderId && d.EndOfOrder == null);
+
+        DO.Delivery updated = delivery with
+        {
+            EndOfOrder = DO.EndOfOrder.Canceled,
+            TimeOfDelivery = DateTime.Now
+        };
+
+        s_dal.Delivery.Update(updated);
     }
 }

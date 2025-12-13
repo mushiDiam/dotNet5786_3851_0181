@@ -3,6 +3,7 @@ namespace Helpers;
 
 using System.Runtime.CompilerServices;
 using DalTest;
+using DO;
 
 /// <summary>
 /// Internal BL manager for all Application's Configuration Variables and Clock logic policies
@@ -217,7 +218,7 @@ internal static class AdminManager //stage 4
     public static void ThrowOnSimulatorIsRunning()
     {
         if (s_thread is not null)
-            throw new BO.BLTemporaryNotAvailableException("Cannot perform the operation since Simulator is running");
+            throw new BlTemporaryNotAvailableException("Cannot perform the operation since Simulator is running");
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)] //stage 7                                                 

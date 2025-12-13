@@ -22,6 +22,7 @@ public class BlCannotBeNullException : Exception
 public class BlInvalidOperationException : Exception
 {
     public BlInvalidOperationException(string? message) : base(message) { }
+    public BlInvalidOperationException(string message, Exception inner) : base(message, inner) { }
 }
 [Serializable]
 public class BlOrderCanceledExeption : Exception
@@ -29,6 +30,7 @@ public class BlOrderCanceledExeption : Exception
     public BlOrderCanceledExeption(string? message) : base(message) { }
 }
 
+[Serializable]
 public class BlXmlFileLoadCreateException : Exception
 {
     public BlXmlFileLoadCreateException(string? message) : base(message) { }
@@ -45,7 +47,24 @@ public class BlUnauthorizedAccessException : Exception
 {
     public BlUnauthorizedAccessException(string? message) : base(message) { }
 }
-public class BLInvalidValueException : Exception
+[Serializable]
+public class BlInvalidValueException : Exception
 {
-    public BLInvalidValueException(string? message) : base(message) { }
+    public BlInvalidValueException(string? message) : base(message) { }
+}
+[Serializable]
+public class BlEmptyListException : Exception
+{
+    public BlEmptyListException(string? message) : base(message) { }
+}
+[Serializable]
+public class BlTemporaryNotAvailableException : Exception
+{
+    public BlTemporaryNotAvailableException(string? message) : base(message) { }
+}
+[Serializable]
+public class BlFailedToConvert : Exception
+{
+    public BlFailedToConvert(string? message) : base(message) { }
+    public BlFailedToConvert(string message, Exception inner) : base(message, inner) { }
 }
