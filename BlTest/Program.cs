@@ -310,7 +310,7 @@ namespace BlTest
 
                             Console.WriteLine($"Clock updated to: {newTime}");
                             break;
-
+     
                         case 3:
                             Console.WriteLine("WARNING: This will wipe all data.");
                             if (ReadBool("Are you sure?"))

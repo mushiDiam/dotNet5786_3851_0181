@@ -65,11 +65,11 @@ internal static class AdminManager //stage 4
         DeliveryWindow = s_dal.Config.MaxDeliveryTime,
         RiskRange = s_dal.Config.RiskRange,
         InactiveTime = s_dal.Config.InactiveTime,
-        CompanyAddress = s_dal.Config.CompanyAddress,
-        MaximumAirRange = (double)s_dal.Config.MaxDeliveryDistance,
-        Latitude = (double)s_dal.Config.CompanyLatitude,
-        Longitude = (double)s_dal.Config.CompanyLongitude,
-        MaxiumDistance = (double)s_dal.Config.MaxDeliveryDistance, //Not sure if needed
+        CompanyAddress = s_dal.Config.CompanyAddress ?? string.Empty,
+        MaximumAirRange = s_dal.Config.MaxDeliveryDistance ?? 0.0,
+        Latitude = s_dal.Config.CompanyLatitude ?? 0.0,
+        Longitude = s_dal.Config.CompanyLongitude ?? 0.0,
+        MaxiumDistance = s_dal.Config.MaxDeliveryDistance ?? 0.0, //Not sure if needed
         AverageCarSpeed = s_dal.Config.AverageCarSpeed,
         AverageMotorbikeSpeed = s_dal.Config.AverageMotorcycleSpeed,
         AverageBikeSpeed = s_dal.Config.AverageBikeSpeed,
