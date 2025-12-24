@@ -47,4 +47,15 @@ internal class AdminImplementation : IAdmin
 
     public BO.Config GetConfig() => AdminManager.GetConfig();
     public void SetConfig(BO.Config configuration) => AdminManager.SetConfig(configuration);
+
+    #region Stage 5
+    public void AddClockObserver(Action clockObserver) =>
+    AdminManager.ClockUpdatedObservers += clockObserver;
+    public void RemoveClockObserver(Action clockObserver) =>
+    AdminManager.ClockUpdatedObservers -= clockObserver;
+    public void AddConfigObserver(Action configObserver) =>
+   AdminManager.ConfigUpdatedObservers += configObserver;
+    public void RemoveConfigObserver(Action configObserver) =>
+    AdminManager.ConfigUpdatedObservers -= configObserver;
+    #endregion Stage 5
 }

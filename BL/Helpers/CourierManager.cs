@@ -9,6 +9,8 @@ internal static class CourierManager
 {
     private static IDal s_dal = Factory.Get;
 
+    internal static ObserverManager Observers = new();
+
     internal static void CreateCourier(BO.Courier courier){
         try
         {
@@ -19,6 +21,7 @@ internal static class CourierManager
         {
             throw new BlAlreadyExistsException("Courier with this ID already exists.", ex);
         }
+        Observers.NotifyListUpdated(); //stage 5
     }
     internal static BO.Courier Read(int id)
     {
@@ -62,8 +65,10 @@ internal static class CourierManager
         {
             throw new BlDoesNotExistException("Courier with this ID Doesn't exists.", ex);
         }
+        Observers.NotifyItemUpdated(courier.Id); //stage 5
+        Observers.NotifyListUpdated(); //stage 5
     }
-    public static void UpdateCourierActivbity(DateTime oldClock, DateTime newClock)
+    public static void UpdateCourierActivity(DateTime oldClock, DateTime newClock)
     {
         DO.Courier[] couriers = s_dal.Courier.ReadAll().ToArray();
         foreach (var courier in couriers)
@@ -74,7 +79,7 @@ internal static class CourierManager
                 s_dal.Courier.Update(c);
             }
         }
-
+        Observers.NotifyListUpdated(); //stage 5
     }
     internal static void Delete(int id)
     {
@@ -88,11 +93,15 @@ internal static class CourierManager
         {
             throw new BlDoesNotExistException("Courier with this ID Doesn't exists.", ex);
         }
+        Observers.NotifyItemUpdated(id); //stage 5
+        Observers.NotifyListUpdated(); //stage 5
+
     }
-    
+
     internal static void DeleteAll()
     {
             s_dal.Courier.DeleteAll();
+        Observers.NotifyListUpdated(); //stage 5
     }
     public static DO.Courier ConvertToDal(BO.Courier courier){
         return new DO.Courier(){

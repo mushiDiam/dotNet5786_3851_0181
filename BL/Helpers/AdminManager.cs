@@ -59,6 +59,7 @@ internal static class AdminManager //stage 4
     internal static BO.Config GetConfig() //stage 4
     => new BO.Config()
     {
+        
         //MaxRange = s_dal.Config.MaxRange,
         //TO_DO: //stage 4
         //add an assignment for each configuration property
@@ -77,8 +78,6 @@ internal static class AdminManager //stage 4
         ManagerId = s_dal.Config.ManagerId,
         ManagerPassword = s_dal.Config.ManagerPassword,
 
-
-        //...
     };
 
     /// <summary>
@@ -174,7 +173,7 @@ internal static class AdminManager //stage 4
         {
             s_dal.resetDB(); //stage 4
             AdminManager.UpdateClock(AdminManager.Now); //stage 5 - needed since we want the label on Pl to be updated
-            AdminManager.SetConfig(AdminManager.GetConfig()); //stage 5 - needed to update PL 
+            ConfigUpdatedObservers?.Invoke(); //stage 5 - needed to update PL
         }
     }
 
@@ -184,7 +183,7 @@ internal static class AdminManager //stage 4
         {
             DalTest.Initialization.Do(); //stage 4
             AdminManager.UpdateClock(AdminManager.Now);  //stage 5 - needed since we want the label on Pl to be updated           
-            AdminManager.SetConfig(AdminManager.GetConfig()); //stage 5 - needed for update the PL
+           ConfigUpdatedObservers?.Invoke(); //stage 5 - needed to update PL
         }
     }
 

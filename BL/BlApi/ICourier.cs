@@ -2,7 +2,8 @@
 
 namespace BlApi;
 
-public interface ICourier{
+public interface ICourier : IObservable
+{
 
     JobTypes EnterProgram(int id);
     IEnumerable<BO.CourierInList> GetCouriers(int id, bool? includeInactive, CourierInListOptions? sort);

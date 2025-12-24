@@ -2,7 +2,7 @@
 
 namespace BlApi;
 
-public interface IOrder{
+public interface IOrder : IObservable{
     int[] CountByType(int id);
     IEnumerable<BO.OrderInList> GetOrders(int id, OrderInListOptions? filter,object? obj , OrderInListOptions? sort);
     BO.Order? Details(int id, int orderId);

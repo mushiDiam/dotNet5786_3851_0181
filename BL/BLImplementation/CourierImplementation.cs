@@ -95,4 +95,15 @@ internal class CourierImplementation : BlApi.ICourier
             throw new BlUnauthorizedAccessException("Only an admin can access couriers");
         CourierManager.Update(courier);
     }
+
+    #region Stage 5
+    public void AddObserver(Action listObserver) =>
+        CourierManager.Observers.AddListObserver(listObserver); //stage 5
+    public void AddObserver(int id, Action observer) =>
+        CourierManager.Observers.AddObserver(id, observer); //stage 5
+    public void RemoveObserver(Action listObserver) =>
+        CourierManager.Observers.RemoveListObserver(listObserver); //stage 5
+    public void RemoveObserver(int id, Action observer) =>
+        CourierManager.Observers.RemoveObserver(id, observer); //stage 5
+    #endregion Stage 5
 }

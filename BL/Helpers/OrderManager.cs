@@ -1,14 +1,18 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using BlApi;
+﻿using BlApi;
 using BlImplementation;
 using BO;
 using DalApi;
 using DO;
+using System.Diagnostics.Metrics;
+using System.Globalization;
+using System.Text.Json;
 namespace Helpers;
 
 internal static class OrderManager{
     private static IDal s_dal = DalApi.Factory.Get;
+
+    internal static ObserverManager Observers = new();
+
     private static readonly HttpClient s_client = new HttpClient
     {
         Timeout = TimeSpan.FromSeconds(10) // Set global timeout here
@@ -89,6 +93,9 @@ internal static class OrderManager{
             // Translate DAL errors to BL errors
             throw new BlDoesNotExistException($"Active delivery for order {orderId} not found", ex);
         }
+        Observers.NotifyItemUpdated(orderId); //stage 5
+        Observers.NotifyListUpdated(); //stage 5
+
     }
     private static OrderStatus CalculateOrderStatus(int orderId)
     {
@@ -248,6 +255,7 @@ internal static class OrderManager{
         {
             throw new BlAlreadyExistsException($"Order ID {order.Id} already exists.", ex);
         }
+        Observers.NotifyListUpdated(); //stage 5
     }
     internal static BO.Order? Read(int orderId)
     {
@@ -277,6 +285,8 @@ internal static class OrderManager{
         {
             throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
         }
+        Observers.NotifyItemUpdated(order.Id); //stage 5
+        Observers.NotifyListUpdated(); //stage 5
     }
     internal static void Delete(int orderId)
     {
@@ -288,6 +298,8 @@ internal static class OrderManager{
         {
             throw new BlInvalidOperationException($"Order ID {orderId} does not exist.", exception);
         }
+        Observers.NotifyItemUpdated(orderId); //stage 5
+        Observers.NotifyListUpdated(); //stage 5
     }
     internal static IEnumerable<BO.Order> ReadAll(Func<BO.Order, bool>? filter = null)
     {
@@ -302,6 +314,7 @@ internal static class OrderManager{
     internal static void DeleteAll()
     {
         s_dal.Order.DeleteAll();
+        Observers.NotifyListUpdated(); //stage 5
     }
 
     public static async Task<double?> GetActualDistanceAsync(double latitude, double longitude, BO.Transportation transport)
@@ -533,5 +546,7 @@ internal static class OrderManager{
 
         // 4. Update DAL
         s_dal.Delivery.Update(updatedDelivery);
+        Observers.NotifyItemUpdated(deliveryId);//stage 5
+        Observers.NotifyListUpdated();//stage 5
     }
 }

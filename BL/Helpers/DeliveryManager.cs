@@ -5,6 +5,8 @@ namespace Helpers;
 
 internal static class DeliveryManager{
     private static IDal s_dal = Factory.Get;
+
+    internal static ObserverManager Observers = new();
     public static List<BO.Order> GetAllOrdersByCourier(int courierId)
     {
         var deliveries = s_dal.Delivery.ReadAll(d => d.CourierId == courierId);
@@ -53,6 +55,8 @@ internal static class DeliveryManager{
 
         // Request DAL to update the entity
         s_dal.Delivery.Update(updatedDelivery);
+        Observers.NotifyItemUpdated(deliveryId);//stage 5
+        Observers.NotifyListUpdated();//stage 5
     }
     public static List<DO.Delivery> GetAllDeliveryByCourier(int courierId)
     {
@@ -70,6 +74,9 @@ internal static class DeliveryManager{
             EndOfOrder = null // Or whatever the nullable enum/status field is named
         };
         s_dal.Delivery.Create(delivery);
+        Observers.NotifyListUpdated(); //stage 5
+        Observers.NotifyItemUpdated(orderId);//stage 5
+
     }
     internal static void CreateMockDeliveryForCancellation(int orderId, DO.OrderType type)
     {
@@ -84,6 +91,8 @@ internal static class DeliveryManager{
             OrderType = type
         };
         s_dal.Delivery.Create(canceledDelivery);
+        Observers.NotifyListUpdated(); //stage 5
+        Observers.NotifyItemUpdated(orderId);//stage 5
     }
 
     internal static void CancelActiveDelivery(int orderId)
@@ -99,5 +108,7 @@ internal static class DeliveryManager{
         };
 
         s_dal.Delivery.Update(updated);
+        Observers.NotifyListUpdated(); //stage 5
+        Observers.NotifyItemUpdated(delivery.Id);//stage 5
     }
 }

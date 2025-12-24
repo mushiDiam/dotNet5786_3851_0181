@@ -76,7 +76,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void Delete(int id, int orderId)
     {
-            throw new BlInvalidOperationException("Cannot delete an order");
+        throw new BlInvalidOperationException("Cannot delete an order");
     }
 
     public BO.Order? Details(int id, int orderId)
@@ -88,7 +88,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void EndOfOrder(int id, int courierId, int deliveryId)
     {
-       if(id != courierId)
+        if (id != courierId)
             throw new BlUnauthorizedAccessException("Only couriers can only end their own deliveries");
         OrderManager.EndDelivery(courierId, deliveryId);
     }
@@ -243,9 +243,9 @@ internal class OrderImplementation : BlApi.IOrder
     }
     public IEnumerable<OrderInList> GetOrders(int id, OrderInListOptions? filter, object? obj, OrderInListOptions? sort)
     {
-       if(!AdminManager.IsAdmin(id))
+        if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only admin can get orders list");
-       return OrderManager.GetOrders(filter, obj, sort);
+        return OrderManager.GetOrders(filter, obj, sort);
     }
 
     public void UpdateDetails(int id, BO.Order order)
@@ -254,4 +254,15 @@ internal class OrderImplementation : BlApi.IOrder
             throw new BlUnauthorizedAccessException("Only an admin can get orders");
         OrderManager.Update(order);
     }
+
+    #region Stage 5
+    public void AddObserver(Action listObserver) =>
+        OrderManager.Observers.AddListObserver(listObserver); //stage 5
+    public void AddObserver(int id, Action observer) =>
+        OrderManager.Observers.AddObserver(id, observer); //stage 5
+    public void RemoveObserver(Action listObserver) =>
+        OrderManager.Observers.RemoveListObserver(listObserver); //stage 5
+    public void RemoveObserver(int id, Action observer) =>
+        OrderManager.Observers.RemoveObserver(id, observer); //stage 5
+    #endregion Stage 5
 }
