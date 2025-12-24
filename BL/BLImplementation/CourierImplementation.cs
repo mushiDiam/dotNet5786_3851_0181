@@ -41,15 +41,15 @@ internal class CourierImplementation : BlApi.ICourier
         return JobTypes.Courier;
     }
 
-    public IEnumerable<CourierInList> GetCouriers(int id, bool? includeInactive, CourierInListOptions? sort)
+    public IEnumerable<CourierInList> GetCouriers(int id, bool? IsActiveFilter, CourierInListOptions? sort)
     {
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can access couriers");
 
         IEnumerable<BO.Courier> couriers = CourierManager.ConvertToBOList(CourierManager.ReadAll());
        
-        if (includeInactive.HasValue) 
-            couriers = couriers.Where(c => c.IsActive == includeInactive.Value);
+        if (IsActiveFilter.HasValue) 
+            couriers = couriers.Where(c => c.IsActive == IsActiveFilter.Value);
         
         if (sort is null)
             couriers = couriers.OrderBy(c => c.Id);

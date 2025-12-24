@@ -1,6 +1,7 @@
 ﻿using System;
 using BlApi;
 using BO;
+using DO;
 
 namespace BlTest
 {
@@ -289,26 +290,32 @@ namespace BlTest
 
                         case 2:
                             Console.WriteLine("How much time to advance?");
-                            int hours = ReadInt("Hours: ");
-                            int minutes = ReadInt("Minutes: ");
-                            TimeSpan jump = new TimeSpan(hours, minutes, 0);
-
-                            // Calculate new absolute time
-                            DateTime newTime = s_bl.Admin.GetClock().Add(jump);
-
-                            // Call BL with proper enum value (Times is an enum, not a class with Time property)
-                            // You may need to call ForwardClock with a Times enum value, not a BO.Times object.
-                            // For example, to advance by hour or minute, call:
-                            //   s_bl.Admin.ForwardClock(Times.Hour);
-                            // But your API expects a Times value, not a DateTime.
-
-                            // If you want to advance by a specific amount, you may need to call ForwardClock multiple times,
-                            // or your BL API may need to be changed to accept a TimeSpan or DateTime.
-
-                            // For now, as per the provided signature, here's a minimal fix to avoid the CS0117 error:
-                            s_bl.Admin.ForwardClock(BO.Times.Hour); // or BO.Times.Minute, etc.
-
-                            Console.WriteLine($"Clock updated to: {newTime}");
+                            Console.WriteLine("For minute, press 1");
+                            Console.WriteLine("For hour, press 2");
+                            Console.WriteLine("For day, press 3");
+                            Console.WriteLine("For month, press 4");
+                            Console.WriteLine("For year, press 5");
+                            switch(ReadInt("Your choice: "))
+                            {
+                                case 1:
+                                    s_bl.Admin.ForwardClock(BO.Times.Minute);
+                                    break;
+                                case 2:
+                                    s_bl.Admin.ForwardClock(BO.Times.Hour);
+                                    break;
+                                case 3:
+                                    s_bl.Admin.ForwardClock(BO.Times.Day);
+                                    break;
+                                case 4:
+                                    s_bl.Admin.ForwardClock(BO.Times.Month);
+                                    break;
+                                case 5:
+                                    s_bl.Admin.ForwardClock(BO.Times.Year);
+                                    break;
+                                default:
+                                   throw new BlInvalidValueException("Invalid time unit choice.");
+                            }
+                            Console.WriteLine($"Clock updated to: {s_bl.Admin.GetClock()}");
                             break;
      
                         case 3:
