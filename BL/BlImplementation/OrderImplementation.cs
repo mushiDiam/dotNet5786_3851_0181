@@ -116,7 +116,7 @@ internal class OrderImplementation : BlApi.IOrder
                         OrderId = o.Id,
                         OrderType = o.OrderType,
                         FullAddress = o.FullAddress,
-                        DeliveryType = d.DeliveryType,
+                        Transport = d.Transport,
                         ActualDistance = o.AirDistance,
                         CompletionTime = d.EndTime.Value - d.StartTime,
                         OrderStatus = d.OrderStatus

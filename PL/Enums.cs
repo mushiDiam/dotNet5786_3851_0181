@@ -2,13 +2,7 @@
 using System.Collections;
 
 namespace PL;
-
-public class DeliveryTypesCollection : System.Collections.IEnumerable
-{
-    static readonly IEnumerable<BO.DeliveryTypes> s_enums =
-        (Enum.GetValues(typeof(BO.DeliveryTypes)) as IEnumerable<BO.DeliveryTypes>)!;
-    public IEnumerator GetEnumerator() => s_enums.GetEnumerator();
-}   
+ 
 public class OrderTypesCollection : IEnumerable
 {
     static readonly IEnumerable<BO.OrderTypes> s_enums =

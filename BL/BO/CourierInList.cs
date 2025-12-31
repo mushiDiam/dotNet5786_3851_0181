@@ -13,7 +13,7 @@ public class CourierInList
     public int Id { get; init; }
     public string FullName { get; set; }
     public bool IsActive { get; set; }
-    public DeliveryTypes DeliveryType { get; set; }
+    public Transportation Transport { get; set; }
     public DateTime JoinDate { get; init; }
     public int OrdersOnTime { get; set; }
     public int OrdersLate { get; set; }

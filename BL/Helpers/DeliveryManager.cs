@@ -89,6 +89,7 @@ internal static class DeliveryManager{
             EndOfOrder = DO.EndOfOrder.Canceled,
             ActualDistance = 0,
             OrderType = type
+
         };
         s_dal.Delivery.Create(canceledDelivery);
         Observers.NotifyListUpdated(); //stage 5

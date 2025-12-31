@@ -18,7 +18,7 @@ public class ClosedDeliveryInList
     public int OrderId { get; init; }
     public OrderTypes OrderType { get; set; }
     public string FullAddress { get; set; }
-    public DeliveryTypes DeliveryType { get; set; }
+    public Transportation Transport { get; set; }
     public double? ActualDistance { get; set; }
     public TimeSpan CompletionTime { get; set; }
     public OrderStatus? OrderStatus { get; set; }

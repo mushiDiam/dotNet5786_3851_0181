@@ -65,7 +65,7 @@ internal class CourierImplementation : BlApi.ICourier
                 case CourierInListOptions.IsActive:
                         couriers = couriers.OrderByDescending(c => c.IsActive);
                     break;
-                case CourierInListOptions.DeliveryType:
+                case CourierInListOptions.Transport:
                         couriers = couriers.OrderBy(c => c.Transport);
                     break;
                 case CourierInListOptions.JoinDate:

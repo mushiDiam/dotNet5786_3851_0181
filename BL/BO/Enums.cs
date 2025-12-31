@@ -1,8 +1,4 @@
 ﻿namespace BO;
-public enum DeliveryTypes{
-    Regular, Express, Fragile
-}
-
 public enum OrderTypes  {
     Food, Gifts, Health, Supplies, Pets
 }
@@ -31,7 +27,7 @@ public enum OrderInListOptions{
 }
 
 public enum CourierInListOptions{
-    Id, FullName, IsActive, DeliveryType, JoinDate, OrdersOnTime, OrdersLate, CurrentOrderId
+    Id, FullName, IsActive, Transport, JoinDate, OrdersOnTime, OrdersLate, CurrentOrderId
 }
 
 public enum  Times{

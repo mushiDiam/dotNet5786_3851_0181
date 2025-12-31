@@ -16,7 +16,7 @@ public class DeliveryPerOrderInList
     public int DeliveryId { get; init; }
     public int? CourierId { get; set; }
     public string CourierName { get; set; }
-    public DeliveryTypes DeliveryType { get; set; }
+    public Transportation Transport { get; set; }
     public DateTime StartTime { get; init; }
     public OrderStatus? OrderStatus { get; set; }
     public DateTime? EndTime { get; set; }

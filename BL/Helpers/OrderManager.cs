@@ -221,7 +221,7 @@ internal static class OrderManager{
                     DeliveryId = d.Id,
                     CourierId = d.CourierId,
                     CourierName = courier?.Name ?? string.Empty,
-                    DeliveryType = (BO.DeliveryTypes)d.OrderType,
+                    Transport = (BO.Transportation)d.OrderType,
                     OrderStatus = d.EndOfOrder.HasValue ? (BO.OrderStatus?)d.EndOfOrder.Value : null,
                     EndTime = d.TimeOfDelivery,
                     StartTime = d.StartOfDelivery,

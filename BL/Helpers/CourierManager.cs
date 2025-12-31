@@ -45,7 +45,7 @@ internal static class CourierManager
             Id = courier.Id,
             FullName = courier.FullName,
             IsActive = courier.IsActive,
-            DeliveryType = (DeliveryTypes)courier.Transport,
+            Transport = (Transportation)courier.Transport,
             JoinDate = courier.JoinDate,
             OrdersOnTime = courier.DeliveryCountOnTime,
             OrdersLate = courier.DeliveryCountLate,

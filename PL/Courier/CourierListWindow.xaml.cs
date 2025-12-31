@@ -103,10 +103,14 @@ namespace PL.Courier
 
         private void dgCourierList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            // Option A (Best Way): Use the bound property directly.
+            // Since we have TwoWay binding on SelectedItem, 'SelectedCourier' is always updated.
             if (SelectedCourier != null)
             {
-                // Open as Dialog to wait for close
+                // Open the window in Update mode (passing the ID)
                 new CourierWindow(SelectedCourier.Id).ShowDialog();
+
+                // Refresh list after window closes
                 RefreshList();
             }
         }
@@ -116,6 +120,39 @@ namespace PL.Courier
             // Open as Dialog to wait for close
             new CourierWindow().ShowDialog();
             RefreshList();
+        }
+        private void btnDeleteCourier_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. Get the courier object from the button's data context
+            // 'sender' is the button that was clicked
+            if (sender is Button btn && btn.DataContext is BO.CourierInList courierToDelete)
+            {
+                // 2. Ask for confirmation
+                var result = MessageBox.Show($"Are you sure you want to delete {courierToDelete.FullName}?",
+                                             "Confirm Delete",
+                                             MessageBoxButton.YesNo,
+                                             MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        // 3. Get Manager ID
+                        int managerId = s_bl.Admin.GetConfig().ManagerId;
+
+                        // 4. Call BL to delete
+                        // Note: The signature in your interface is Delete(managerId, courierId)
+                        s_bl.Courier.Delete(managerId, courierToDelete.Id);
+
+                        // 5. Refresh the list to remove the deleted item from the screen
+                        RefreshList();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to delete: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
     }
 }
