@@ -4,6 +4,15 @@
              xmlns:local="clr-namespace:PL"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:DeliveryTypesCollection x:Key="DeliveryTypesKey" />
+        <local:OrderTypesCollection x:Key="OrderTypesKey" />
+        <local:EndTypesCollection x:Key="EndTypesKey" />
+        <local:ScheduleStatusCollection x:Key="ScheduleStatusKey" />
+        <local:OrderStatusCollection x:Key="OrderStatusKey" />
+        <local:TransportationCollection x:Key="TransportationKey" />
+        <local:JobTypesCollection x:Key="JobTypesKey" />
+        <local:OrderInListOptionsCollection x:Key="OrderInListOptionsKey" />
+        <local:CourierInListOptionsCollection x:Key="CourierInListOptionsKey" />
+        <local:TimesCollection x:Key="TimesKey" />
     </Application.Resources>
 </Application>

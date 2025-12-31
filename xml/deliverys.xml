@@ -1,2 +1,503 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ArrayOfDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+<ArrayOfDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Delivery>
+    <Id>1</Id>
+    <OrderId>1</OrderId>
+    <CourierId>308139347</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-10-07T02:20:34.9026687+03:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2025-10-07T09:20:34.9026687+03:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>2</Id>
+    <OrderId>2</OrderId>
+    <CourierId>237669281</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-12-13T06:20:34.9073455+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>3</Id>
+    <OrderId>3</OrderId>
+    <CourierId>356968602</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-10-23T23:20:34.9214182+03:00</StartOfDelivery>
+    <ActualDistance>1.8730646660345318</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>4</Id>
+    <OrderId>4</OrderId>
+    <CourierId>222685538</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-10-14T01:20:34.9338391+03:00</StartOfDelivery>
+    <ActualDistance>2.5919380908706366</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>5</Id>
+    <OrderId>5</OrderId>
+    <CourierId>350537083</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-10-04T21:20:34.9470608+03:00</StartOfDelivery>
+    <ActualDistance>2.8193307016459266</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-10-05T03:20:34.9470608+03:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>6</Id>
+    <OrderId>6</OrderId>
+    <CourierId>237669281</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-10-29T05:20:34.9607486+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-10-29T06:20:34.9607486+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>7</Id>
+    <OrderId>7</OrderId>
+    <CourierId>341964603</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-10-30T19:20:34.9728015+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-10-31T01:20:34.9728015+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>8</Id>
+    <OrderId>8</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-09T18:20:34.9845385+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-12-09T22:20:34.9845385+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>9</Id>
+    <OrderId>9</OrderId>
+    <CourierId>308139347</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-12-01T19:20:34.9962721+02:00</StartOfDelivery>
+    <ActualDistance>2.5919380908706366</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>10</Id>
+    <OrderId>10</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-14T12:20:35.0087086+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>11</Id>
+    <OrderId>11</OrderId>
+    <CourierId>356968602</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-12-23T06:20:35.0223608+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-12-23T09:20:35.0223608+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>12</Id>
+    <OrderId>12</OrderId>
+    <CourierId>356968602</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-12-18T21:20:35.0344954+02:00</StartOfDelivery>
+    <ActualDistance>1.8730646660345318</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>13</Id>
+    <OrderId>13</OrderId>
+    <CourierId>237669281</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-12-07T15:20:35.0474201+02:00</StartOfDelivery>
+    <ActualDistance>2.6803283782578893</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-12-08T00:20:35.0474201+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>14</Id>
+    <OrderId>14</OrderId>
+    <CourierId>232450997</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-12-18T07:20:35.0617553+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder>Unreached</EndOfOrder>
+    <TimeOfDelivery>2025-12-18T08:20:35.0617553+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>15</Id>
+    <OrderId>15</OrderId>
+    <CourierId>351944918</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-08T00:20:35.0760655+02:00</StartOfDelivery>
+    <ActualDistance>2.8193307016459266</ActualDistance>
+    <EndOfOrder>Unreached</EndOfOrder>
+    <TimeOfDelivery>2025-11-08T07:20:35.0760655+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>16</Id>
+    <OrderId>16</OrderId>
+    <CourierId>366191272</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-12-20T00:20:35.0879172+02:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-12-20T01:20:35.0879172+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>17</Id>
+    <OrderId>17</OrderId>
+    <CourierId>358634359</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-11-23T18:20:35.0999777+02:00</StartOfDelivery>
+    <ActualDistance>2.8193307016459266</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>18</Id>
+    <OrderId>18</OrderId>
+    <CourierId>351944918</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-22T04:20:35.1124668+02:00</StartOfDelivery>
+    <ActualDistance>2.5919380908706366</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-11-22T08:20:35.1124668+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>19</Id>
+    <OrderId>19</OrderId>
+    <CourierId>354889702</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-12-26T15:20:35.126028+02:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>20</Id>
+    <OrderId>20</OrderId>
+    <CourierId>222685538</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-12-28T22:20:35.1426219+02:00</StartOfDelivery>
+    <ActualDistance>2.6803283782578893</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>21</Id>
+    <OrderId>21</OrderId>
+    <CourierId>294674378</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-11-20T11:20:35.1566709+02:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>22</Id>
+    <OrderId>22</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-02T20:20:35.1768022+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-11-03T01:20:35.1768022+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>23</Id>
+    <OrderId>23</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-10-06T09:20:35.1964944+03:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>24</Id>
+    <OrderId>24</OrderId>
+    <CourierId>237669281</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-11-15T01:20:35.2110523+02:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder>Unreached</EndOfOrder>
+    <TimeOfDelivery>2025-11-15T03:20:35.2110523+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>25</Id>
+    <OrderId>25</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-02T19:20:35.2273229+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>26</Id>
+    <OrderId>26</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-02T17:20:35.2429231+02:00</StartOfDelivery>
+    <ActualDistance>0.4840421724729251</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>27</Id>
+    <OrderId>27</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-20T18:20:35.2571816+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder>Failed</EndOfOrder>
+    <TimeOfDelivery>2025-12-21T00:20:35.2571816+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>28</Id>
+    <OrderId>28</OrderId>
+    <CourierId>376038737</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-30T06:20:35.2711152+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>29</Id>
+    <OrderId>29</OrderId>
+    <CourierId>350537083</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-30T06:20:35.2846253+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-11-30T10:20:35.2846253+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>30</Id>
+    <OrderId>30</OrderId>
+    <CourierId>358634359</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-12-22T04:20:35.3011694+02:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-12-22T12:20:35.3011694+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>31</Id>
+    <OrderId>31</OrderId>
+    <CourierId>290381488</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2026-01-01T05:20:35.3156574+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2026-01-01T08:20:35.3156574+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>32</Id>
+    <OrderId>32</OrderId>
+    <CourierId>223068433</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-10-28T03:20:35.3293029+02:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-10-28T08:20:35.3293029+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>33</Id>
+    <OrderId>33</OrderId>
+    <CourierId>308139347</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-12T11:20:35.3424915+02:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-11-12T14:20:35.3424915+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>34</Id>
+    <OrderId>34</OrderId>
+    <CourierId>351944918</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-10-24T09:20:35.3568496+03:00</StartOfDelivery>
+    <ActualDistance>0.4840421724729251</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>35</Id>
+    <OrderId>35</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-19T09:20:35.3704961+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder>Denied</EndOfOrder>
+    <TimeOfDelivery>2025-11-19T11:20:35.3704961+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>36</Id>
+    <OrderId>36</OrderId>
+    <CourierId>380301526</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-11-04T07:20:35.3849168+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder>Failed</EndOfOrder>
+    <TimeOfDelivery>2025-11-04T09:20:35.3849168+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>37</Id>
+    <OrderId>37</OrderId>
+    <CourierId>380301526</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2025-11-25T10:20:35.3990273+02:00</StartOfDelivery>
+    <ActualDistance>1.8730646660345318</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>38</Id>
+    <OrderId>38</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-06T01:20:35.4152318+02:00</StartOfDelivery>
+    <ActualDistance>2.8193307016459266</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>39</Id>
+    <OrderId>39</OrderId>
+    <CourierId>290381488</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-10T20:20:35.4278007+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder>Failed</EndOfOrder>
+    <TimeOfDelivery>2025-11-11T05:20:35.4278007+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>40</Id>
+    <OrderId>40</OrderId>
+    <CourierId>222685538</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-06T09:20:35.4427225+02:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2025-11-06T12:20:35.4427225+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>41</Id>
+    <OrderId>41</OrderId>
+    <CourierId>354889702</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-12-26T15:20:35.4588875+02:00</StartOfDelivery>
+    <ActualDistance>2.5919380908706366</ActualDistance>
+    <EndOfOrder>Failed</EndOfOrder>
+    <TimeOfDelivery>2025-12-27T00:20:35.4588875+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>42</Id>
+    <OrderId>42</OrderId>
+    <CourierId>308139347</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-12-09T04:20:35.4725922+02:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2025-12-09T12:20:35.4725922+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>43</Id>
+    <OrderId>43</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-11T13:20:35.486373+02:00</StartOfDelivery>
+    <ActualDistance>1.5766243540555007</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>44</Id>
+    <OrderId>44</OrderId>
+    <CourierId>351944918</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-11-11T16:20:35.4996113+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>45</Id>
+    <OrderId>45</OrderId>
+    <CourierId>341964603</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-10-16T16:20:35.5113973+03:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>46</Id>
+    <OrderId>46</OrderId>
+    <CourierId>358634359</CourierId>
+    <OrderType>Motorcycle</OrderType>
+    <StartOfDelivery>2025-12-25T15:20:35.5244217+02:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>47</Id>
+    <OrderId>47</OrderId>
+    <CourierId>376038737</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-12-05T23:20:35.5384732+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>48</Id>
+    <OrderId>48</OrderId>
+    <CourierId>235770216</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-19T11:20:35.5545125+02:00</StartOfDelivery>
+    <ActualDistance>0.14577626337202904</ActualDistance>
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2025-11-19T16:20:35.5545125+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>49</Id>
+    <OrderId>49</OrderId>
+    <CourierId>269290771</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-10-10T02:20:35.5732602+03:00</StartOfDelivery>
+    <ActualDistance>0.6839832942513357</ActualDistance>
+    <EndOfOrder>Failed</EndOfOrder>
+    <TimeOfDelivery>2025-10-10T11:20:35.5732602+03:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>50</Id>
+    <OrderId>50</OrderId>
+    <CourierId>223068433</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2025-10-13T12:20:35.592093+03:00</StartOfDelivery>
+    <ActualDistance>1.2741270086112402</ActualDistance>
+    <EndOfOrder xsi:nil="true" />
+    <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+</ArrayOfDelivery>

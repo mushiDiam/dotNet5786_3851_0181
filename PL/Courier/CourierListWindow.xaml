@@ -3,79 +3,80 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:bo="clr-namespace:BO;assembly=BL" 
         xmlns:local="clr-namespace:PL.Courier"
         mc:Ignorable="d"
-        Title="Courier List" Height="640" Width="800"
-        FlowDirection="LeftToRight">
+        Title="Courier Management" Height="500" Width="800"
+        WindowStartupLocation="CenterScreen">
 
-    <Grid>
+    <Window.Resources>
+        <ObjectDataProvider x:Key="SortOptionsCollection" 
+                            MethodName="GetValues" 
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="bo:CourierInListOptions"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#DDDDDD"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="10">
+        <TextBlock Text="Registered Couriers" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <Grid Grid.Row="1" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Label Content="Filter by Courier Status:" 
-                   Grid.Column="0" 
-                   VerticalAlignment="Center" 
-                   Margin="0,0,10,0"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Sort by:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
 
-            <ComboBox Grid.Column="1" 
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Stretch"/>
+                <ComboBox Width="150" 
+                          ItemsSource="{Binding Source={StaticResource SortOptionsCollection}}"
+                          SelectedItem="{Binding SelectedSort}"
+                          VerticalContentAlignment="Center"/>
+
+                <Button Content="X" Width="30" ToolTip="Clear Sort" Click="btnClearSort_Click"/>
+            </StackPanel>
+
+            <Button Grid.Column="2" Content="+ Add New Courier" 
+                    Background="#4CAF50" Foreground="White" FontWeight="Bold"
+                    Click="btnAddCourier_Click"/>
         </Grid>
 
-        <DataGrid Grid.Row="1" 
-                  ItemsSource="{Binding Path=CourierInList}"
+        <DataGrid x:Name="dgCourierList" 
+                  Grid.Row="2"
+                  ItemsSource="{Binding CourierInList}"
                   SelectedItem="{Binding SelectedCourier}"
-                  IsReadOnly="True"
                   AutoGenerateColumns="False"
-                  EnableRowVirtualization="True"
-                  RowDetailsVisibilityMode="VisibleWhenSelected"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
                   MouseDoubleClick="dgCourierList_MouseDoubleClick"
-                  Margin="10"
-                  BorderBrush="Gray" 
-                  BorderThickness="1">
-
+                  CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Id}" Header="ID" Width="Auto"/>
-
-                <DataGridTextColumn Binding="{Binding FullName}" Header="Full Name" Width="*"/>
-
-                <DataGridTemplateColumn Header="Active" Width="50">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <CheckBox IsEnabled="False" 
-                                      HorizontalAlignment="Center"
-                                      IsChecked="{Binding Path=IsActive}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <DataGridTextColumn Binding="{Binding DeliveryType}" Header="Delivery Type" Width="Auto"/>
-
-                <DataGridTextColumn Binding="{Binding JoinDate, StringFormat=\{0:yyyy-MM-dd\}}" Header="Join Date" Width="Auto"/>
-
-                <DataGridTextColumn Binding="{Binding OrdersOnTime}" Header="On Time" Width="Auto"/>
-                <DataGridTextColumn Binding="{Binding OrdersLate}" Header="Late" Width="Auto"/>
-
-                <DataGridTextColumn Binding="{Binding CurrentOrderId}" Header="Current Order" Width="Auto"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
+                <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="*"/>
+                <DataGridTextColumn Header="Transport" Binding="{Binding DeliveryType}" Width="100"/>
+                <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="60"/>
+                <DataGridTextColumn Header="On Time" Binding="{Binding OrdersOnTime}" Width="80"/>
+                <DataGridTextColumn Header="Late" Binding="{Binding OrdersLate}" Width="80"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <Button Content="Add New Courier" 
-                Grid.Row="2" 
-                HorizontalAlignment="Center" 
-                Height="40" 
-                Width="150"
-                Margin="10"
-                FontSize="14"
-                FontWeight="Bold"/>
     </Grid>
 </Window>

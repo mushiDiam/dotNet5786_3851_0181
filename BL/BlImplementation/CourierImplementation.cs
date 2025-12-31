@@ -85,8 +85,6 @@ internal class CourierImplementation : BlApi.ICourier
             }
 
         return couriers.Select(CourierManager.ConvertToCourierInList);
-
-
     }
 
     public void UpdateDetails(int id, BO.Courier courier)

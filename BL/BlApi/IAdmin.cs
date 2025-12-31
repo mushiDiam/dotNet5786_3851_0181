@@ -7,8 +7,8 @@ public interface IAdmin{
     void InitializeDB();
     DateTime GetClock();
     void ForwardClock(Times T);
-    internal BO.Config GetConfig();
-    internal void SetConfig(BO.Config C);
+    public BO.Config GetConfig();
+    public void SetConfig(BO.Config C);
 
     #region Stage 5
     void AddConfigObserver(Action configObserver);

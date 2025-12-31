@@ -25,6 +25,7 @@ public static class Initialization
         //s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
         s_dal = DalApi.Factory.Get; //stage 4
         s_dal.resetDB();
+        DataInit();
 
     }
     private static readonly Random s_rand = new();

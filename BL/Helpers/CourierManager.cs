@@ -27,7 +27,9 @@ internal static class CourierManager
     {
         try
         {
-            DO.Courier dalCourier = s_dal.Courier.Read(id);
+            DO.Courier? dalCourier = s_dal.Courier.Read(id);
+            if (dalCourier is null)
+                throw new DalDoesNotExistException($"Courier with ID {id} does not exist.");
             return ConvertToBO(dalCourier);
         }
         catch (DalDoesNotExistException ex)

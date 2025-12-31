@@ -42,9 +42,16 @@ internal class CourierImplementation : ICourier
              ? DataSource.Couriers.Select(item => item)
              : DataSource.Couriers.Where(filter);
 
-    public void Update(Courier item)
+    public void Update(DO.Courier courier)
     {
-        Delete(item.Id);
-        DataSource.Couriers.Add(item);
+        DO.Courier? existing = DataSource.Couriers.FirstOrDefault(c => c.Id == courier.Id);
+       
+        if (existing is null)
+        {
+            throw new DO.DalDoesNotExistException($"Courier with ID {courier.Id} does not exist");
+        }
+
+        DataSource.Couriers.Remove(existing);
+        DataSource.Couriers.Add(courier);
     }
 }

@@ -44,11 +44,22 @@ internal class CourierImplementation : ICourier
         return filter == null ? Couriers : Couriers.Where(filter);
     }
 
-    public void Update(Courier item){
-        List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
-        Delete(item.Id);
-        Couriers.Add(item);
-        XMLTools.SaveListToXMLSerializer<Courier>(Couriers, Config.s_couriers_xml);
+    public void Update(Courier item)
+    {
+        List<Courier> list = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
+
+        Courier? existing = list.FirstOrDefault(c => c.Id == item.Id);
+
+        if (existing == null)
+        {
+            throw new DalDoesNotExistException($"Courier with ID {item.Id} not found in XML");
+        }
+
+        list.Remove(existing);
+
+        list.Add(item);
+
+        XMLTools.SaveListToXMLSerializer(list, Config.s_couriers_xml);
     }
 }
 

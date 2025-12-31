@@ -1,6 +1,6 @@
 ﻿namespace BO;
 
-internal class Config
+public class Config
 {
     public DateTime Clock {  get; set; }
     public TimeSpan DeliveryWindow { get; set; }

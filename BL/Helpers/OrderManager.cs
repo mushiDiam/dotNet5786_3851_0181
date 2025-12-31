@@ -434,6 +434,26 @@ internal static class OrderManager{
                         boOrders = boOrders.Where(o => o.OrderType == type);
                     break;
 
+                case OrderInListOptions.AirDistance:
+                    if (obj is double maxDistance)
+                        boOrders = boOrders.Where(o => o.AirDistance <= maxDistance);
+                    break;
+
+                case OrderInListOptions.OrderStatus:
+                    if (obj is BO.OrderStatus status)
+                        boOrders = boOrders.Where(o => o.OrderStatus == status);
+                    break;
+
+                case OrderInListOptions.ScheduleStatus:
+                    if (obj is BO.ScheduleStatus schedStatus)
+                        boOrders = boOrders.Where(o => o.ScheduleStatus == schedStatus);
+                    break;
+
+                case OrderInListOptions.RemainingTime:
+                    if (obj is TimeSpan maxRemaining)
+                        boOrders = boOrders.Where(o => o.RemainingTime <= maxRemaining);
+                    break;
+
                 case OrderInListOptions.CompletionTime:
                     if (obj is TimeSpan maxTime)
                     {
@@ -445,7 +465,15 @@ internal static class OrderManager{
                     }
                     break;
 
-                    // ... other filters ...
+                case OrderInListOptions.DeliveryCount:
+                    if (obj is int minCount)
+                        boOrders = boOrders.Where(o =>
+                            allDeliveries.TryGetValue(o.Id, out var dels) && dels.Count >= minCount
+                        );
+                    break;
+
+                default:
+                    break;
             }
         }
 
@@ -465,6 +493,30 @@ internal static class OrderManager{
                             ? dels.OrderByDescending(d => d.StartOfDelivery).FirstOrDefault()?.Id ?? int.MaxValue
                             : int.MaxValue
                     );
+                    break;
+
+                case OrderInListOptions.OrderId:
+                    boOrders = boOrders.OrderBy(o => o.Id);
+                    break;
+
+                case OrderInListOptions.OrderType:
+                    boOrders = boOrders.OrderBy(o => o.OrderType);
+                    break;
+
+                case OrderInListOptions.AirDistance:
+                    boOrders = boOrders.OrderBy(o => o.AirDistance);
+                    break;
+
+                case OrderInListOptions.OrderStatus:
+                    boOrders = boOrders.OrderBy(o => o.OrderStatus);
+                    break;
+
+                case OrderInListOptions.ScheduleStatus:
+                    boOrders = boOrders.OrderBy(o => o.ScheduleStatus);
+                    break;
+
+                case OrderInListOptions.RemainingTime:
+                    boOrders = boOrders.OrderBy(o => o.RemainingTime);
                     break;
 
                 case OrderInListOptions.CompletionTime:
