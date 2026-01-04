@@ -13,5 +13,10 @@
         <local:OrderInListOptionsCollection x:Key="OrderInListOptionsKey" />
         <local:CourierInListOptionsCollection x:Key="CourierInListOptionsKey" />
         <local:TimesCollection x:Key="TimesKey" />
+
+        <local:ModeToReadOnlyConverter x:Key="ConvertUpdateToTrueKey"/>
+        <local:ModeToVisibilityConverter x:Key="ConvertUpdateToVisibleKey"/>
+        <local:StatusToIconConverter x:Key="StatusToIconKey"/>
+
     </Application.Resources>
 </Application>

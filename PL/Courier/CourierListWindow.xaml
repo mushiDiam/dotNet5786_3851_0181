@@ -13,22 +13,6 @@
         Closed="Window_Closed">
 
     <Window.Resources>
-        <ObjectDataProvider x:Key="SortOptionsCollection" 
-                            MethodName="GetValues" 
-                            ObjectType="{x:Type System:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="bo:CourierInListOptions"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <ObjectDataProvider x:Key="TransportOptionsCollection" 
-                            MethodName="GetValues" 
-                            ObjectType="{x:Type System:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="bo:Transportation"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
         <Style TargetType="Button">
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="Margin" Value="5"/>
@@ -56,15 +40,19 @@
             <StackPanel Orientation="Horizontal" Grid.Column="0">
 
                 <TextBlock Text="Sort by:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                <ComboBox Width="130" 
-                          ItemsSource="{Binding Source={StaticResource SortOptionsCollection}}"
+
+                <ComboBox x:Name="cbSort" 
+                          Width="130" 
+                          ItemsSource="{Binding Source={StaticResource CourierInListOptionsKey}}"
                           SelectedValue="{Binding Path=SelectedSort, Mode=TwoWay}"
                           SelectionChanged="cbSort_SelectionChanged"
                           VerticalContentAlignment="Center"/>
 
                 <TextBlock Text="Filter Transport:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="15,0,10,0"/>
-                <ComboBox Width="130" 
-                          ItemsSource="{Binding Source={StaticResource TransportOptionsCollection}}"
+
+                <ComboBox x:Name="cbFilter" 
+                          Width="130" 
+                          ItemsSource="{Binding Source={StaticResource TransportationKey}}"
                           SelectedValue="{Binding Path=TransportFilter, Mode=TwoWay}"
                           SelectionChanged="cbTransport_SelectionChanged"
                           VerticalContentAlignment="Center"/>
@@ -89,7 +77,6 @@
           RowHeaderWidth="0">
 
             <DataGrid.Columns>
-
                 <DataGridTemplateColumn Width="40">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -131,9 +118,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Transport}" 
-                               Foreground="DarkBlue" 
-                               FontStyle="Italic"
-                               VerticalAlignment="Center"/>
+                                       Foreground="DarkBlue" 
+                                       FontStyle="Italic"
+                                       VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -141,10 +128,8 @@
                 <DataGridTemplateColumn Header="Active" Width="60">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsActive}" 
-                              IsEnabled="False" 
-                              HorizontalAlignment="Center" 
-                              VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding IsActive, Converter={StaticResource StatusToIconKey}}" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

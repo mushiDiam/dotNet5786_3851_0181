@@ -19,81 +19,23 @@ namespace PL.Courier
             InitializeComponent();
             DataContext = this;
 
-            // Registration for events
             Loaded += Window_Loaded;
             Closed += Window_Closed;
         }
 
         // -----------------------------------------------------------------------
-        // Event Handlers (Window Lifecycle)
+        // Filter & Sort Properties (Standard C# Properties)
         // -----------------------------------------------------------------------
+        // Note: According to instructions, these are standard properties, NOT DependencyProperties.
+        // Implication: Changing them in code does NOT automatically update the UI (must reset manually).
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            // 1. Initial Data Load
-            RefreshList();
-
-            // 2. Register observer so BL will notify this window when the courier list changes
-            try
-            {
-                s_bl.Courier.AddObserver(CourierListObserver);
-            }
-            catch
-            {
-                // Ignore observer registration errors
-            }
-        }
-
-        private void Window_Closed(object? sender, EventArgs e)
-        {
-            // Unregister observer to avoid memory leaks
-            try
-            {
-                s_bl.Courier.RemoveObserver(CourierListObserver);
-            }
-            catch { }
-        }
+        public BO.Transportation TransportFilter { get; set; } = BO.Transportation.None;
+        public BO.CourierInListOptions? SelectedSort { get; set; } = null;
 
         // -----------------------------------------------------------------------
-        // Main Logic (Observer & Refresh)
+        // Dependency Properties (Only for List and Selection)
         // -----------------------------------------------------------------------
 
-        // Observer method invoked by BL on list changes
-        private void CourierListObserver()
-        {
-            // Ensure UI thread updates using Dispatcher
-            Dispatcher.Invoke(() => RefreshList());
-        }
-
-        // ONE central method to handle fetching and filtering
-        private void RefreshList()
-        {
-            try
-            {
-                // 1. Call BL with the Sort parameter (BL handles the sorting)
-                // We pass 'true' to include inactive couriers
-                var allCouriers = s_bl.Courier.GetCouriers(AdminId, null, SelectedSort);
-
-                // 2. Apply UI-side filter by Transport (TransportFilter is bound from the ComboBox)
-                var filtered = (TransportFilter == BO.Transportation.None) ?
-                    allCouriers :
-                    allCouriers.Where(c => c.Transport == TransportFilter);
-
-                // 3. Update the UI list
-                CourierInList = filtered;
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show("Error loading list: " + ex.Message);
-            }
-        }
-
-        // -----------------------------------------------------------------------
-        // Dependency Properties
-        // -----------------------------------------------------------------------
-
-        #region CourierInList
-        // This is the ONLY property used for the DataGrid ItemsSource
         public IEnumerable<BO.CourierInList> CourierInList
         {
             get { return (IEnumerable<BO.CourierInList>)GetValue(CourierInListProperty); }
@@ -101,9 +43,7 @@ namespace PL.Courier
         }
         public static readonly DependencyProperty CourierInListProperty =
             DependencyProperty.Register(nameof(CourierInList), typeof(IEnumerable<BO.CourierInList>), typeof(CourierListWindow));
-        #endregion
 
-        #region SelectedCourier
         public BO.CourierInList SelectedCourier
         {
             get { return (BO.CourierInList)GetValue(SelectedCourierProperty); }
@@ -111,39 +51,64 @@ namespace PL.Courier
         }
         public static readonly DependencyProperty SelectedCourierProperty =
             DependencyProperty.Register(nameof(SelectedCourier), typeof(BO.CourierInList), typeof(CourierListWindow));
-        #endregion
 
-        #region SelectedSort
-        public BO.CourierInListOptions? SelectedSort
+        // -----------------------------------------------------------------------
+        // Event Handlers
+        // -----------------------------------------------------------------------
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            get { return (BO.CourierInListOptions?)GetValue(SelectedSortProperty); }
-            set { SetValue(SelectedSortProperty, value); }
+            RefreshList();
+            // Register Observer only if implemented in BL
+            try { s_bl.Courier.AddObserver(CourierListObserver); } catch { }
         }
 
-        public static readonly DependencyProperty SelectedSortProperty =
-            DependencyProperty.Register(nameof(SelectedSort), typeof(BO.CourierInListOptions?), typeof(CourierListWindow),
-                new PropertyMetadata(null)); // We rely on SelectionChanged event to trigger refresh
-        #endregion
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            // Unregister Observer
+            try { s_bl.Courier.RemoveObserver(CourierListObserver); } catch { }
+        }
+
+        private void CourierListObserver()
+        {
+            // UI updates must run on Dispatcher
+            Dispatcher.Invoke(() => RefreshList());
+        }
+
+        private void RefreshList()
+        {
+            try
+            {
+                // 1. Fetch & Sort (via BL)
+                var allCouriers = s_bl.Courier.GetCouriers(AdminId, null, SelectedSort);
+
+                // 2. Filter (via PL)
+                var filtered = (TransportFilter == BO.Transportation.None) ?
+                    allCouriers :
+                    allCouriers.Where(c => c.Transport == TransportFilter);
+
+                CourierInList = filtered;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading list: " + ex.Message);
+            }
+        }
 
         // -----------------------------------------------------------------------
-        // Standard Properties
-        // -----------------------------------------------------------------------
-
-        // Bound via TwoWay to the UI. Since it's not a DependencyProperty, 
-        // we rely on the SelectionChanged event to know when it changes.
-        public BO.Transportation TransportFilter { get; set; } = BO.Transportation.None;
-
-        // -----------------------------------------------------------------------
-        // UI Interaction Handlers
+        // UI Interaction
         // -----------------------------------------------------------------------
 
         private void btnClearSort_Click(object sender, RoutedEventArgs e)
         {
-            SelectedSort = BO.CourierInListOptions.None; // Reset sort
-            TransportFilter = BO.Transportation.None;    // Reset filter
+            // 1. Reset logic properties
+            TransportFilter = BO.Transportation.None;
+            SelectedSort = null;
 
-            // Note: Since TransportFilter is not a DP, the ComboBox UI might not update visually to "None" automatically
-            // unless we implement INotifyPropertyChanged, but for now, we just refresh the list.
+            // 2. Reset UI Controls manually (because properties are not DPs)
+            cbFilter.SelectedValue = BO.Transportation.None;
+            cbSort.SelectedIndex = -1; // Clear selection
+
             RefreshList();
         }
 
@@ -161,38 +126,31 @@ namespace PL.Courier
         {
             if (SelectedCourier != null)
             {
-                // Open for Update (pass ID)
-                new CourierWindow(SelectedCourier.Id).ShowDialog();
-                // List refreshes automatically via Observer, but we can force it too
-                // RefreshList(); 
+                // Open for Update - using Show() to allow multi-window observation
+                new CourierWindow(SelectedCourier.Id).Show();
             }
         }
 
         private void btnAddCourier_Click(object sender, RoutedEventArgs e)
         {
-            // Open for Add (no ID)
-            new CourierWindow().ShowDialog();
+            // Open for Add
+            new CourierWindow().Show();
         }
 
         private void btnDeleteCourier_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is BO.CourierInList courierToDelete)
             {
-                var result = MessageBox.Show($"Are you sure you want to delete {courierToDelete.FullName}?",
-                                             "Confirm Delete",
-                                             MessageBoxButton.YesNo,
-                                             MessageBoxImage.Warning);
-
+                var result = MessageBox.Show($"Delete {courierToDelete.FullName}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
                         s_bl.Courier.Delete(AdminId, courierToDelete.Id);
-                        // No need to call RefreshList() manually here because the Observer will catch the change!
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Failed to delete: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Failed: {ex.Message}");
                     }
                 }
             }

@@ -7,14 +7,12 @@ namespace PL.Courier
 {
     public partial class CourierWindow : Window
     {
-        // Private field to access BL
         private static readonly IBl s_bl = Factory.Get();
 
         // ---------------------------------------------------------
         // Dependency Properties
         // ---------------------------------------------------------
 
-        // The main object we are binding to
         public BO.Courier CurrentCourier
         {
             get { return (BO.Courier)GetValue(CurrentCourierProperty); }
@@ -27,9 +25,35 @@ namespace PL.Courier
         // ---------------------------------------------------------
         // UI Logic Properties
         // ---------------------------------------------------------
-        public bool IsAddMode { get; set; }
-        public string WindowTitle { get; set; }
-        public string ButtonText { get; set; }
+
+        // Used to enable/disable the DatePicker
+        public bool IsAddMode
+        {
+            get { return (bool)GetValue(IsAddModeProperty); }
+            set { SetValue(IsAddModeProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsAddModeProperty =
+            DependencyProperty.Register("IsAddMode", typeof(bool), typeof(CourierWindow), new PropertyMetadata(false));
+
+        public string ButtonText
+        {
+            get { return (string)GetValue(ButtonTextProperty); }
+            set { SetValue(ButtonTextProperty, value); }
+        }
+
+        public static readonly DependencyProperty ButtonTextProperty =
+            DependencyProperty.Register("ButtonText", typeof(string), typeof(CourierWindow), new PropertyMetadata(""));
+
+        // WindowTitle as DependencyProperty
+        public string WindowTitle
+        {
+            get { return (string)GetValue(WindowTitleProperty); }
+            set { SetValue(WindowTitleProperty, value); }
+        }
+
+        public static readonly DependencyProperty WindowTitleProperty =
+            DependencyProperty.Register("WindowTitle", typeof(string), typeof(CourierWindow), new PropertyMetadata(""));
 
         // ---------------------------------------------------------
         // Constructor
@@ -38,31 +62,24 @@ namespace PL.Courier
         {
             InitializeComponent();
 
-            // Note: We do NOT write DataContext = this; here anymore.
-            // It is defined in the XAML window tag.
-
-            // Set UI Logic flags
+            // Set Mode Logic
             IsAddMode = (courierId == 0);
-            WindowTitle = IsAddMode ? "Add New Courier" : "Update Courier Details";
+            WindowTitle = IsAddMode ? "Add New Courier" : "Update Courier";
             ButtonText = IsAddMode ? "Add" : "Update";
 
-            // Initialize CurrentCourier based on the ID
+            // Initialize Data
             if (IsAddMode)
             {
-                // Create new instance with defaults
                 CurrentCourier = new BO.Courier
                 {
-                    Id = 0, // Will be filled by user
+                    Id = 0,
                     JoinDate = DateTime.Now,
                     IsActive = true,
-                    Transport = BO.Transportation.Motorcycle,
-                    DeliveryCountOnTime = 0,
-                    DeliveryCountLate = 0
+                    Transport = BO.Transportation.Motorcycle
                 };
             }
             else
             {
-                // Fetch existing from BL
                 try
                 {
                     int managerId = s_bl.Admin.GetConfig().ManagerId;
@@ -71,8 +88,65 @@ namespace PL.Courier
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error loading courier: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Close(); // Close window if we can't load the data
+                    Close();
                 }
+            }
+        }
+        // ---------------------------------------------------------
+        // Observer Implementation
+        // ---------------------------------------------------------
+
+        /// <summary>
+        /// This method is called automatically by the BL whenever the specific courier changes.
+        /// </summary>
+        private void CourierObserver()
+        {
+            // Must use Dispatcher because the BL event comes from a background thread
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (IsAddMode || CurrentCourier == null) return;
+
+                    int id = CurrentCourier.Id;
+                    int managerId = s_bl.Admin.GetConfig().ManagerId;
+                    var updatedCourier = s_bl.Courier.Details(managerId, id);
+                    CurrentCourier = updatedCourier;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("This courier was deleted by another user.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Close();
+                }
+            });
+        }
+
+        // ---------------------------------------------------------
+        // Window Lifecycle Events
+        // ---------------------------------------------------------
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!IsAddMode && CurrentCourier != null && CurrentCourier.Id != 0)
+            {
+                try
+                {
+
+                    s_bl.Courier.AddObserver(CurrentCourier.Id, CourierObserver);
+                }
+                catch { }
+            }
+        }
+
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            if (!IsAddMode && CurrentCourier != null && CurrentCourier.Id != 0)
+            {
+                try
+                {
+                    s_bl.Courier.RemoveObserver(CurrentCourier.Id, CourierObserver);
+                }
+                catch { }
             }
         }
 
@@ -86,26 +160,17 @@ namespace PL.Courier
             {
                 int managerId = s_bl.Admin.GetConfig().ManagerId;
 
-                // Input Validation (Basic)
-                if (string.IsNullOrWhiteSpace(CurrentCourier.FullName))
-                    throw new Exception("Full Name is required.");
-
-                if (IsAddMode)
+                if (ButtonText == "Add")
                 {
-                    // Add Mode: BL.Add expects the object
-                    if (CurrentCourier.Id <= 0) throw new Exception("ID must be positive.");
-
                     s_bl.Courier.Add(managerId, CurrentCourier);
-                    MessageBox.Show("Courier added successfully!");
+                    MessageBox.Show("Courier added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    // Update Mode: BL.Update expects the object
                     s_bl.Courier.UpdateDetails(managerId, CurrentCourier);
-                    MessageBox.Show("Courier updated successfully!");
+                    MessageBox.Show("Courier updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-
-                Close();
+                this.Close();
             }
             catch (Exception ex)
             {

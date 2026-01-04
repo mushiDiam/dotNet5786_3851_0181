@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:bo="clr-namespace:BO;assembly=BL"
-        xmlns:local="clr-namespace:PL.Courier"
+        xmlns:local="clr-namespace:PL" 
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="580" Width="450"
         WindowStartupLocation="CenterScreen"
-        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
-
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed">
     <Window.Resources>
         <ObjectDataProvider x:Key="TransportOptionsCollection" 
                             MethodName="GetValues" 
@@ -25,20 +26,6 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
-        </Style>
-        <Style TargetType="DatePicker">
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-        <Style TargetType="TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,0,10,10"/>
-        </Style>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -49,7 +36,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="{Binding WindowTitle}" FontSize="24" FontWeight="Bold" 
-                   Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -58,24 +45,25 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <TextBlock Text="Courier ID:"/>
-                <TextBlock Text="Joined At:"/>
-                <TextBlock Text="Full Name:"/>
-                <TextBlock Text="Email:"/>
-                <TextBlock Text="Phone Number:"/>
-                <TextBlock Text="Password:"/>
-                <TextBlock Text="Max Distance (km):"/>
-                <TextBlock Text="Transportation:"/>
-                <TextBlock Text="Active Status:"/>
+                <TextBlock Text="Courier ID:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Joined At:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Full Name:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Email:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Phone Number:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Password:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Max Distance:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Transportation:" Margin="0,5,0,15" FontWeight="SemiBold"/>
+                <TextBlock Text="Active Status:" Margin="0,5,0,15" FontWeight="SemiBold"/>
             </StackPanel>
 
             <StackPanel Grid.Column="1">
 
                 <TextBox Text="{Binding CurrentCourier.Id, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
-                         IsEnabled="{Binding IsAddMode}"/>
+                         IsReadOnly="{Binding ButtonText, Converter={StaticResource ConvertUpdateToTrueKey}}"/>
 
-                <DatePicker SelectedDate="{Binding CurrentCourier.JoinDate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
-                            IsEnabled="{Binding IsAddMode}"/>
+                <DatePicker SelectedDate="{Binding CurrentCourier.JoinDate, Mode=TwoWay}"
+                            IsEnabled="{Binding IsAddMode}"
+                            Margin="0,0,0,10" Height="25"/>
 
                 <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
 
@@ -88,10 +76,11 @@
                 <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
 
                 <ComboBox ItemsSource="{Binding Source={StaticResource TransportOptionsCollection}}"
-                          SelectedValue="{Binding CurrentCourier.Transport, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                          SelectedValue="{Binding CurrentCourier.Transport, Mode=TwoWay}"
+                          Height="25" Margin="0,0,0,10"/>
 
-                <CheckBox IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
-                          Content="Is Active Courier" Margin="0,5,0,0"/>
+                <CheckBox IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay}" 
+                          Content="Is Active" Margin="0,5,0,0"/>
             </StackPanel>
         </Grid>
 

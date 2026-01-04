@@ -5,14 +5,15 @@ using System.Windows.Data;
 
 namespace PL
 {
-    // Converts "Update" -> True (for IsReadOnly)
-    // Converts "Add" -> False
+    // Converts "Update" -> True (IsReadOnly = True)
+    // Converts "Add" / Other -> False (IsReadOnly = False)
     public class ModeToReadOnlyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // If the button text is "Update", the field should be ReadOnly (True)
-            return (string)value == "Update";
+            // Safe check for string to avoid NullReferenceException
+            string? mode = value as string;
+            return mode == "Update";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -22,14 +23,18 @@ namespace PL
     }
 
     // Converts "Update" -> Visible
-    // Converts "Add" -> Collapsed (or vice versa, depending on needs)
+    // Converts "Add" -> Collapsed
     public class ModeToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Example: If we only want to show ID in Update mode
-            if ((string)value == "Update")
+            string? mode = value as string;
+
+            // Logic: Show element only in Update mode
+            if (mode == "Update")
+            {
                 return Visibility.Visible;
+            }
 
             return Visibility.Collapsed;
         }
@@ -45,12 +50,14 @@ namespace PL
         {
             if (value is bool isActive)
             {
-                return isActive ? "✅" : "❌"; // You can also use "Active" : "Not Active"
+                return isActive ? "✅" : "❌";
             }
-            return string.Empty;
+            return string.Empty; 
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+        {
+            throw new NotImplementedException();
+        }
     }
 }
