@@ -15,7 +15,7 @@ public enum OrderStatus{
     Open, InProgress, Closed, Denied, Cancelled
 }
 public enum Transportation{
-    Car, Motorcycle, Bike, Walking
+    Car, Motorcycle, Bike, Walking, None
 }
 
 public enum JobTypes{
@@ -27,7 +27,7 @@ public enum OrderInListOptions{
 }
 
 public enum CourierInListOptions{
-    Id, FullName, IsActive, Transport, JoinDate, OrdersOnTime, OrdersLate, CurrentOrderId
+    Id, FullName, IsActive, Transport, JoinDate, OrdersOnTime, OrdersLate, CurrentOrderId, None
 }
 
 public enum  Times{

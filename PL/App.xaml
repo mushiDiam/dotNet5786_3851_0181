@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:PL"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <local:OrderTypesCollection x:Key="OrderTypesKey" />
+        <local:OrderTypesCollection x:Key="BO:orderTypes" />
         <local:EndTypesCollection x:Key="EndTypesKey" />
         <local:ScheduleStatusCollection x:Key="ScheduleStatusKey" />
         <local:OrderStatusCollection x:Key="OrderStatusKey" />
