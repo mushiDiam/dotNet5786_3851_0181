@@ -68,10 +68,10 @@
         <DataGrid Grid.Row="2"
           ItemsSource="{Binding CourierInList}"
           SelectedItem="{Binding SelectedCourier}"
+          MouseDoubleClick="dgCourierList_MouseDoubleClick"
           AutoGenerateColumns="False"
           IsReadOnly="True"
           SelectionMode="Single"
-          MouseDoubleClick="dgCourierList_MouseDoubleClick"
           CanUserAddRows="False"
           GridLinesVisibility="Horizontal"
           RowHeaderWidth="0">

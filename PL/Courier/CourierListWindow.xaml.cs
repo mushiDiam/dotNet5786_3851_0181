@@ -44,13 +44,7 @@ namespace PL.Courier
         public static readonly DependencyProperty CourierInListProperty =
             DependencyProperty.Register(nameof(CourierInList), typeof(IEnumerable<BO.CourierInList>), typeof(CourierListWindow));
 
-        public BO.CourierInList SelectedCourier
-        {
-            get { return (BO.CourierInList)GetValue(SelectedCourierProperty); }
-            set { SetValue(SelectedCourierProperty, value); }
-        }
-        public static readonly DependencyProperty SelectedCourierProperty =
-            DependencyProperty.Register(nameof(SelectedCourier), typeof(BO.CourierInList), typeof(CourierListWindow));
+        public BO.CourierInList? SelectedCourier { get; set; }
 
         // -----------------------------------------------------------------------
         // Event Handlers
@@ -60,13 +54,19 @@ namespace PL.Courier
         {
             RefreshList();
             // Register Observer only if implemented in BL
-            try { s_bl.Courier.AddObserver(CourierListObserver); } catch { }
+            try { 
+                s_bl.Courier.AddObserver(CourierListObserver);
+            } 
+            catch { }
         }
 
         private void Window_Closed(object? sender, EventArgs e)
         {
             // Unregister Observer
-            try { s_bl.Courier.RemoveObserver(CourierListObserver); } catch { }
+            try { 
+                s_bl.Courier.RemoveObserver(CourierListObserver); 
+            } 
+            catch { }
         }
 
         private void CourierListObserver()
@@ -127,14 +127,16 @@ namespace PL.Courier
             if (SelectedCourier != null)
             {
                 // Open for Update - using Show() to allow multi-window observation
-                new CourierWindow(SelectedCourier.Id).Show();
+                CourierWindow courierWindow = new CourierWindow(SelectedCourier.Id);
+                courierWindow.Show();
             }
         }
 
         private void btnAddCourier_Click(object sender, RoutedEventArgs e)
         {
             // Open for Add
-            new CourierWindow().Show();
+            CourierWindow courierWindow = new CourierWindow();
+            courierWindow.Show();
         }
 
         private void btnDeleteCourier_Click(object sender, RoutedEventArgs e)

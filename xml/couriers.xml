@@ -209,15 +209,4 @@
     <Email>noga.arbel@mail.com</Email>
     <Password>1234</Password>
   </Courier>
-  <Courier>
-    <Id>210536090</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>26.369504311313463</MaxDeliveryDistance>
-    <JoinDate>2024-07-16T17:20:34.7363213+03:00</JoinDate>
-    <OrderType>Car</OrderType>
-    <Name>shlomo</Name>
-    <Phone>050-3512274</Phone>
-    <Email>neta.ben@mail.com</Email>
-    <Password />
-  </Courier>
 </ArrayOfCourier>
