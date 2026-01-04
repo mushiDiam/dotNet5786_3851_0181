@@ -7,74 +7,78 @@ namespace PL.Courier
 {
     public partial class CourierWindow : Window
     {
+        // Private field to access BL
         private static readonly IBl s_bl = Factory.Get();
 
-        // The object holding MUTABLE data (Name, Email, etc.)
+        // ---------------------------------------------------------
+        // Dependency Properties
+        // ---------------------------------------------------------
+
+        // The main object we are binding to
         public BO.Courier CurrentCourier
         {
             get { return (BO.Courier)GetValue(CurrentCourierProperty); }
             set { SetValue(CurrentCourierProperty, value); }
         }
+
         public static readonly DependencyProperty CurrentCourierProperty =
-            DependencyProperty.Register("CurrentCourier", typeof(BO.Courier), typeof(CourierWindow));
+            DependencyProperty.Register(nameof(CurrentCourier), typeof(BO.Courier), typeof(CourierWindow), new PropertyMetadata(null));
 
         // ---------------------------------------------------------
-        // "Init" Properties (Handled separately because they are immutable)
+        // UI Logic Properties
         // ---------------------------------------------------------
-        public int FixedId { get; set; }
-        public DateTime FixedJoinDate { get; set; } = DateTime.Now;
-
-        // Helper for UI Logic
-        public bool IsAddMode { get; set; } // Controls IsEnabled for ID/Date
+        public bool IsAddMode { get; set; }
         public string WindowTitle { get; set; }
-        public Array TransportOptions => Enum.GetValues(typeof(BO.Transportation));
+        public string ButtonText { get; set; }
 
-
+        // ---------------------------------------------------------
         // Constructor
+        // ---------------------------------------------------------
         public CourierWindow(int courierId = 0)
         {
             InitializeComponent();
-            DataContext = this;
 
-            if (courierId == 0)
+            // Note: We do NOT write DataContext = this; here anymore.
+            // It is defined in the XAML window tag.
+
+            // Set UI Logic flags
+            IsAddMode = (courierId == 0);
+            WindowTitle = IsAddMode ? "Add New Courier" : "Update Courier Details";
+            ButtonText = IsAddMode ? "Add" : "Update";
+
+            // Initialize CurrentCourier based on the ID
+            if (IsAddMode)
             {
-                // ADD MODE
-                IsAddMode = true;
-                WindowTitle = "Add New Courier";
-
-                // Initialize defaults
-                FixedId = 0;
-                FixedJoinDate = DateTime.Now;
-
-                // Empty object to hold user inputs for other fields
-                CurrentCourier = new BO.Courier();
-                CurrentCourier.IsActive = true;
-                CurrentCourier.Transport = BO.Transportation.Motorcycle;
+                // Create new instance with defaults
+                CurrentCourier = new BO.Courier
+                {
+                    Id = 0, // Will be filled by user
+                    JoinDate = DateTime.Now,
+                    IsActive = true,
+                    Transport = BO.Transportation.Motorcycle,
+                    DeliveryCountOnTime = 0,
+                    DeliveryCountLate = 0
+                };
             }
             else
             {
-                // UPDATE MODE
-                IsAddMode = false;
-                WindowTitle = "Update Courier Details";
-
+                // Fetch existing from BL
                 try
                 {
                     int managerId = s_bl.Admin.GetConfig().ManagerId;
-
-                    // Load existing data
                     CurrentCourier = s_bl.Courier.Details(managerId, courierId);
-
-                    // Copy immutable values to the fixed properties for display
-                    FixedId = CurrentCourier.Id;
-                    FixedJoinDate = CurrentCourier.JoinDate;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Close();
+                    MessageBox.Show($"Error loading courier: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Close(); // Close window if we can't load the data
                 }
             }
         }
+
+        // ---------------------------------------------------------
+        // Event Handlers
+        // ---------------------------------------------------------
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
@@ -82,50 +86,30 @@ namespace PL.Courier
             {
                 int managerId = s_bl.Admin.GetConfig().ManagerId;
 
-                // Basic Validation
+                // Input Validation (Basic)
                 if (string.IsNullOrWhiteSpace(CurrentCourier.FullName))
                     throw new Exception("Full Name is required.");
-                if (string.IsNullOrWhiteSpace(CurrentCourier.PhoneNumber))
-                    throw new Exception("Phone Number is required.");
 
                 if (IsAddMode)
                 {
-                    if (FixedId <= 0) throw new Exception("ID must be positive.");
+                    // Add Mode: BL.Add expects the object
+                    if (CurrentCourier.Id <= 0) throw new Exception("ID must be positive.");
 
-                    // CONSTRUCT the final object here because properties are 'init'
-                    var newCourier = new BO.Courier
-                    {
-                        Id = this.FixedId,
-                        JoinDate = this.FixedJoinDate,
-                        // Copy mutable fields from the binding source
-                        FullName = CurrentCourier.FullName,
-                        Email = CurrentCourier.Email,
-                        PhoneNumber = CurrentCourier.PhoneNumber,
-                        Password = CurrentCourier.Password,
-                        MaxDistancePreference = CurrentCourier.MaxDistancePreference,
-                        Transport = CurrentCourier.Transport,
-                        IsActive = CurrentCourier.IsActive,
-                        // Initialize counters
-                        DeliveryCountOnTime = 0,
-                        DeliveryCountLate = 0
-                    };
-
-                    s_bl.Courier.Add(managerId, newCourier);
-                    MessageBox.Show("Added Successfully!");
+                    s_bl.Courier.Add(managerId, CurrentCourier);
+                    MessageBox.Show("Courier added successfully!");
                 }
                 else
                 {
-                    // UPDATE MODE: We just pass the CurrentCourier object.
-                    // The BL will ignore ID/JoinDate changes anyway, or we didn't change them.
+                    // Update Mode: BL.Update expects the object
                     s_bl.Courier.UpdateDetails(managerId, CurrentCourier);
-                    MessageBox.Show("Updated Successfully!");
+                    MessageBox.Show("Courier updated successfully!");
                 }
 
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Operation Failed: {ex.Message}", "Error");
+                MessageBox.Show($"Operation Failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -3,12 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:bo="clr-namespace:BO;assembly=BL"
         xmlns:local="clr-namespace:PL.Courier"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="580" Width="450"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Window.Resources>
+        <ObjectDataProvider x:Key="TransportOptionsCollection" 
+                            MethodName="GetValues" 
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="bo:Transportation"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <Style TargetType="TextBox">
             <Setter Property="Height" Value="25"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -60,29 +71,34 @@
 
             <StackPanel Grid.Column="1">
 
-                <TextBox Text="{Binding FixedId, Mode=TwoWay}" 
+                <TextBox Text="{Binding CurrentCourier.Id, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
                          IsEnabled="{Binding IsAddMode}"/>
 
-                <DatePicker SelectedDate="{Binding FixedJoinDate, Mode=TwoWay}"
+                <DatePicker SelectedDate="{Binding CurrentCourier.JoinDate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
                             IsEnabled="{Binding IsAddMode}"/>
 
-                <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay}"/>
-                <TextBox Text="{Binding CurrentCourier.Email, Mode=TwoWay}"/>
-                <TextBox Text="{Binding CurrentCourier.PhoneNumber, Mode=TwoWay}"/>
-                <TextBox Text="{Binding CurrentCourier.Password, Mode=TwoWay}"/>
-                <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay}"/>
+                <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
 
-                <ComboBox ItemsSource="{Binding TransportOptions}"
-                          SelectedItem="{Binding CurrentCourier.Transport, Mode=TwoWay}"/>
+                <TextBox Text="{Binding CurrentCourier.Email, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
 
-                <CheckBox IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay}" 
+                <TextBox Text="{Binding CurrentCourier.PhoneNumber, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+
+                <TextBox Text="{Binding CurrentCourier.Password, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+
+                <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+
+                <ComboBox ItemsSource="{Binding Source={StaticResource TransportOptionsCollection}}"
+                          SelectedValue="{Binding CurrentCourier.Transport, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+
+                <CheckBox IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
                           Content="Is Active Courier" Margin="0,5,0,0"/>
             </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Save Courier" Click="BtnSave_Click" 
+            <Button Content="{Binding ButtonText}" Click="BtnSave_Click" 
                     Width="120" Height="35" Background="#4CAF50" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"/>
+
             <Button Content="Cancel" Click="BtnCancel_Click" Width="80" Height="35"/>
         </StackPanel>
     </Grid>
