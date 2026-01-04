@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input; // Required for Cursors
 using BlApi;
@@ -15,6 +16,7 @@ namespace PL
     {
         // Access to the Business Logic layer
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
+        private static readonly System.Net.Http.HttpClient s_client = new System.Net.Http.HttpClient();
 
         #region Dependency Properties
 
@@ -141,15 +143,48 @@ namespace PL
 
         #region Configuration Update
 
-        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                // 1. בדיקה שהכתובת לא ריקה
+                if (string.IsNullOrWhiteSpace(Configuration.CompanyAddress))
+                {
+                    Mouse.OverrideCursor = null;
+                    MessageBox.Show("Address cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // 2. חיפוש קואורדינטות
+                var coords = await GetCoordinatesFromAddressAsync(Configuration.CompanyAddress);
+
+                Mouse.OverrideCursor = null; // החזרת הסמן הרגיל
+
+                // 3. בדיקה קריטית: האם נמצאה כתובת?
+                if (coords.Lat == null || coords.Lon == null)
+                {
+                    // --- עצירה! לא שומרים! ---
+                    MessageBox.Show("Cannot find this address on the map.\nPlease check spelling or try a more specific address (City, Street).",
+                                    "Invalid Address",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                    return; // יציאה מהפונקציה בלי לשמור
+                }
+
+                // 4. אם הגענו לפה - הכתובת תקינה. נעדכן את האובייקט.
+                Configuration.Latitude = coords.Lat.Value;
+                Configuration.Longitude = coords.Lon.Value;
+
+                // 5. שמירה ל-XML
                 s_bl.Admin.SetConfig(Configuration);
+
                 MessageBox.Show("Configuration saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
+                Mouse.OverrideCursor = null;
                 MessageBox.Show("Error saving configuration: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -228,5 +263,57 @@ namespace PL
         }
 
         #endregion
+
+        // Add this helper method to MainWindow class to resolve CS0103
+        private async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
+        {
+            if (string.IsNullOrWhiteSpace(address)) return (null, null);
+
+            string url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(address)}&format=json&limit=1";
+
+            try
+            {
+                // --- תיקון השגיאה 403 Forbidden ---
+                // 1. ניקוי כותרות קודמות כדי למנוע כפילויות שגורמות לשגיאות
+                s_client.DefaultRequestHeaders.UserAgent.Clear();
+
+                // 2. הוספת User-Agent שנראה כמו דפדפן אמיתי או אפליקציה לגיטימית
+                // השרתים של OSM בדרך כלל מכבדים את הפורמט הזה:
+                s_client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CouriersStudentProject/1.0");
+
+                // 3. ביצוע הבקשה
+                var response = await s_client.GetAsync(url);
+
+                // אם עדיין יש שגיאה, נראה אותה ברור
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    MessageBox.Show("OpenStreetMap Blocked the request (403). Try again in a few seconds.");
+                    return (null, null);
+                }
+
+                response.EnsureSuccessStatusCode(); // זורק חריגה אם יש שגיאה אחרת
+
+                string json = await response.Content.ReadAsStringAsync();
+                using JsonDocument doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                if (root.GetArrayLength() > 0)
+                {
+                    var location = root[0];
+                    if (double.TryParse(location.GetProperty("lat").GetString(), out double lat) &&
+                        double.TryParse(location.GetProperty("lon").GetString(), out double lon))
+                    {
+                        return (lat, lon);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // הצגת השגיאה המלאה לדיבוג
+                MessageBox.Show($"Geocoding Error: {ex.Message}");
+            }
+
+            return (null, null);
+        }
     }
 }

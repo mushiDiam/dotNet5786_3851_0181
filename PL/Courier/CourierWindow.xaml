@@ -12,6 +12,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Loaded="Window_Loaded"
         Closed="Window_Closed">
+
     <Window.Resources>
         <ObjectDataProvider x:Key="TransportOptionsCollection" 
                             MethodName="GetValues" 
@@ -25,6 +26,55 @@
             <Setter Property="Height" Value="25"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border x:Name="SwitchBorder"
+                                    Width="50" Height="24"
+                                    CornerRadius="12"
+                                    Background="#FF5252"
+                                    BorderBrush="#CC0000"
+                                    BorderThickness="1">
+                                <Ellipse x:Name="SwitchKnob"
+                                         Width="18" Height="18"
+                                         Fill="White"
+                                         HorizontalAlignment="Left"
+                                         Margin="3,0,0,0">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect ShadowDepth="1" Opacity="0.3" BlurRadius="2"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+
+                            <ContentPresenter Grid.Column="1" 
+                                              VerticalAlignment="Center" 
+                                              Margin="10,0,0,0"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="SwitchBorder" Property="Background" Value="#4CAF50"/>
+                                <Setter TargetName="SwitchBorder" Property="BorderBrush" Value="#388E3C"/>
+                                <Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="SwitchKnob" Property="Margin" Value="0,0,3,0"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="SwitchBorder" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -79,8 +129,9 @@
                           SelectedValue="{Binding CurrentCourier.Transport, Mode=TwoWay}"
                           Height="25" Margin="0,0,0,10"/>
 
-                <CheckBox IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay}" 
-                          Content="Is Active" Margin="0,5,0,0"/>
+                <CheckBox Style="{StaticResource ToggleSwitchStyle}"
+                          IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay}" 
+                          Margin="0,5,0,0"/>
             </StackPanel>
         </Grid>
 

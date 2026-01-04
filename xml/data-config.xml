@@ -2,12 +2,12 @@
 <config>
   <NextOrderId>51</NextOrderId>
   <NextDeliveryId>51</NextDeliveryId>
-  <Clock>2025-12-31T17:22:34.6314575+02:00</Clock>
-  <ManagerId>0</ManagerId>
+  <Clock>2026-01-04T16:54:14.3842877+02:00</Clock>
+  <ManagerId>10003</ManagerId>
   <ManagerPassword></ManagerPassword>
-  <CompanyAddress></CompanyAddress>
-  <CompanyLatitude>0</CompanyLatitude>
-  <CompanyLongitude>0</CompanyLongitude>
+  <CompanyAddress>הוועד הלאומי 21</CompanyAddress>
+  <CompanyLatitude>31.7663948</CompanyLatitude>
+  <CompanyLongitude>35.1922532</CompanyLongitude>
   <MaxDeliveryDistance>0</MaxDeliveryDistance>
   <AverageCarSpeed>50</AverageCarSpeed>
   <AverageMotorcycleSpeed>40</AverageMotorcycleSpeed>

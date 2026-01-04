@@ -159,12 +159,10 @@ internal static class OrderManager{
         double distance = R * c; // Distance in km
         return distance;
     }
-
     private static double ToRadians(double deg)
     {
         return deg * (Math.PI / 180);
     }
-
     private static TimeSpan CalculateRemainingTime(int orderId)
     {
 
@@ -231,7 +229,6 @@ internal static class OrderManager{
 
         return deliveries;
     }
-
     internal static void CreateOrder(BO.Order order)
     {
         if (order is null)
@@ -316,7 +313,6 @@ internal static class OrderManager{
         s_dal.Order.DeleteAll();
         Observers.NotifyListUpdated(); //stage 5
     }
-
     public static async Task<double?> GetActualDistanceAsync(double latitude, double longitude, BO.Transportation transport)
     {
         // --- Validation (Your code is good here) ---
@@ -376,6 +372,37 @@ internal static class OrderManager{
             // This catches the Timeout
             return null;
         }
+    }
+    public static async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
+    {
+        if (string.IsNullOrWhiteSpace(address)) return (null, null);
+
+        string url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(address)}&format=json&limit=1";
+
+        try
+        {
+            if (!s_client.DefaultRequestHeaders.Contains("User-Agent"))
+            {
+                s_client.DefaultRequestHeaders.Add("User-Agent", "CouriersApp/1.0 (myemail@example.com)");
+            }
+
+            string json = await s_client.GetStringAsync(url);
+            using JsonDocument doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            if (root.GetArrayLength() > 0)
+            {
+                var location = root[0];
+                double lat = double.Parse(location.GetProperty("lat").GetString()!);
+                double lon = double.Parse(location.GetProperty("lon").GetString()!);
+                return (lat, lon);
+            }
+        }
+        catch
+        {
+        }
+
+        return (null, null);
     }
     private static OrderInList ConvertToOrderInList(BO.Order boOrder)
     {
@@ -583,7 +610,6 @@ internal static class OrderManager{
             DeliveryCount = deliveries.Count
         };
     }
-
     internal static void EndDelivery(int courierId, int deliveryId)
     {
 

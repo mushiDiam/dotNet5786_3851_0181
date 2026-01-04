@@ -5,27 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL"
         mc:Ignorable="d"
-        Title="Courier Management System" Height="600" Width="900"
+        Title="Courier Management System" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
-        Background="White">
+        Background="#F5F5F5">
 
     <Window.Resources>
+        <!-- Modern Button Style -->
         <Style x:Key="ModernButton" TargetType="Button">
-            <Setter Property="Background" Value="#DDDDDD"/>
-            <Setter Property="Foreground" Value="#333333"/>
-            <Setter Property="BorderBrush" Value="#999999"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="0"
+                                CornerRadius="5"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -34,107 +32,372 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#CCCCCC"/>
+                    <Setter Property="Background" Value="#1976D2"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="InputBox" TargetType="TextBox">
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="BorderBrush" Value="#C71585"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <!-- Time Control Button Style -->
+        <Style x:Key="TimeButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Danger Button Style -->
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#f44336"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#da190b"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Success Button Style -->
+        <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
-    <Grid Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- Header Bar -->
+        <Border Background="#1565C0" Height="120" VerticalAlignment="Top">
+            <Grid Margin="20,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Courier Management System - Main Dashboard" 
-                   HorizontalAlignment="Center" 
-                   FontSize="20" FontWeight="Bold" Margin="0,0,0,30"/>
+                <!-- Top Section: Title and Clock -->
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="📦" FontSize="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Text="Courier Management System" 
+                                       FontSize="24" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"/>
+                            <TextBlock Text="Main Dashboard - Real-time delivery tracking and management" 
+                                       FontSize="12" 
+                                       Foreground="#E3F2FD"/>
+                        </StackPanel>
+                    </StackPanel>
 
-        <Grid Grid.Row="1">
+                    <!-- Time Display in Header -->
+                    <Border Background="#0D47A1" 
+                            CornerRadius="8" 
+                            Padding="20,10" 
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="CURRENT TIME" 
+                                       FontSize="10" 
+                                       Foreground="#90CAF9" 
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding CurrentClock, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Section: Time Control Buttons -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                    <Button Content="⏩ +1 Minute" 
+                            Click="btnAddOneMinute_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                    <Button Content="⏩ +1 Hour" 
+                            Click="btnAddOneHour_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                    <Button Content="⏩ +1 Day" 
+                            Click="btnAddOneDay_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                    <Button Content="⏩ +1 Month" 
+                            Click="btnAddOneMonth_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                    <Button Content="⏩ +1 Year" 
+                            Click="btnAddOneYear_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Padding="12,6"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Margin="20,140,20,20">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.2*"/>
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="0,40,20,0">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock Text="Max Delivery Window: " 
-                               Foreground="Blue" 
+            <!-- Left Sidebar -->
+            <Border Background="White" 
+                    CornerRadius="10" 
+                    Padding="20"
+                    Margin="0,0,15,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                </Border.Effect>
+
+                <StackPanel>
+                    <!-- Management Section -->
+                    <TextBlock Text="🚚 Management" 
                                FontSize="16" 
-                               VerticalAlignment="Center"/>
+                               FontWeight="SemiBold" 
+                               Margin="0,0,0,15"
+                               Foreground="#333333"/>
 
-                    <TextBox Text="{Binding Configuration.DeliveryWindow, Mode=TwoWay}" 
-                             Width="60" 
-                             Style="{StaticResource InputBox}"
-                             Margin="10,0"/>
+                    <Button Content="Initialize Database" 
+                            Click="btnInitializeDB_Click" 
+                            Style="{StaticResource SuccessButton}"
+                            Margin="0,0,0,8"/>
 
-                    <Button Content="Update" 
-                            Click="UpdateButton_Click" 
-                            Style="{StaticResource ModernButton}"/>
-                </StackPanel>
+                    <Button Content="Reset Database" 
+                            Click="btnResetDB_Click" 
+                            Style="{StaticResource DangerButton}"
+                            Margin="0,0,0,8"/>
 
-                <TextBlock Text="[The maximum time window for delivery,&#x0a;After that the parcel becomes Overdue]" 
-                           Foreground="#9932CC" 
-                           FontSize="14" 
-                           TextWrapping="Wrap"
-                           Margin="0,15,0,0"/>
-            </StackPanel>
+                    <Button Content="All Couriers" 
+                            Click="btnHandleCouriers_Click" 
+                            Style="{StaticResource ModernButton}"
+                            Margin="0,0,0,8"/>
 
-            <Border Grid.Column="1" BorderBrush="Blue" BorderThickness="2" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Top">
-                <StackPanel Width="280">
-                    <Border Background="#00BFFF" Padding="10" Margin="0,0,0,5">
-                        <TextBlock Text="{Binding CurrentClock, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" 
-                                   FontSize="24" 
-                                   FontWeight="Bold" 
-                                   Foreground="Black"
-                                   HorizontalAlignment="Center"/>
-                    </Border>
-
-                    <StackPanel>
-                        <Button Content="Add One Minute" Click="btnAddOneMinute_Click" Style="{StaticResource ModernButton}" Margin="0,1"/>
-                        <Button Content="Add One Hour" Click="btnAddOneHour_Click" Style="{StaticResource ModernButton}" Margin="0,1"/>
-                        <Button Content="Add One Day" Click="btnAddOneDay_Click" Style="{StaticResource ModernButton}" Margin="0,1"/>
-                        <Button Content="Add One Month" Click="btnAddOneMonth_Click" Style="{StaticResource ModernButton}" Margin="0,1"/>
-                        <Button Content="Add One Year" Click="btnAddOneYear_Click" Style="{StaticResource ModernButton}" Margin="0,1"/>
-                    </StackPanel>
+                    <Button Content="All Orders" 
+                            Style="{StaticResource ModernButton}"
+                            Margin="0,0,0,8"/>
+                            <!--TODO: Click="btnAllOrders_Click" -->
                 </StackPanel>
             </Border>
-        </Grid>
 
-        <Grid Grid.Row="2" Margin="0,40,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            <!-- Right Panel - Configuration -->
+            <Border Grid.Column="1" 
+                    Background="White" 
+                    CornerRadius="10" 
+                    Padding="25">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                </Border.Effect>
 
-            <UniformGrid Grid.Column="0" Columns="1" Rows="2" VerticalAlignment="Bottom">
-                <Button Content="Reset DB" 
-                        Click="btnResetDB_Click"
-                        Height="50" Width="180"
-                        Margin="0,0,0,20"
-                        Style="{StaticResource ModernButton}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <Button Content="Init DB" 
-                        Click="btnInitializeDB_Click"
-                        Height="50" Width="180"
-                        Style="{StaticResource ModernButton}"/>
-            </UniformGrid>
+                    <!-- Configuration Header -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <TextBlock Text="⚙️" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="System Configuration" 
+                                   FontSize="20" 
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Foreground="#333333"/>
+                    </StackPanel>
 
-            <UniformGrid Grid.Column="2" Columns="1" Rows="2" VerticalAlignment="Bottom">
-                <Button Content="Handle Couriers" 
-                        Click="btnHandleCouriers_Click"
-                        Height="50" Width="180"
-                        Style="{StaticResource ModernButton}"/>
-            </UniformGrid>
+                    <!-- Configuration Form -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Company Information -->
+                            <Border Background="#E3F2FD" 
+                                    CornerRadius="5" 
+                                    Padding="15" 
+                                    Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="COMPANY INFORMATION" 
+                                               FontSize="12" 
+                                               FontWeight="Bold" 
+                                               Foreground="#1565C0" 
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Company Address" FontSize="13" Margin="0,5,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.CompanyAddress}" 
+                                             Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Security Settings -->
+                            <Border Background="#FFF3E0" 
+                                    CornerRadius="5" 
+                                    Padding="15" 
+                                    Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="SECURITY SETTINGS" 
+                                               FontSize="12" 
+                                               FontWeight="Bold" 
+                                               Foreground="#E65100" 
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Manager ID" FontSize="13" Margin="0,5,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.ManagerId}" 
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Manager Password" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.ManagerPassword}" 
+                                             Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Operational Limits -->
+                            <Border Background="#F3E5F5" 
+                                    CornerRadius="5" 
+                                    Padding="15" 
+                                    Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="OPERATIONAL LIMITS" 
+                                               FontSize="12" 
+                                               FontWeight="Bold" 
+                                               Foreground="#6A1B9A" 
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Maximum Air Range (km)" FontSize="13" Margin="0,5,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.MaximumAirRange}" 
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Maximum Distance (km)" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.MaxiumDistance}" 
+                                             Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Vehicle Speeds -->
+                            <Border Background="#E8F5E9" 
+                                    CornerRadius="5" 
+                                    Padding="15" 
+                                    Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="VEHICLE AVERAGE SPEEDS (km/h)" 
+                                               FontSize="12" 
+                                               FontWeight="Bold" 
+                                               Foreground="#2E7D32" 
+                                               Margin="0,0,0,10"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Grid.Column="0" Grid.Row="0">
+                                            <TextBlock Text="Car Speed" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                            <TextBox Text="{Binding Configuration.AverageCarSpeed}" 
+                                                     Style="{StaticResource ModernTextBox}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" Grid.Row="0">
+                                            <TextBlock Text="Motorbike Speed" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                            <TextBox Text="{Binding Configuration.AverageMotorbikeSpeed}" 
+                                                     Style="{StaticResource ModernTextBox}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="0" Grid.Row="2">
+                                            <TextBlock Text="Bike Speed" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                            <TextBox Text="{Binding Configuration.AverageBikeSpeed}" 
+                                                     Style="{StaticResource ModernTextBox}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" Grid.Row="2">
+                                            <TextBlock Text="Walking Speed" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                            <TextBox Text="{Binding Configuration.AverageWalkingSpeed}" 
+                                                     Style="{StaticResource ModernTextBox}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Timing Configuration -->
+                            <Border Background="#FCE4EC" 
+                                    CornerRadius="5" 
+                                    Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="TIMING CONFIGURATION (HH:MM:SS)" 
+                                               FontSize="12" 
+                                               FontWeight="Bold" 
+                                               Foreground="#C2185B" 
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Delivery Window" FontSize="13" Margin="0,5,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.DeliveryWindow}" 
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Risk Range" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.RiskRange}" 
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Inactive Time" FontSize="13" Margin="0,0,0,3" Foreground="#555"/>
+                                    <TextBox Text="{Binding Configuration.InactiveTime}" 
+                                             Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Update Button -->
+                    <Button Grid.Row="2" 
+                            Content="💾 Save Configuration" 
+                            Style="{StaticResource ModernButton}"
+                            FontSize="16"
+                            Height="45"
+                            Margin="0,20,0,0" 
+                            Click="UpdateButton_Click"/>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </Window>
