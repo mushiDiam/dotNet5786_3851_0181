@@ -72,7 +72,7 @@ namespace PL.Courier
             {
                 // 1. Call BL with the Sort parameter (BL handles the sorting)
                 // We pass 'true' to include inactive couriers
-                var allCouriers = s_bl.Courier.GetCouriers(AdminId, true, SelectedSort);
+                var allCouriers = s_bl.Courier.GetCouriers(AdminId, null, SelectedSort);
 
                 // 2. Apply UI-side filter by Transport (TransportFilter is bound from the ComboBox)
                 var filtered = (TransportFilter == BO.Transportation.None) ?

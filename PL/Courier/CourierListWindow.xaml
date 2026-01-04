@@ -78,13 +78,15 @@
         </Grid>
 
         <DataGrid Grid.Row="2"
-                  ItemsSource="{Binding CourierInList}"
-                  SelectedItem="{Binding SelectedCourier}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  MouseDoubleClick="dgCourierList_MouseDoubleClick"
-                  CanUserAddRows="False">
+          ItemsSource="{Binding CourierInList}"
+          SelectedItem="{Binding SelectedCourier}"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          SelectionMode="Single"
+          MouseDoubleClick="dgCourierList_MouseDoubleClick"
+          CanUserAddRows="False"
+          GridLinesVisibility="Horizontal"
+          RowHeaderWidth="0">
 
             <DataGrid.Columns>
 
@@ -92,16 +94,14 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Click="btnDeleteCourier_Click" 
-                                    Background="Transparent" 
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    ToolTip="Delete Courier">
-
+                            Background="Transparent" 
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            ToolTip="Delete Courier">
                                 <Path Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" 
-                                      Fill="Red" 
-                                      Height="15" Width="15" 
-                                      Stretch="Uniform"/>
-
+                              Fill="Red" 
+                              Height="15" Width="15" 
+                              Stretch="Uniform"/>
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Visibility" Value="Hidden"/>
@@ -118,11 +118,50 @@
                 </DataGridTemplateColumn>
 
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
-                <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="*"/>
-                <DataGridTextColumn Header="Transport" Binding="{Binding Transport}" Width="100"/>
-                <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="60"/>
+
+                <DataGridTemplateColumn Header="Full Name" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FullName}" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Transport" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Transport}" 
+                               Foreground="DarkBlue" 
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Active" Width="60">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsActive}" 
+                              IsEnabled="False" 
+                              HorizontalAlignment="Center" 
+                              VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTextColumn Header="On Time" Binding="{Binding OrdersOnTime}" Width="80"/>
-                <DataGridTextColumn Header="Late" Binding="{Binding OrdersLate}" Width="80"/>
+
+                <DataGridTemplateColumn Header="Late" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding OrdersLate}" 
+                               Foreground="Red" 
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
         </DataGrid>
 
