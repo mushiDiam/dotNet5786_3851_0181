@@ -6,6 +6,7 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:bo="clr-namespace:BO;assembly=BL" 
         xmlns:local="clr-namespace:PL.Courier"
+        xmlns:conv="clr-namespace:PL"
         mc:Ignorable="d"
         Title="Courier Management" Height="500" Width="900"
         WindowStartupLocation="CenterScreen"
@@ -19,6 +20,8 @@
             <Setter Property="Background" Value="#DDDDDD"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
+
+        <conv:EnumToBrushConverter x:Key="EnumToBrush"/>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -76,6 +79,13 @@
           GridLinesVisibility="Horizontal"
           RowHeaderWidth="0">
 
+            <!-- ensure rows default to system text color (helps override hover/selection text color changes) -->
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                </Style>
+            </DataGrid.RowStyle>
+
             <DataGrid.Columns>
                 <DataGridTemplateColumn Width="40">
                     <DataGridTemplateColumn.CellTemplate>
@@ -104,12 +114,21 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="5,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
 
                 <DataGridTemplateColumn Header="Full Name" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding FullName}" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0"/>
+                            <TextBlock Text="{Binding FullName}" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0"
+                                       Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -117,10 +136,12 @@
                 <DataGridTemplateColumn Header="Transport" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Transport}" 
-                                       Foreground="DarkBlue" 
-                                       FontStyle="Italic"
-                                       VerticalAlignment="Center"/>
+                            <Border Background="{Binding Transport, Converter={StaticResource EnumToBrush}}"
+                                    Padding="6"
+                                    CornerRadius="2">
+                                <TextBlock Text="{Binding Transport}" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                            </Border>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -129,12 +150,21 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding IsActive, Converter={StaticResource StatusToIconKey}}" 
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"
+                                       Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="On Time" Binding="{Binding OrdersOnTime}" Width="80"/>
+                <DataGridTextColumn Header="On Time" Binding="{Binding OrdersOnTime}" Width="80">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
 
                 <DataGridTemplateColumn Header="Late" Width="80">
                     <DataGridTemplateColumn.CellTemplate>

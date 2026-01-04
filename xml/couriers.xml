@@ -45,17 +45,6 @@
     <Password>pL3@kV</Password>
   </Courier>
   <Courier>
-    <Id>204781425</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>0.5276899070842493</MaxDeliveryDistance>
-    <JoinDate>2025-04-13T16:54:14.4601866+03:00</JoinDate>
-    <OrderType>Walking</OrderType>
-    <Name>Lior Azulay</Name>
-    <Phone>050-6841110</Phone>
-    <Email>lior.azulay@mail.com</Email>
-    <Password>R2s*e</Password>
-  </Courier>
-  <Courier>
     <Id>327262957</Id>
     <Active>true</Active>
     <MaxDeliveryDistance>4.690653555996157</MaxDeliveryDistance>
@@ -189,35 +178,4 @@
   </Courier>
   <Courier>
     <Id>256696310</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>8.564617873126583</MaxDeliveryDistance>
-    <JoinDate>2025-04-30T16:54:14.6091408+03:00</JoinDate>
-    <OrderType>Motorcycle</OrderType>
-    <Name>Ben Shachar</Name>
-    <Phone>050-3802378</Phone>
-    <Email>ben.shachar@mail.com</Email>
-    <Password>oF2)yR</Password>
-  </Courier>
-  <Courier>
-    <Id>243706393</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>3.5060052413408433</MaxDeliveryDistance>
-    <JoinDate>2023-05-26T16:54:14.6198357+03:00</JoinDate>
-    <OrderType>Bike</OrderType>
-    <Name>Omer Lavi</Name>
-    <Phone>050-2554216</Phone>
-    <Email>omer.lavi@mail.com</Email>
-    <Password>Ras971!</Password>
-  </Courier>
-  <Courier>
-    <Id>299287321</Id>
-    <Active>false</Active>
-    <MaxDeliveryDistance>6.892067081646582</MaxDeliveryDistance>
-    <JoinDate>2024-05-13T16:54:14.6304124+03:00</JoinDate>
-    <OrderType>Bike</OrderType>
-    <Name>Noga Arbel</Name>
-    <Phone>050-4757430</Phone>
-    <Email>noga.arbel@mail.com</Email>
-    <Password>J2^@as</Password>
-  </Courier>
-</ArrayOfCourier>
+    <
