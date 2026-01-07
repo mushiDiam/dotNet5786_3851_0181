@@ -21,7 +21,11 @@ namespace PL
         public BO.Courier CurrentCourier
         {
             get { return (BO.Courier)GetValue(CurrentCourierProperty); }
-            set { SetValue(CurrentCourierProperty, value); }
+            set
+            {
+                SetValue(CurrentCourierProperty, value);
+                UpdateMaskedPassword();
+            }
         }
         public static readonly DependencyProperty CurrentCourierProperty =
             DependencyProperty.Register(nameof(CurrentCourier), typeof(BO.Courier), typeof(MainCourierWindow), new PropertyMetadata(null));
@@ -44,7 +48,24 @@ namespace PL
         public static readonly DependencyProperty EndedDeliveriesProperty =
             DependencyProperty.Register(nameof(EndedDeliveries), typeof(IEnumerable<BO.ClosedDeliveryInList>), typeof(MainCourierWindow), new PropertyMetadata(null));
 
+        public DateTime CurrentClock
+        {
+            get { return (DateTime)GetValue(CurrentClockProperty); }
+            set { SetValue(CurrentClockProperty, value); }
+        }
+        public static readonly DependencyProperty CurrentClockProperty =
+            DependencyProperty.Register("CurrentClock", typeof(DateTime), typeof(MainCourierWindow));
+
         public BO.ClosedDeliveryInList? SelectedEndedDelivery { get; set; }
+
+        // Masked password display
+        public string MaskedPassword
+        {
+            get { return (string)GetValue(MaskedPasswordProperty); }
+            set { SetValue(MaskedPasswordProperty, value); }
+        }
+        public static readonly DependencyProperty MaskedPasswordProperty =
+            DependencyProperty.Register(nameof(MaskedPassword), typeof(string), typeof(MainCourierWindow), new PropertyMetadata(""));
 
         public MainCourierWindow(int courierId)
         {
@@ -75,12 +96,16 @@ namespace PL
                 s_bl.Order.AddObserver(_courierId, OrderObserver);
             }
             catch { }
+
+            // subscribe to admin clock if available (already implemented elsewhere)
+            try { s_bl.Admin.AddClockObserver(clockObserver); CurrentClock = s_bl.Admin.GetClock(); } catch { }
         }
 
         private void MainCourierWindow_Closed(object? sender, EventArgs e)
         {
             try { s_bl.Courier.RemoveObserver(_courierId, CourierObserver); } catch { }
             try { s_bl.Order.RemoveObserver(_courierId, OrderObserver); } catch { }
+            try { s_bl.Admin.RemoveClockObserver(clockObserver); } catch { }
         }
 
         private void CourierObserver()
@@ -93,11 +118,17 @@ namespace PL
             Dispatcher.Invoke(() => RefreshOrders());
         }
 
+        private void clockObserver()
+        {
+            Dispatcher.Invoke(() => CurrentClock = s_bl.Admin.GetClock());
+        }
+
         private void RefreshAll()
         {
             RefreshCourier();
             RefreshOrders();
             RefreshEndedDeliveries();
+            try { CurrentClock = s_bl.Admin.GetClock(); } catch { }
         }
 
         private void RefreshCourier()
@@ -112,11 +143,18 @@ namespace PL
             }
         }
 
+        private void UpdateMaskedPassword()
+        {
+            if (CurrentCourier == null || string.IsNullOrEmpty(CurrentCourier.Password))
+                MaskedPassword = "(no password)";
+            else
+                MaskedPassword = new string('*', CurrentCourier.Password.Length);
+        }
+
         private void RefreshOrders()
         {
             try
             {
-                // Get open orders relevant to this courier (BL may filter by courier)
                 var open = s_bl.Order.GetOpenOrder(_managerId, _courierId, null, null);
                 OpenOrders = open ?? new List<BO.OpenOrderInList>();
             }
@@ -146,10 +184,10 @@ namespace PL
         {
             try
             {
-                // Use manager id to perform update (BL requires an admin id)
+                // Prevent changing JoinDate/IsActive on UI by design — BL still requires full BO
                 s_bl.Courier.UpdateDetails(_managerId, CurrentCourier);
 
-                // Immediately refresh from BL so UI displays values after DAL persistence
+                // Refresh to pick up persisted values (including password if changed)
                 RefreshCourier();
 
                 MessageBox.Show("Profile updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -165,7 +203,19 @@ namespace PL
             RefreshAll();
         }
 
-        // Choose order button handler
+        // Change password opens modal dialog
+        private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new ChangePasswordWindow(_courierId, _managerId);
+            if (dlg.ShowDialog() == true)
+            {
+                // after successful password change, reload courier and update mask
+                RefreshCourier();
+                UpdateMaskedPassword();
+            }
+        }
+
+        // Choose order handlers (unchanged)
         private void BtnChooseOrder_Click(object sender, RoutedEventArgs e)
         {
             ChooseSelectedOrder();
@@ -199,18 +249,14 @@ namespace PL
             }
         }
 
-        // ---------------------------------------------------
-        // Logout handler
-        // ---------------------------------------------------
+        // Logout (unchanged)
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Create and show login window first
                 var login = new LoginWindow();
                 login.Show();
 
-                // Close all other windows except the login window
                 var windowsToClose = Application.Current.Windows.Cast<Window>().Where(w => w != login).ToList();
                 foreach (var w in windowsToClose)
                     w.Close();
@@ -218,6 +264,20 @@ namespace PL
             catch (Exception ex)
             {
                 MessageBox.Show($"Logout failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Open AvailableOrderListWindow for this courier
+        private void BtnAvailableOrders_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var wnd = new AvailableOrderListWindow(_courierId, false) { Owner = this };
+                wnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Cannot open available orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

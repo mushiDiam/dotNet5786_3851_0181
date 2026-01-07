@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input; // Required for Cursors
+using System.Linq; // Required for window collection operations
 using BlApi;
 using BO;
 using PL.Courier;
@@ -260,6 +261,39 @@ namespace PL
         private void btnHandleCouriers_Click(object sender, RoutedEventArgs e)
         {
             new CourierListWindow().Show();
+        }
+
+        private void BtnAllOrders_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int managerId = s_bl.Admin.GetConfig().ManagerId;
+                var wnd = new AvailableOrderListWindow(managerId, true) { Owner = this };
+                wnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Cannot open orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // show login window first
+                var login = new LoginWindow();
+                login.Show();
+
+                // close all other windows except the new login window
+                var windowsToClose = Application.Current.Windows.Cast<Window>().Where(w => w != login).ToList();
+                foreach (var w in windowsToClose)
+                    w.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Logout failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion

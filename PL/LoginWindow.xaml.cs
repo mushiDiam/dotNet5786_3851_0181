@@ -17,7 +17,7 @@ namespace PL
             InitializeComponent();
         }
 
-        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        private void BtnLeave_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }

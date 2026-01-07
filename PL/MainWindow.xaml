@@ -180,7 +180,7 @@
             <Border Background="White" 
                     CornerRadius="10" 
                     Padding="20"
-                    Margin="0,0,15,0">
+                    Margin="0,0,10,0">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
                 </Border.Effect>
@@ -209,9 +209,16 @@
                             Margin="0,0,0,8"/>
 
                     <Button Content="All Orders" 
+                            Click="BtnAllOrders_Click"
                             Style="{StaticResource ModernButton}"
                             Margin="0,0,0,8"/>
                             <!--TODO: Click="btnAllOrders_Click" -->
+
+                    <!-- LOGOUT button added -->
+                    <Button Content="Logout"
+                            Click="BtnLogout_Click"
+                            Style="{StaticResource DangerButton}"
+                            Margin="0,200,0,0"/>
                 </StackPanel>
             </Border>
 

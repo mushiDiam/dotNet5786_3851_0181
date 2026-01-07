@@ -125,13 +125,13 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
                         <StackPanel>
-                            <TextBlock Text="SIGNED IN AS" 
+                            <TextBlock Text="CURRENT TIME" 
                                        FontSize="10" 
                                        Foreground="#90CAF9" 
                                        HorizontalAlignment="Center"
                                        Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding CurrentCourier.FullName}" 
-                                       FontSize="16" 
+                            <TextBlock Text="{Binding CurrentClock, StringFormat='{} {0:dd/MM/yyyy HH:mm}'}" 
+                                       FontSize="18" 
                                        FontWeight="Bold" 
                                        Foreground="White"
                                        HorizontalAlignment="Center"/>
@@ -154,10 +154,6 @@
                             Click="BtnSave_Click" 
                             Style="{StaticResource ModernButton}"
                             Margin="0,0,8,0"
-                            Padding="12,6"/>
-                    <Button Content="Choose Order" 
-                            Click="BtnChooseOrder_Click" 
-                            Style="{StaticResource ModernButton}"
                             Padding="12,6"/>
                 </StackPanel>
             </Grid>
@@ -186,10 +182,9 @@
                                Margin="0,0,0,15"
                                Foreground="#333333"/>
 
-                    <Button Content="My Profile" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
-                    <Button Content="Available Orders" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
+                    <Button Content="Available Orders" Click="BtnAvailableOrders_Click" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
                     <Button Content="Delivery History" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
-                    <Button Content="Logout" Click="BtnLogout_Click" Style="{StaticResource DangerButton}" Margin="0,20,0,0"/>
+                    <Button Content="Logout" Click="BtnLogout_Click" Style="{StaticResource DangerButton}" Margin="0,280,0,0"/>
                 </StackPanel>
             </Border>
 
@@ -229,7 +224,7 @@
                         <Border Background="#FAFAFA" CornerRadius="6" Padding="12" Margin="0,0,0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="320"/>
+                                    <ColumnDefinition Width="360"/>
                                     <ColumnDefinition Width="12"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
@@ -237,25 +232,46 @@
                                 <StackPanel Grid.Column="0" VerticalAlignment="Top">
                                     <TextBlock Text="PROFILE" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="90" Text="Full Name:" VerticalAlignment="Center"/>
-                                        <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Style="{StaticResource ModernTextBox}"/>
+                                        <TextBlock Width="110" Text="Full Name:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="90" Text="Phone:" VerticalAlignment="Center"/>
-                                        <TextBox Text="{Binding CurrentCourier.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Style="{StaticResource ModernTextBox}"/>
+                                        <TextBlock Width="110" Text="Phone:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="90" Text="Transport:" VerticalAlignment="Center"/>
-                                        <ComboBox Width="200"
+                                        <TextBlock Width="110" Text="Email:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4" VerticalAlignment="Center">
+                                        <TextBlock Width="110" Text="Password:" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding MaskedPassword}" VerticalAlignment="Center" Width="160"/>
+                                        <Button Content="Change" Width="60" Click="BtnChangePassword_Click" Margin="8,0,0,0" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Transport:" VerticalAlignment="Center"/>
+                                        <ComboBox Width="220"
                                                   ItemsSource="{StaticResource TransportationKey}"
                                                   SelectedItem="{Binding CurrentCourier.Transport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="90" Text="Join Date:" VerticalAlignment="Center"/>
-                                        <DatePicker SelectedDate="{Binding CurrentCourier.JoinDate, Mode=TwoWay}" Width="200"/>
+                                        <TextBlock Width="110" Text="Max Distance (km):" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Join Date:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.JoinDate}" Width="130" IsEnabled="False" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Active:" VerticalAlignment="Center"/>
+                                        <CheckBox IsChecked="{Binding CurrentCourier.IsActive}" IsEnabled="False" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -276,40 +292,6 @@
                                 <ColumnDefinition Width="12"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
-                            <!-- Open / Available Orders -->
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Open / Available Orders" FontWeight="Bold" Margin="0,0,0,8"/>
-                                <DataGrid ItemsSource="{Binding OpenOrders}" AutoGenerateColumns="False" SelectionMode="Single"
-                                          SelectedItem="{Binding SelectedOpenOrder, Mode=TwoWay}" Height="250" MouseDoubleClick="OpenOrders_DoubleClick">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="OrderId" Binding="{Binding Id}" Width="80"/>
-                                        <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="*"/>
-                                        <DataGridTextColumn Header="Address" Binding="{Binding Address}" Width="200"/>
-                                        <DataGridTextColumn Header="Distance" Binding="{Binding Distance, StringFormat=N2}" Width="90"/>
-                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                                    <Button Content="Choose Order" Width="110" Click="BtnChooseOrder_Click" Style="{StaticResource ModernButton}" />
-                                </StackPanel>
-                            </StackPanel>
-
-                            <!-- History -->
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Delivery History" FontWeight="Bold" Margin="0,0,0,8"/>
-                                <DataGrid ItemsSource="{Binding EndedDeliveries}" AutoGenerateColumns="False" SelectionMode="Single"
-                                          SelectedItem="{Binding SelectedEndedDelivery, Mode=TwoWay}" Height="250" IsReadOnly="True">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="DeliveryId" Binding="{Binding Id}" Width="90"/>
-                                        <DataGridTextColumn Header="OrderId" Binding="{Binding OrderId}" Width="80"/>
-                                        <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="*"/>
-                                        <DataGridTextColumn Header="Delivered At" Binding="{Binding EndTime}" Width="160"/>
-                                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="120"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </StackPanel>
                         </Grid>
                     </Grid>
                 </Grid>
