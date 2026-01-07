@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfCourier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Courier>
-    <Id>323195840</Id>
-    <Active>false</Active>
-    <MaxDeliveryDistance>18.31361936798146</MaxDeliveryDistance>
-    <JoinDate>2025-07-29T16:54:14.4083998+03:00</JoinDate>
-    <OrderType>Motorcycle</OrderType>
-    <Name>David Levi</Name>
-    <Phone>050-1769147</Phone>
-    <Email>david.levi@mail.com</Email>
-    <Password>A9r$</Password>
-  </Courier>
-  <Courier>
     <Id>383079919</Id>
     <Active>true</Active>
     <MaxDeliveryDistance>6.392396679766728</MaxDeliveryDistance>
@@ -170,12 +159,32 @@
     <Active>true</Active>
     <MaxDeliveryDistance>0.9423094667834855</MaxDeliveryDistance>
     <JoinDate>2024-11-10T16:54:14.5982336+02:00</JoinDate>
-    <OrderType>Walking</OrderType>
+    <OrderType>Car</OrderType>
     <Name>Yael Amir</Name>
     <Phone>050-7360012</Phone>
     <Email>yael.amir@mail.com</Email>
-    <Password>U7n#s</Password>
+    <Password />
   </Courier>
   <Courier>
-    <Id>256696310</Id>
-    <
+    <Id>323195840</Id>
+    <Active>false</Active>
+    <MaxDeliveryDistance>18.31361936798146</MaxDeliveryDistance>
+    <JoinDate>2025-06-29T00:00:00</JoinDate>
+    <OrderType>Walking</OrderType>
+    <Name>David Levi</Name>
+    <Phone>050-1769147</Phone>
+    <Email>david.levi@mail.com</Email>
+    <Password />
+  </Courier>
+  <Courier>
+    <Id>251614911</Id>
+    <Active>true</Active>
+    <MaxDeliveryDistance>5619</MaxDeliveryDistance>
+    <JoinDate>2026-01-07T15:52:50.9696918+02:00</JoinDate>
+    <OrderType>Motorcycle</OrderType>
+    <Name>mushi</Name>
+    <Phone>24878471</Phone>
+    <Email>hbghvfyv</Email>
+    <Password />
+  </Courier>
+</ArrayOfCourier>

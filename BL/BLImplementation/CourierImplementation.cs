@@ -41,6 +41,17 @@ internal class CourierImplementation : BlApi.ICourier
         return JobTypes.Courier;
     }
 
+    public JobTypes Authenticate(int id, string password)
+    {
+        var match = CourierManager.ReadAll().FirstOrDefault(c => c.Id == id);
+        if (match is null)
+            throw new BlDoesNotExistException($"No courier with id {id} exists");
+        if (match.Password != password)
+            throw new BlUnauthorizedAccessException("Incorrect password");
+        if (AdminManager.IsAdmin(id))
+            return JobTypes.Manager;
+        return JobTypes.Courier;
+    }
     public IEnumerable<CourierInList> GetCouriers(int id, bool? IsActiveFilter, CourierInListOptions? sort)
     {
         if (!AdminManager.IsAdmin(id))

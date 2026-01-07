@@ -6,6 +6,8 @@ public interface ICourier : IObservable
 {
 
     JobTypes EnterProgram(int id);
+    JobTypes Authenticate(int id, string password);
+
     IEnumerable<BO.CourierInList> GetCouriers(int id, bool? includeInactive, CourierInListOptions? sort);
     BO.Courier Details(int id , int courierId);
     void UpdateDetails(int id, BO.Courier C);
