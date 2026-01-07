@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using BO;
 using DalApi;
 using DO;
+
 namespace Helpers;
 
 internal static class CourierManager
@@ -105,6 +106,10 @@ internal static class CourierManager
             s_dal.Courier.DeleteAll();
         Observers.NotifyListUpdated(); //stage 5
     }
+
+    // -------------------------------------------------------
+    // ConvertToDal: INCLUDE the Password field (was missing)
+    // -------------------------------------------------------
     public static DO.Courier ConvertToDal(BO.Courier courier){
         return new DO.Courier(){
             Id = courier.Id,
@@ -114,9 +119,14 @@ internal static class CourierManager
             Email= courier.Email,
             MaxDeliveryDistance = courier.MaxDistancePreference,
             JoinDate = courier.JoinDate,
-            OrderType = (DO.OrderType)courier.Transport
+            OrderType = (DO.OrderType)courier.Transport,
+            Password = courier.Password  // <<< ensure password is preserved on update
         };
     }
+
+    // -------------------------------------------------------
+    // ConvertToBO: INCLUDE the Password field so UI can show masked length
+    // -------------------------------------------------------
     internal static BO.Courier ConvertToBO(DO.Courier dalCourier)
     {
         if (dalCourier == null)
@@ -130,6 +140,7 @@ internal static class CourierManager
             PhoneNumber = dalCourier.Phone,
             IsActive = dalCourier.Active,
             Email = dalCourier.Email,
+            Password = dalCourier.Password ?? string.Empty, // <<< expose password to BO (masked in UI)
             MaxDistancePreference = dalCourier.MaxDeliveryDistance ?? 0.0,
             JoinDate = dalCourier.JoinDate,
             Transport = (BO.Transportation)dalCourier.OrderType // keep mapping consistent with DAL

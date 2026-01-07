@@ -1,0 +1,301 @@
+﻿<Window x:Class="PL.MainCourierWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PL"
+        mc:Ignorable="d"
+        Title="Courier Dashboard" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Time Control Button Style -->
+        <Style x:Key="TimeButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Danger Button Style -->
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#f44336"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#da190b"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Success Button Style -->
+        <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Header Bar -->
+        <Border Background="#1565C0" Height="120" VerticalAlignment="Top">
+            <Grid Margin="20,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Top Section: Title and Courier Info -->
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="📦" FontSize="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Text="Courier Dashboard" 
+                                       FontSize="24" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"/>
+                            <TextBlock Text="Personal workspace — manage profile, pick orders and view history" 
+                                       FontSize="12" 
+                                       Foreground="#E3F2FD"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Courier Display in Header -->
+                    <Border Background="#0D47A1" 
+                            CornerRadius="8" 
+                            Padding="20,10" 
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="CURRENT TIME" 
+                                       FontSize="10" 
+                                       Foreground="#90CAF9" 
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding CurrentClock, StringFormat='{} {0:dd/MM/yyyy HH:mm}'}" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentCourier.Id, StringFormat='ID: {0}'}"
+                                       FontSize="12"
+                                       Foreground="#BBDEFB"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Section: small actions -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                    <Button Content="Refresh" 
+                            Click="BtnRefresh_Click" 
+                            Style="{StaticResource TimeButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                    <Button Content="Save Profile" 
+                            Click="BtnSave_Click" 
+                            Style="{StaticResource ModernButton}"
+                            Margin="0,0,8,0"
+                            Padding="12,6"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Margin="20,140,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Sidebar -->
+            <Border Background="White" 
+                    CornerRadius="10" 
+                    Padding="20"
+                    Margin="0,0,15,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                </Border.Effect>
+
+                <StackPanel>
+                    <TextBlock Text="🔧 Quick Actions" 
+                               FontSize="16" 
+                               FontWeight="SemiBold" 
+                               Margin="0,0,0,15"
+                               Foreground="#333333"/>
+
+                    <Button Content="Available Orders" Click="BtnAvailableOrders_Click" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
+                    <Button Content="Delivery History" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
+                    <Button Content="Logout" Click="BtnLogout_Click" Style="{StaticResource DangerButton}" Margin="0,280,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Right Panel - Courier Content -->
+            <Border Grid.Column="1" 
+                    Background="White" 
+                    CornerRadius="10" 
+                    Padding="25">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Section Header -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <TextBlock Text="🚚" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="My Workspace" 
+                                   FontSize="20" 
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Foreground="#333333"/>
+                    </StackPanel>
+
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="12"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Profile Panel -->
+                        <Border Background="#FAFAFA" CornerRadius="6" Padding="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="360"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Top">
+                                    <TextBlock Text="PROFILE" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Full Name:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Phone:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Email:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4" VerticalAlignment="Center">
+                                        <TextBlock Width="110" Text="Password:" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding MaskedPassword}" VerticalAlignment="Center" Width="160"/>
+                                        <Button Content="Change" Width="60" Click="BtnChangePassword_Click" Margin="8,0,0,0" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Transport:" VerticalAlignment="Center"/>
+                                        <ComboBox Width="220"
+                                                  ItemsSource="{StaticResource TransportationKey}"
+                                                  SelectedItem="{Binding CurrentCourier.Transport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Max Distance (km):" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" Style="{StaticResource ModernTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Join Date:" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CurrentCourier.JoinDate}" Width="130" IsEnabled="False" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                                        <TextBlock Width="110" Text="Active:" VerticalAlignment="Center"/>
+                                        <CheckBox IsChecked="{Binding CurrentCourier.IsActive}" IsEnabled="False" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Current delivery summary -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                                    <TextBlock Text="CURRENT DELIVERY" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
+                                    <TextBlock Text="{Binding SelectedOpenOrder.OrderId, StringFormat='Order ID: {0}'}" FontSize="13" Margin="0,2"/>
+                                    <TextBlock Text="{Binding SelectedOpenOrder.FullAddress, StringFormat='Address: {0}'}" FontSize="13" Margin="0,2" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding SelectedOpenOrder.ScheduleStatus, StringFormat='Status: {0}'}" FontSize="13" Margin="0,6"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Orders and History -->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
