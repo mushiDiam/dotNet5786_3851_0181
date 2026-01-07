@@ -8,6 +8,7 @@ using BO;
 using DalApi;
 using DO;
 using Helpers;
+using System.Linq;
 
 internal class OrderImplementation : BlApi.IOrder
 {
@@ -170,8 +171,8 @@ internal class OrderImplementation : BlApi.IOrder
             }
         }
 
-        // Return the mapped and ordered items
-        return (IEnumerable<ClosedDeliveryInList>)ordered.Select(x => x.Item).ToList();
+        // Materialize a strongly-typed list instead of casting List<object> to IEnumerable<ClosedDeliveryInList>
+        return ordered.Select(x => (BO.ClosedDeliveryInList)x.Item).ToList();
     }
 
     public IEnumerable<OpenOrderInList> GetOpenOrder(int id, int courierId, OrderTypes? filter, OrderInListOptions? sort)
