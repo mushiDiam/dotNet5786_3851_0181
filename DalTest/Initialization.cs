@@ -127,7 +127,7 @@ public static class Initialization
 
     private static void createDeliveries()
     {
-        foreach (var order in s_dal!.Order.ReadAll())
+        foreach (var order in s_dal!.Order.ReadAll().Take(20))
         {
             var availableCouriers = s_dal!.Courier.ReadAll();
 

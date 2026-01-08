@@ -19,17 +19,19 @@ internal static class DeliveryManager{
         }
         return orders;
     }
-    public static Delivery GetDelivery(int orderId)
+    public static Delivery? GetDelivery(int orderId)
     {
+
+        DO.Delivery? delToRet = null;
         try
         {
-            s_dal.Delivery.Read(d => d.OrderId == orderId);
+            delToRet = s_dal.Delivery.Read(d => d.OrderId == orderId);
         }
         catch(DalDoesNotExistException ex)
         {
             throw new BlDoesNotExistException("Delivery not found", ex);
         }
-        return s_dal.Delivery.Read(d => d.OrderId == orderId);
+        return delToRet;
     }
 
     internal static void CancelDelivery(int deliveryId)

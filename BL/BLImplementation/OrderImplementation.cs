@@ -9,6 +9,9 @@ using DalApi;
 using DO;
 using Helpers;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Collections.Specialized;
 
 internal class OrderImplementation : BlApi.IOrder
 {
@@ -94,6 +97,7 @@ internal class OrderImplementation : BlApi.IOrder
         OrderManager.EndDelivery(courierId, deliveryId);
     }
 
+   
     public IEnumerable<ClosedDeliveryInList> GetEndedDeliveries(int id, int courierId, OrderTypes? filter, OrderInListOptions? sort)
     {
         if (!AdminManager.IsAdmin(id))
@@ -177,68 +181,88 @@ internal class OrderImplementation : BlApi.IOrder
 
     public IEnumerable<OpenOrderInList> GetOpenOrder(int id, int courierId, OrderTypes? filter, OrderInListOptions? sort)
     {
-        if (!AdminManager.IsAdmin(id))
-            throw new BlUnauthorizedAccessException("Only an admin can get open orders");
+        // בדיקת הרשאות
+        if (!AdminManager.IsAdmin(id) && id != courierId)
+            throw new BlUnauthorizedAccessException("Only an admin or the courier themselves can get open orders");
 
         BO.Courier courier = CourierManager.Read(courierId);
         if (courier is null)
             throw new BlDoesNotExistException($"Courier {courierId} not found");
 
-        // 3. Get all orders (BO.Order) and filter open
-        List<BO.Order> allOrders = OrderManager.ReadAll()?.Where(o => o.OrderStatus == OrderStatus.Open).ToList()
-                                  ?? new List<BO.Order>();
+        // 1. שליפת כל ההזמנות
+        var allOrders = OrderManager.ReadAll() ?? new List<BO.Order>();
 
-        // 4. Filter orders by type if requested
+        Debug.WriteLine("count of  orders within courier range: " + allOrders.Count());
+
+
+        // 2. סינון קריטי: רק הזמנות בסטטוס Open
+        // (מכיוון שאין CourierId ב-BO.Order, אנחנו מסתמכים על הסטטוס בלבד)
+
+
+        var orderListToRet = from order in allOrders
+                             let distance = order.AirDistance
+                             where (OrderManager.CalculateOrderStatus(order.Id) == BO.OrderStatus.Open && distance <= courier.MaxDistancePreference)
+                             
+                             select order; //BuildOpenOrder(id, order);
+
+        Debug.WriteLine("count of open orders within courier range: " + orderListToRet.Count());
+        
+
+        var openOrders = orderListToRet;
+
+        // 3. סינון לפי סוג הזמנה
         if (filter.HasValue)
-            allOrders = allOrders.Where(o => o.OrderType == filter.Value).ToList();
+        {
+            openOrders = openOrders.Where(o => o.OrderType == filter.Value);
+        }
 
-        // 5. Filter orders by courier distance
-        allOrders = allOrders
-            .Where(o => o.AirDistance <= courier.MaxDistancePreference)
-            .ToList();
+        // 5. המרה (Projection)
+        var projected = openOrders.Select(o => new OpenOrderInList
+        {
+            CourierId = courierId,
+            OrderId = o.Id,
+            OrderType = o.OrderType,
+            weight = o.Weight,
+            volume = o.Volume,
+            fragile = o.Fragile,
+            FullAddress = o.FullAddress,
+            AirDistance = o.AirDistance,
 
-        // 6. Map to OpenOrderInList
-        var projected = allOrders
-            .Select(o => new OpenOrderInList
-            {
-                CourierId = courierId,
-                OrderId = o.Id,
-                OrderType = o.OrderType,
-                weight = o.Weight,
-                volume = o.Volume,
-                fragile = o.Fragile,
-                FullAddress = o.FullAddress,
-                AirDistance = o.AirDistance,
-                ActualDistance = OrderManager.GetActualDistanceAsync(o.Latitude, o.Longitude, courier.Transport).GetAwaiter().GetResult(),
-                EstimatedTime = o.ExpectedDeliveryTime.HasValue ? o.ExpectedDeliveryTime.Value - DateTime.Now : null,
-                ScheduleStatus = o.ScheduleStatus, // 1:1 copy
-                RemainingTime = o.RemainingTime,
-                MaxDeliveryTime = o.MaxDeliveryTime
-            });
+            // מונע תקיעה: לא מחשבים מסלול מלא בתוך הרשימה
+            ActualDistance = null,
 
-        // 7. Apply sorting
+            EstimatedTime = o.ExpectedDeliveryTime.HasValue ? o.ExpectedDeliveryTime.Value - DateTime.Now : null,
+            ScheduleStatus = o.ScheduleStatus,
+            RemainingTime = o.RemainingTime,
+            MaxDeliveryTime = o.MaxDeliveryTime
+        });
+
+        // 6. מיון
         IOrderedEnumerable<OpenOrderInList> ordered;
         if (sort.HasValue)
         {
             ordered = sort.Value switch
             {
-                OrderInListOptions.DeliveryId => projected.OrderBy(o => o.OrderId), // fallback
+                OrderInListOptions.DeliveryId => projected.OrderBy(o => o.OrderId),
                 OrderInListOptions.OrderId => projected.OrderBy(o => o.OrderId),
                 OrderInListOptions.OrderType => projected.OrderBy(o => o.OrderType).ThenBy(o => o.OrderId),
                 OrderInListOptions.AirDistance => projected.OrderBy(o => o.AirDistance).ThenBy(o => o.OrderId),
-                OrderInListOptions.OrderStatus => projected.OrderBy(o => o.ScheduleStatus).ThenBy(o => o.OrderId),
-                OrderInListOptions.ScheduleStatus => projected.OrderBy(o => o.ScheduleStatus).ThenBy(o => o.OrderId),
-                OrderInListOptions.RemainingTime => projected.OrderBy(o => o.RemainingTime).ThenBy(o => o.OrderId),
-                OrderInListOptions.CompletionTime => projected.OrderBy(o => o.MaxDeliveryTime).ThenBy(o => o.OrderId),
-                OrderInListOptions.DeliveryCount => projected.OrderBy(o => o.OrderId),
                 _ => projected.OrderBy(o => o.ScheduleStatus).ThenBy(o => o.OrderId)
             };
         }
         else
         {
-            // default sort = ScheduleStatus, then OrderId
             ordered = projected.OrderBy(o => o.ScheduleStatus).ThenBy(o => o.OrderId);
         }
+
+        Debug.WriteLine("Open Orders for Courier " + courierId + ":");
+
+        foreach (var order in ordered)
+        {
+      
+            Debug.WriteLine($"Open Order: {order.OrderId}, Distance: {order.AirDistance}");
+        }
+
 
         return ordered.ToList();
     }

@@ -3,7 +3,7 @@ using System.Windows;
 using BlApi;
 using BO;
 
-namespace PL.Courier
+namespace PL.Courier.ForManager
 {
     public partial class CourierWindow : Window
     {

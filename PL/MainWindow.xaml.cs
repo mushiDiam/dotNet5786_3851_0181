@@ -7,6 +7,8 @@ using System.Linq; // Required for window collection operations
 using BlApi;
 using BO;
 using PL.Courier;
+using PL.Login;
+using PL.Courier.ForManager;
 
 namespace PL
 {

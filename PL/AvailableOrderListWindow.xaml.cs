@@ -92,6 +92,8 @@ namespace PL
                     var openFromBl = s_bl.Order.GetOpenOrder(_managerId, _requesterId, null, null)?.ToList()
                                      ?? new List<BO.OpenOrderInList>();
 
+
+
                     // Map BL result (already filtered) to view
                     var blList = openFromBl.Select(o => new OrderView
                     {

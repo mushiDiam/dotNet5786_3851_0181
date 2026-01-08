@@ -3,7 +3,7 @@ using System.Windows;
 using BlApi;
 using BO;
 
-namespace PL
+namespace PL.Login
 {
     /// <summary>
     /// Interaction logic for LoginWindow.xaml
@@ -15,11 +15,6 @@ namespace PL
         public LoginWindow()
         {
             InitializeComponent();
-        }
-
-        private void BtnLeave_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -66,7 +61,7 @@ namespace PL
 
                 if (role == JobTypes.Courier)
                 {
-                    var courierWindow = new MainCourierWindow(id);
+                    var courierWindow = new PL.Courier.ForCourier.MainCourierWindow(id);
                     courierWindow.Show();
                     Close();
                     return;
@@ -84,6 +79,11 @@ namespace PL
         {
             txtStatus.Text = message;
             txtStatus.Visibility = Visibility.Visible;
+        }
+
+        private void BtnLeave_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

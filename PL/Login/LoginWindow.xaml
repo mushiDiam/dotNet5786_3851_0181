@@ -1,4 +1,4 @@
-﻿<Window x:Class="PL.LoginWindow"
+﻿<Window x:Class="PL.Login.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Sign In" Height="420" Width="560"

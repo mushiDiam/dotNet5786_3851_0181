@@ -3,6 +3,7 @@ using BlImplementation;
 using BO;
 using DalApi;
 using DO;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.Json;
@@ -97,11 +98,14 @@ internal static class OrderManager{
         Observers.NotifyListUpdated(); //stage 5
 
     }
-    private static OrderStatus CalculateOrderStatus(int orderId)
+    public static OrderStatus CalculateOrderStatus(int orderId)
     {
-        DO.Delivery del = DeliveryManager.GetDelivery(orderId);
+        DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
         if (del == null)
-            return OrderStatus.InProgress;
+        {
+            Debug.WriteLine($"Order {orderId} has no delivery record; treating as Open.");
+            return OrderStatus.Open;
+        }
         if (del.EndOfOrder == DO.EndOfOrder.Completed)
             return OrderStatus.Closed;
         else if (del.EndOfOrder == DO.EndOfOrder.Canceled)

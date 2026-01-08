@@ -7,7 +7,7 @@ using System.Linq;
 using BO;
 using BlApi;
 
-namespace PL.Courier
+namespace PL.Courier.ForManager
 {
     public partial class CourierListWindow : Window
     {
