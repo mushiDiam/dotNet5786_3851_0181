@@ -6,11 +6,8 @@
         xmlns:local="clr-namespace:PL.AvailableOrders"
         mc:Ignorable="d"
         Title="Order Details" Height="520" Width="900"
-        WindowStartupLocation="CenterOwner"
-        Background="#F5F5F5">
-
+        WindowStartupLocation="CenterOwner" Background="#F5F5F5">
     <Window.Resources>
-        <!-- Copied minimal theme styles from MainCourierWindow for consistent look -->
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="#2196F3"/>
             <Setter Property="Foreground" Value="White"/>
@@ -21,9 +18,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="5"
-                                Padding="{TemplateBinding Padding}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -35,7 +30,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
         <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#4CAF50"/>
             <Style.Triggers>
@@ -44,7 +38,14 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#f44336"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#da190b"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="ModernTextBox" TargetType="TextBox">
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
@@ -53,10 +54,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="3">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
                             <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
                         </Border>
                     </ControlTemplate>
@@ -70,7 +68,6 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="110"/>
@@ -78,14 +75,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <Border Background="#1565C0" CornerRadius="8" Grid.Row="0" Padding="16">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="270"/>
                 </Grid.ColumnDefinitions>
-
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="📦" FontSize="36" Margin="0,0,12,0" VerticalAlignment="Center"/>
                     <StackPanel>
@@ -93,7 +88,6 @@
                         <TextBlock Text="Complete information about the selected order" FontSize="12" Foreground="#E3F2FD"/>
                     </StackPanel>
                 </StackPanel>
-
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Order ID" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Right"/>
                     <TextBlock Text="{Binding OrderId}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
@@ -101,7 +95,6 @@
             </Grid>
         </Border>
 
-        <!-- Content -->
         <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="18" Margin="0,12,0,39" Grid.RowSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -112,37 +105,30 @@
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Top">
                     <TextBlock Text="MAIN" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Address:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding FullAddress}" TextWrapping="Wrap" Width="220"/>
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Customer:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding CustomerName}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Phone:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding CustomerPhone}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Type:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding OrderType}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Fragile:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Fragile}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Weight:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Weight}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Volume:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Volume}" />
@@ -152,35 +138,28 @@
                     <TextBox Text="{Binding Description}" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Height="90" TextWrapping="Wrap"/>
                 </StackPanel>
 
-                <!-- Right column: timing / status / computed -->
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
                     <TextBlock Text="TIMING AND STATUS" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Created At:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Expected:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding ExpectedDeliveryTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Max Delivery:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding MaxDeliveryTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Order Status:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding OrderStatus}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Schedule Status:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding ScheduleStatus}" />
                     </StackPanel>
-
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="150" Text="Remaining Time:" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding RemainingTime}" />
@@ -206,10 +185,9 @@
             </Grid>
         </Border>
 
-        <!-- Footer actions -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
-            <Button Content="Close" Click="BtnClose_Click" Style="{StaticResource ModernButton}" Margin="0,0,8,0" Width="100"/>
-            <Button Content="OK" Click="BtnOk_Click" Style="{StaticResource SuccessButton}" Width="100"/>
+            <Button Content="Close" Click="BtnClose_Click" Style="{StaticResource DangerButton}" Margin="0,0,8,0" Width="100"/>
+            <Button x:Name="BtnAccept" Content="Accept Order" Click="BtnAccept_Click" Style="{StaticResource SuccessButton}" Width="120"/>
         </StackPanel>
     </Grid>
 </Window>
