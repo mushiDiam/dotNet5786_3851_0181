@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BlApi;
+using PL.Login;
+using System.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -199,7 +202,7 @@ namespace PL.Courier.ForCourier
             }
         }
 
- 
+
 
         // Change password opens modal dialog
         private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
@@ -240,6 +243,9 @@ namespace PL.Courier.ForCourier
                 // Refresh to update assigned orders and current delivery
                 RefreshOrders();
                 RefreshEndedDeliveries();
+
+                // IMPORTANT: refresh courier so UI receives updated ActiveOrder immediately
+                RefreshCourier();
             }
             catch (Exception ex)
             {

@@ -199,17 +199,6 @@
     <Password>1234</Password>
   </Courier>
   <Courier>
-    <Id>236132573</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>29.904807630633943</MaxDeliveryDistance>
-    <JoinDate>2025-09-18T17:16:33.1026999+03:00</JoinDate>
-    <OrderType>Car</OrderType>
-    <Name>Omer Lavi</Name>
-    <Phone>050-7365126</Phone>
-    <Email>omer.lavi@mail.com</Email>
-    <Password>1234</Password>
-  </Courier>
-  <Courier>
     <Id>217947954</Id>
     <Active>true</Active>
     <MaxDeliveryDistance>52</MaxDeliveryDistance>
@@ -218,6 +207,17 @@
     <Name>Noga Arbel</Name>
     <Phone>050-1370395</Phone>
     <Email>noga.arbel@mail.com</Email>
+    <Password>1234</Password>
+  </Courier>
+  <Courier>
+    <Id>236132573</Id>
+    <Active>true</Active>
+    <MaxDeliveryDistance>6030633943</MaxDeliveryDistance>
+    <JoinDate>2025-09-18T17:16:33.1026999+03:00</JoinDate>
+    <OrderType>Car</OrderType>
+    <Name>Omer Lavi</Name>
+    <Phone>050-7365126</Phone>
+    <Email>omer.lavi@mail.com</Email>
     <Password>1234</Password>
   </Courier>
 </ArrayOfCourier>

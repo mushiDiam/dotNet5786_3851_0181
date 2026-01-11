@@ -144,13 +144,7 @@
                 </Grid>
 
                 <!-- Bottom Section: small actions -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <Button Content="Save Profile" 
-                            Click="BtnSave_Click" 
-                            Style="{StaticResource ModernButton}"
-                            Margin="0,0,8,0"
-                            Padding="12,6"/>
-                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10"/>
             </Grid>
         </Border>
 
@@ -269,19 +263,60 @@
                                         <CheckBox IsChecked="{Binding CurrentCourier.IsActive}" IsEnabled="False" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
-                                <Button Content="💾 Save Profile" 
-                                    Click="BtnSave_Click" 
-                                    Style="{StaticResource SuccessButton}"
-                                    Margin="0,339,229,10"
-                                    Padding="12,6"/>
 
                                 <!-- Current delivery summary -->
-                                <StackPanel Grid.Column="2" VerticalAlignment="Top">
-                                    <TextBlock Text="CURRENT DELIVERY" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
-                                    <TextBlock Text="{Binding SelectedOpenOrder.OrderId, StringFormat='Order ID: {0}'}" FontSize="13" Margin="0,2"/>
-                                    <TextBlock Text="{Binding SelectedOpenOrder.FullAddress, StringFormat='Address: {0}'}" FontSize="13" Margin="0,2" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding SelectedOpenOrder.ScheduleStatus, StringFormat='Status: {0}'}" FontSize="13" Margin="0,6"/>
-                                </StackPanel>
+                                <Border Grid.Column="2" CornerRadius="6" Padding="12">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <!-- default: highlight when there IS a delivery -->
+                                            <Setter Property="Background" Value="#E8F5E9"/>
+                                            <Style.Triggers>
+                                                <!-- when no active order -> white background -->
+                                                <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
+                                                    <Setter Property="Background" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <StackPanel>
+                                        <TextBlock Text="CURRENT DELIVERY" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
+
+                                        <!-- Details visible only when ActiveOrder is not null -->
+                                        <StackPanel Margin="0,0,0,4">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+
+                                            <TextBlock Text="{Binding CurrentCourier.ActiveOrder.OrderId, StringFormat='Order ID: {0}'}" FontSize="13" Margin="0,2"/>
+                                            <TextBlock Text="{Binding CurrentCourier.ActiveOrder.Address, StringFormat='Address: {0}'}" FontSize="13" Margin="0,2" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding CurrentCourier.ActiveOrder.ScheduleStatus, StringFormat='Status: {0}'}" FontSize="13" Margin="0,6"/>
+                                            <TextBlock Text="{Binding CurrentCourier.ActiveOrder.CustomerName, StringFormat='Customer: {0}'}" FontSize="13" Margin="0,2"/>
+                                            <TextBlock Text="{Binding CurrentCourier.ActiveOrder.TimeLeftForDelivery, StringFormat='Time left: {0}'}" FontSize="13" Margin="0,2"/>
+                                        </StackPanel>
+
+                                        <!-- Placeholder when there is no active delivery -->
+                                        <TextBlock Text="No current delivery." Foreground="#777" FontStyle="Italic" Margin="0,6,0,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
                             </Grid>
                         </Border>
 
@@ -297,5 +332,16 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <!-- Fixed Save button: overlayed on top of content so it remains visible even when window is small -->
+        <Button x:Name="BtnSaveProfileFixed"
+                Content="💾 Save Profile"
+                Click="BtnSave_Click"
+                Style="{StaticResource SuccessButton}"
+                Width="140" Height="40"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,24,24"
+                ToolTip="Save profile (always visible)"/>
     </Grid>
 </Window>
