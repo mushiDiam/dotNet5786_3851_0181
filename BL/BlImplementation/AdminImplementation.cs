@@ -4,7 +4,7 @@ using System;
 using BlApi;
 using BO;
 using Helpers;
-using DO;
+using System.Threading.Tasks;
 
 internal class AdminImplementation : IAdmin
 {
@@ -58,4 +58,8 @@ internal class AdminImplementation : IAdmin
     public void RemoveConfigObserver(Action configObserver) =>
     AdminManager.ConfigUpdatedObservers -= configObserver;
     #endregion Stage 5
+
+    // Delegate the geocoding request to BL helper (no PL-level HTTP/json logic).
+    public Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
+        => OrderManager.GetCoordinatesFromAddressAsync(address);
 }

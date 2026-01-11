@@ -14,15 +14,18 @@ internal class DeliveryImplementation : IDelivery
         XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
     }
 
-    public void Delete(int id){
+    // In DeliveryImplementation.cs
+    public void Delete(int id)
+    {
         List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        if (Deliverys.Exists(d => d.Id == id)){
-            Deliverys.RemoveAll(d => d.Id == id);
+
+        if (Deliverys.Exists(d => d.Id == id))
+        {
+            Deliverys.RemoveAll(d => d.Id == id);  // Remove ALL duplicates
             XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
             return;
         }
         throw new DalDoesNotExistException($"Delivery with ID= {id} doesn't exists");
-
     }
 
     public void DeleteAll(){
@@ -44,10 +47,17 @@ internal class DeliveryImplementation : IDelivery
         return filter == null ? Deliverys : Deliverys.Where(filter);
     }
 
-    public void Update(Delivery item){
+    public void Update(Delivery item)
+    {
         List<Delivery> Deliverys = XMLTools.LoadListFromXMLSerializer<Delivery>(Config.s_deliveries_xml);
-        Delete(item.Id);
+
+        // Remove ALL instances of this ID (to clean up duplicates)
+        Deliverys.RemoveAll(d => d.Id == item.Id);
+
+        // Add the updated delivery
         Deliverys.Add(item);
+
+        // Save once
         XMLTools.SaveListToXMLSerializer<Delivery>(Deliverys, Config.s_deliveries_xml);
     }
 }

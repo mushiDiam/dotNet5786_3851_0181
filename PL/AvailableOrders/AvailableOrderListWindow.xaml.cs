@@ -85,7 +85,6 @@ namespace PL
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e) => RefreshList();
-        private void BtnChoose_Click(object sender, RoutedEventArgs e) => ChooseSelectedOrder();
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -102,7 +101,13 @@ namespace PL
             }
         }
 
-        private void ChooseSelectedOrder()
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            try { s_bl.Order.RemoveObserver(_requesterId, OrderObserver); } catch { }
+            Close();
+        }
+
+        private void BtnChoose_Click(object sender, RoutedEventArgs e)
         {
             if (dgOrders.SelectedItem is not OrderView sel)
             {
@@ -126,12 +131,6 @@ namespace PL
             {
                 MessageBox.Show($"Failed to choose order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            try { s_bl.Order.RemoveObserver(_requesterId, OrderObserver); } catch { }
-            Close();
         }
     }
 }

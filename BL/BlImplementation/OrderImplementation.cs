@@ -24,9 +24,14 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void Cancel(int id, int orderId)
     {
-        if (!AdminManager.IsAdmin(id))
-            throw new BlUnauthorizedAccessException("Only admin can add orders");
-        OrderManager.CancelOrder(orderId);
+        try
+        {
+            OrderManager.CancelOrder(orderId);
+        }
+        catch (BlDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException("Order doesn't exist", ex);
+        }
     }
 
     public void ChooseOrder(int id, int courierId, int orderId)
@@ -278,6 +283,16 @@ internal class OrderImplementation : BlApi.IOrder
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can get orders");
         OrderManager.Update(order);
+    }
+    // In OrderImplementation.cs
+    public void MarkDeliveryNotFound(int requesterId, int courierId, int deliveryId)
+    {
+        // Authorization check
+        if (requesterId != courierId)
+            throw new BlUnauthorizedAccessException("Only the courier can mark their own delivery as not found");
+
+        // Delegate to OrderManager
+        OrderManager.MarkDeliveryNotFound(courierId, deliveryId);
     }
 
     #region Stage 5

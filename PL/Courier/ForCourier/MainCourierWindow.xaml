@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PL"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:BO="clr-namespace:BO;assembly=BL"
+        xmlns:local="clr-namespace:PL.Courier.ForCourier"
         mc:Ignorable="d"
         Title="Courier Dashboard" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -11,7 +13,12 @@
         Background="#F5F5F5">
 
     <Window.Resources>
-        <!-- Modern Button Style -->
+        <ObjectDataProvider x:Key="TransportationKey" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="BO:Transportation"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="#2196F3"/>
             <Setter Property="Foreground" Value="White"/>
@@ -37,17 +44,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Time Control Button Style -->
-        <Style x:Key="TimeButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
-            <Setter Property="Background" Value="#4CAF50"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#45a049"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Danger Button Style -->
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#f44336"/>
             <Style.Triggers>
@@ -57,7 +53,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Success Button Style -->
         <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#4CAF50"/>
             <Style.Triggers>
@@ -67,7 +62,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- TextBox Style -->
         <Style x:Key="ModernTextBox" TargetType="TextBox">
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="BorderBrush" Value="#CCCCCC"/>
@@ -95,7 +89,6 @@
     </Window.Resources>
 
     <Grid>
-        <!-- Header Bar -->
         <Border Background="#1565C0" Height="120" VerticalAlignment="Top">
             <Grid Margin="20,0">
                 <Grid.RowDefinitions>
@@ -103,7 +96,6 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Top Section: Title and Courier Info -->
                 <Grid Grid.Row="0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="📦" FontSize="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
@@ -118,7 +110,6 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Courier Display in Header -->
                     <Border Background="#0D47A1" 
                             CornerRadius="8" 
                             Padding="20,10" 
@@ -142,20 +133,15 @@
                         </StackPanel>
                     </Border>
                 </Grid>
-
-                <!-- Bottom Section: small actions -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10"/>
             </Grid>
         </Border>
 
-        <!-- Main Content Area -->
         <Grid Margin="20,140,20,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left Sidebar -->
             <Border Background="White" 
                     CornerRadius="10" 
                     Padding="20"
@@ -172,12 +158,11 @@
                                Foreground="#333333"/>
 
                     <Button Content="Available Orders" Click="BtnAvailableOrders_Click" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
-                    <Button Content="Delivery History" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
+                    <Button Content="Delivery History" Style="{StaticResource ModernButton}" Margin="0,0,0,8" Click="BtnDeliveryHistory_Click"/>
                     <Button Content="Logout" Click="BtnLogout_Click" Style="{StaticResource DangerButton}" Margin="0,280,0,0"/>
                 </StackPanel>
             </Border>
 
-            <!-- Right Panel - Courier Content -->
             <Border Grid.Column="1" 
                     Background="White" 
                     CornerRadius="10" 
@@ -192,7 +177,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Section Header -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                         <TextBlock Text="🚚" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <TextBlock Text="My Workspace" 
@@ -209,7 +193,6 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Profile Panel -->
                         <Border Background="#FAFAFA" CornerRadius="6" Padding="12" Grid.RowSpan="3" Margin="0,0,0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -220,8 +203,9 @@
 
                                 <StackPanel Grid.Column="0" VerticalAlignment="Top">
                                     <TextBlock Text="PROFILE" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
+
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="110" Text="Full Name:" VerticalAlignment="Center"/>
+                                        <TextBlock Width="110" Text="Name:" VerticalAlignment="Center"/>
                                         <TextBox Text="{Binding CurrentCourier.FullName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="220" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
 
@@ -238,24 +222,24 @@
                                     <StackPanel Orientation="Horizontal" Margin="0,4" VerticalAlignment="Center">
                                         <TextBlock Width="110" Text="Password:" VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding MaskedPassword}" VerticalAlignment="Center" Width="160"/>
-                                        <Button Content="Change" Width="60" Click="BtnChangePassword_Click" Margin="8,0,0,0" />
+                                        <Button Content="Change" Width="60" Click="BtnChangePassword_Click" Margin="8,0,0,0" Style="{StaticResource ModernButton}" Padding="4"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
                                         <TextBlock Width="110" Text="Transport:" VerticalAlignment="Center"/>
                                         <ComboBox Width="220"
-                                                  ItemsSource="{StaticResource TransportationKey}"
+                                                  ItemsSource="{Binding Source={StaticResource TransportationKey}}"
                                                   SelectedItem="{Binding CurrentCourier.Transport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
-                                        <TextBlock Width="110" Text="Max Distance (km):" VerticalAlignment="Center"/>
+                                        <TextBlock Width="110" Text="Max Distance:" VerticalAlignment="Center"/>
                                         <TextBox Text="{Binding CurrentCourier.MaxDistancePreference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
                                         <TextBlock Width="110" Text="Join Date:" VerticalAlignment="Center"/>
-                                        <TextBox Text="{Binding CurrentCourier.JoinDate}" Width="130" IsEnabled="False" />
+                                        <TextBox Text="{Binding CurrentCourier.JoinDate, StringFormat=d}" Width="150" IsEnabled="False" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Margin="0,4">
@@ -264,14 +248,11 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Current delivery summary -->
                                 <Border Grid.Column="2" CornerRadius="6" Padding="12">
                                     <Border.Style>
                                         <Style TargetType="Border">
-                                            <!-- default: highlight when there IS a delivery -->
                                             <Setter Property="Background" Value="#E8F5E9"/>
                                             <Style.Triggers>
-                                                <!-- when no active order -> white background -->
                                                 <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
                                                     <Setter Property="Background" Value="White"/>
                                                 </DataTrigger>
@@ -282,7 +263,6 @@
                                     <StackPanel>
                                         <TextBlock Text="CURRENT DELIVERY" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
 
-                                        <!-- Details visible only when ActiveOrder is not null -->
                                         <StackPanel Margin="0,0,0,4">
                                             <StackPanel.Style>
                                                 <Style TargetType="StackPanel">
@@ -300,9 +280,43 @@
                                             <TextBlock Text="{Binding CurrentCourier.ActiveOrder.ScheduleStatus, StringFormat='Status: {0}'}" FontSize="13" Margin="0,6"/>
                                             <TextBlock Text="{Binding CurrentCourier.ActiveOrder.CustomerName, StringFormat='Customer: {0}'}" FontSize="13" Margin="0,2"/>
                                             <TextBlock Text="{Binding CurrentCourier.ActiveOrder.TimeLeftForDelivery, StringFormat='Time left: {0}'}" FontSize="13" Margin="0,2"/>
+
+                                            <!-- Buttons row: same line horizontally, smaller buttons, visible only when ActiveOrder exists -->
+                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+
+                                                <Button x:Name="BtnMarkCancelled"
+                                                        Content="Cancelled"
+                                                        Click="BtnMarkCancelled_Click"
+                                                        Style="{StaticResource DangerButton}"
+                                                        Width="84" Height="32" FontSize="12" Padding="6"
+                                                        Margin="0,0,8,0"/>
+
+                                                <Button x:Name="BtnMarkCompleted"
+                                                        Content="Completed"
+                                                        Click="BtnMarkCompleted_Click"
+                                                        Style="{StaticResource SuccessButton}"
+                                                        Width="84" Height="32" FontSize="12" Padding="6"
+                                                        Margin="0,0,8,0"/>
+
+                                                <Button x:Name="BtnMarkNotFound"
+                                                        Content="Not Found"
+                                                        Click="BtnMarkNotFound_Click"
+                                                        Style="{StaticResource DangerButton}"
+                                                        Width="84" Height="32" FontSize="12" Padding="6"/>
+                                            </StackPanel>
+
                                         </StackPanel>
 
-                                        <!-- Placeholder when there is no active delivery -->
                                         <TextBlock Text="No current delivery." Foreground="#777" FontStyle="Italic" Margin="0,6,0,0">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -320,20 +334,13 @@
                             </Grid>
                         </Border>
 
-                        <!-- Orders and History -->
-                        <Grid Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                        </Grid>
+                        <Grid Grid.Row="2"/>
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- Fixed Save button: overlayed on top of content so it remains visible even when window is small -->
+        <!-- Save profile button (always visible) -->
         <Button x:Name="BtnSaveProfileFixed"
                 Content="💾 Save Profile"
                 Click="BtnSave_Click"

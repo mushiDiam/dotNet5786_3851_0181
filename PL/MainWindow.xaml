@@ -212,13 +212,18 @@
                             Click="BtnAllOrders_Click"
                             Style="{StaticResource ModernButton}"
                             Margin="0,0,0,8"/>
-                            <!--TODO: Click="btnAllOrders_Click" -->
+                    
+                    <Button Content="All Deliveries" 
+                            Click="BtnAllDeliveries_Click"
+                            Style="{StaticResource ModernButton}"
+                            Margin="0,0,0,8"/>
+                            
 
                     <!-- LOGOUT button added -->
                     <Button Content="Logout"
                             Click="BtnLogout_Click"
                             Style="{StaticResource DangerButton}"
-                            Margin="0,200,0,0"/>
+                            Margin="0,140,0,0"/>
                 </StackPanel>
             </Border>
 

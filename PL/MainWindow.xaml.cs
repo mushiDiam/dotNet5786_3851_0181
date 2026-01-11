@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input; // Required for Cursors
-using System.Linq; // Required for window collection operations
 using BlApi;
 using BO;
 using PL.Courier;
@@ -19,7 +18,7 @@ namespace PL
     {
         // Access to the Business Logic layer
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-        private static readonly System.Net.Http.HttpClient s_client = new System.Net.Http.HttpClient();
+        private static readonly int managerId = s_bl.Admin.GetConfig().ManagerId;
 
         #region Dependency Properties
 
@@ -152,7 +151,7 @@ namespace PL
             {
                 Mouse.OverrideCursor = Cursors.Wait;
 
-                // 1. בדיקה שהכתובת לא ריקה
+                // 1. Validate address not empty
                 if (string.IsNullOrWhiteSpace(Configuration.CompanyAddress))
                 {
                     Mouse.OverrideCursor = null;
@@ -160,27 +159,26 @@ namespace PL
                     return;
                 }
 
-                // 2. חיפוש קואורדינטות
-                var coords = await GetCoordinatesFromAddressAsync(Configuration.CompanyAddress);
+                // 2. Get coordinates from BL (BL handles HTTP/json)
+                var coords = await s_bl.Admin.GetCoordinatesFromAddressAsync(Configuration.CompanyAddress);
 
-                Mouse.OverrideCursor = null; // החזרת הסמן הרגיל
+                Mouse.OverrideCursor = null; // restore cursor
 
-                // 3. בדיקה קריטית: האם נמצאה כתובת?
+                // 3. Critical check: did we find coordinates?
                 if (coords.Lat == null || coords.Lon == null)
                 {
-                    // --- עצירה! לא שומרים! ---
                     MessageBox.Show("Cannot find this address on the map.\nPlease check spelling or try a more specific address (City, Street).",
                                     "Invalid Address",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
-                    return; // יציאה מהפונקציה בלי לשמור
+                    return;
                 }
 
-                // 4. אם הגענו לפה - הכתובת תקינה. נעדכן את האובייקט.
+                // 4. Update the configuration object
                 Configuration.Latitude = coords.Lat.Value;
                 Configuration.Longitude = coords.Lon.Value;
 
-                // 5. שמירה ל-XML
+                // 5. Save via BL
                 s_bl.Admin.SetConfig(Configuration);
 
                 MessageBox.Show("Configuration saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -240,7 +238,7 @@ namespace PL
                 CurrentClock = s_bl.Admin.GetClock();
                 Configuration = s_bl.Admin.GetConfig();
 
-                // 5. FIX: Clean up old observers before re-registering to avoid duplicates
+                // 5. Clean up old observers before re-registering to avoid duplicates
                 UnregisterObservers();
                 RegisterObservers();
 
@@ -269,7 +267,6 @@ namespace PL
         {
             try
             {
-                int managerId = s_bl.Admin.GetConfig().ManagerId;
                 var wnd = new AvailableOrderListWindow(managerId, true) { Owner = this };
                 wnd.Show();
             }
@@ -300,56 +297,10 @@ namespace PL
 
         #endregion
 
-        // Add this helper method to MainWindow class to resolve CS0103
-        private async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
+        private void BtnAllDeliveries_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(address)) return (null, null);
-
-            string url = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(address)}&format=json&limit=1";
-
-            try
-            {
-                // --- תיקון השגיאה 403 Forbidden ---
-                // 1. ניקוי כותרות קודמות כדי למנוע כפילויות שגורמות לשגיאות
-                s_client.DefaultRequestHeaders.UserAgent.Clear();
-
-                // 2. הוספת User-Agent שנראה כמו דפדפן אמיתי או אפליקציה לגיטימית
-                // השרתים של OSM בדרך כלל מכבדים את הפורמט הזה:
-                s_client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CouriersStudentProject/1.0");
-
-                // 3. ביצוע הבקשה
-                var response = await s_client.GetAsync(url);
-
-                // אם עדיין יש שגיאה, נראה אותה ברור
-                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    MessageBox.Show("OpenStreetMap Blocked the request (403). Try again in a few seconds.");
-                    return (null, null);
-                }
-
-                response.EnsureSuccessStatusCode(); // זורק חריגה אם יש שגיאה אחרת
-
-                string json = await response.Content.ReadAsStringAsync();
-                using JsonDocument doc = JsonDocument.Parse(json);
-                var root = doc.RootElement;
-
-                if (root.GetArrayLength() > 0)
-                {
-                    var location = root[0];
-                    if (double.TryParse(location.GetProperty("lat").GetString(), out double lat) &&
-                        double.TryParse(location.GetProperty("lon").GetString(), out double lon))
-                    {
-                        return (lat, lon);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // הצגת השגיאה המלאה לדיבוג
-                MessageBox.Show($"Geocoding Error: {ex.Message}");
-            }
-
-            return (null, null);
+            var wnd = new PL.Deliveries.DeliveriesListWindow(managerId, true);
+            wnd.ShowDialog();
         }
     }
 }

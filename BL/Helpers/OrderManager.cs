@@ -66,12 +66,12 @@ internal static class OrderManager{
     }
     public static void CancelOrder(int orderId)
     {
+
         // 1. Get the Order (assuming Read throws if not found, based on critique)
-        BO.Order boOrder = Read(orderId) ?? throw new BlDoesNotExistException($"Order {orderId} not found");
+        BO.Order boOrder = Read(orderId) ?? throw new BlDoesNotExistException($"Order with ID {orderId} does not exist.");
 
         // 2. Validate Status
-        if (boOrder.OrderStatus == OrderStatus.Closed ||
-            boOrder.OrderStatus == OrderStatus.Cancelled)
+        if (boOrder.OrderStatus == OrderStatus.Closed || boOrder.OrderStatus == OrderStatus.Denied || boOrder.OrderStatus == OrderStatus.Cancelled)
         {
             throw new BlInvalidOperationException("Cannot cancel an order that is already delivered or canceled");
         }
@@ -98,6 +98,24 @@ internal static class OrderManager{
         Observers.NotifyListUpdated(); //stage 5
 
     }
+
+    // Map DAL EndOfOrder to BO.OrderStatus correctly (explicit mapping).
+    private static BO.OrderStatus? MapEndOfOrderToBO(DO.EndOfOrder? end)
+    {
+        if (!end.HasValue) return null;
+
+        return end.Value switch
+        {
+            DO.EndOfOrder.Completed => BO.OrderStatus.Closed,
+            DO.EndOfOrder.Canceled  => BO.OrderStatus.Cancelled,
+            DO.EndOfOrder.Denied    => BO.OrderStatus.Denied,
+            DO.EndOfOrder.Unreached => BO.OrderStatus.Denied,
+            DO.EndOfOrder.Failed    => BO.OrderStatus.Denied,
+            _ => null
+        };
+    }
+
+    // --- update CalculateOrderStatus to use the DAL EndOfOrder explicitly ---
     public static OrderStatus CalculateOrderStatus(int orderId)
     {
         DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
@@ -106,12 +124,21 @@ internal static class OrderManager{
             Debug.WriteLine($"Order {orderId} has no delivery record; treating as Open.");
             return OrderStatus.Open;
         }
+
+        // Map DAL EndOfOrder to BO.OrderStatus explicitly
         if (del.EndOfOrder == DO.EndOfOrder.Completed)
             return OrderStatus.Closed;
-        else if (del.EndOfOrder == DO.EndOfOrder.Canceled)
+        if (del.EndOfOrder == DO.EndOfOrder.Canceled)
             return OrderStatus.Cancelled;
-        else
-            return OrderStatus.InProgress;
+
+        // Treat Denied/Unreached/Failed as Denied in BO
+        if (del.EndOfOrder == DO.EndOfOrder.Denied ||
+            del.EndOfOrder == DO.EndOfOrder.Unreached ||
+            del.EndOfOrder == DO.EndOfOrder.Failed)
+            return OrderStatus.Denied;
+
+        // Otherwise delivery exists but not finished
+        return OrderStatus.InProgress;
     }
 
     /// <summary>
@@ -204,6 +231,27 @@ internal static class OrderManager{
 
         return TimeSpan.FromHours(hours);
     }
+    // In OrderManager.cs (in the Helpers folder)
+    internal static void MarkDeliveryNotFound(int courierId, int deliveryId)
+    {
+        DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
+        if (delivery == null)
+            throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
+
+        // Verify this courier owns this delivery
+        if (delivery.CourierId != courierId)
+            throw new BlUnauthorizedAccessException("Courier can only mark their own deliveries");
+
+        DO.Delivery updatedDelivery = delivery with
+        {
+            EndOfOrder = DO.EndOfOrder.Unreached,  // Or use Denied/Failed based on your enum
+            TimeOfDelivery = DateTime.Now
+        };
+
+        s_dal.Delivery.Update(updatedDelivery);
+        Observers.NotifyItemUpdated(deliveryId);
+        Observers.NotifyListUpdated();
+    }
 
     /// <summary>
     /// Return all deliveries (from the DAL) for the specified order id converted to
@@ -213,7 +261,7 @@ internal static class OrderManager{
     /// <returns>List of <see cref="DeliveryPerOrderInList"/> for the order.</returns>
     private static List<DeliveryPerOrderInList> GetAllDeliveriesForOrder(int orderId)
     {
-        // use LINQ to read DAL deliveries for the order and map to BO.DeliveryPerOrderInList
+        // --- update GetAllDeliveriesForOrder mapping to set Delivery.OrderStatus using mapper ---
         var deliveries = s_dal.Delivery.ReadAll(d => d.OrderId == orderId)
             .Select(d =>
             {
@@ -224,7 +272,8 @@ internal static class OrderManager{
                     CourierId = d.CourierId,
                     CourierName = courier?.Name ?? string.Empty,
                     Transport = (BO.Transportation)d.OrderType,
-                    OrderStatus = d.EndOfOrder.HasValue ? (BO.OrderStatus?)d.EndOfOrder.Value : null,
+                    // map DAL EndOfOrder to BO.OrderStatus (nullable)
+                    OrderStatus = MapEndOfOrderToBO(d.EndOfOrder),
                     EndTime = d.TimeOfDelivery,
                     StartTime = d.StartOfDelivery,
                 };
@@ -240,9 +289,6 @@ internal static class OrderManager{
 
         if (string.IsNullOrWhiteSpace(order.FullAddress))
             throw new BlInvalidValueException("Order address is required.");
-
-        if (string.IsNullOrWhiteSpace(order.CustomerName))
-            throw new BlInvalidValueException("Recipient name is required.");
 
         if (double.IsNaN(order.Latitude) || order.Latitude < -90 || order.Latitude > 90 ||
             double.IsNaN(order.Longitude) || order.Longitude < -180 || order.Longitude > 180)
@@ -515,7 +561,7 @@ internal static class OrderManager{
         }
         else
         {
-            switch (sort)
+            switch (sort.Value)
             {
                 case OrderInListOptions.DeliveryId:
                     boOrders = boOrders.OrderBy(o =>

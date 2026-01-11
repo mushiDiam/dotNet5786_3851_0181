@@ -75,7 +75,7 @@ namespace PL.AvailableOrders
             }
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e) => Close();
+        private void BtnClose_Click(object sender, RoutedEventArgs e) => this.Close();
 
         private void BtnAccept_Click(object sender, RoutedEventArgs e)
         {

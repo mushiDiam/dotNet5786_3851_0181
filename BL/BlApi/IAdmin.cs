@@ -1,4 +1,5 @@
 ﻿using BO;
+using System.Threading.Tasks;
 
 namespace BlApi;
 
@@ -16,4 +17,7 @@ public interface IAdmin{
     void AddClockObserver(Action clockObserver);
     void RemoveClockObserver(Action clockObserver);
     #endregion Stage 5
+
+    // Geocoding helper exposed by BL so PL can request coordinates without doing HTTP/json itself.
+    Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address);
 }

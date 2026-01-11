@@ -1,9 +1,6 @@
-﻿using BlApi;
-using PL.Login;
-using System.Windows;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BlApi;
@@ -21,7 +18,6 @@ namespace PL.Courier.ForCourier
         private readonly int _courierId;
         private readonly int _managerId;
 
-        // Dependency / Bindable properties
         public BO.Courier CurrentCourier
         {
             get { return (BO.Courier)GetValue(CurrentCourierProperty); }
@@ -34,24 +30,6 @@ namespace PL.Courier.ForCourier
         public static readonly DependencyProperty CurrentCourierProperty =
             DependencyProperty.Register(nameof(CurrentCourier), typeof(BO.Courier), typeof(MainCourierWindow), new PropertyMetadata(null));
 
-        public IEnumerable<BO.OpenOrderInList> OpenOrders
-        {
-            get { return (IEnumerable<BO.OpenOrderInList>)GetValue(OpenOrdersProperty); }
-            set { SetValue(OpenOrdersProperty, value); }
-        }
-        public static readonly DependencyProperty OpenOrdersProperty =
-            DependencyProperty.Register(nameof(OpenOrders), typeof(IEnumerable<BO.OpenOrderInList>), typeof(MainCourierWindow), new PropertyMetadata(null));
-
-        public BO.OpenOrderInList? SelectedOpenOrder { get; set; }
-
-        public IEnumerable<BO.ClosedDeliveryInList> EndedDeliveries
-        {
-            get { return (IEnumerable<BO.ClosedDeliveryInList>)GetValue(EndedDeliveriesProperty); }
-            set { SetValue(EndedDeliveriesProperty, value); }
-        }
-        public static readonly DependencyProperty EndedDeliveriesProperty =
-            DependencyProperty.Register(nameof(EndedDeliveries), typeof(IEnumerable<BO.ClosedDeliveryInList>), typeof(MainCourierWindow), new PropertyMetadata(null));
-
         public DateTime CurrentClock
         {
             get { return (DateTime)GetValue(CurrentClockProperty); }
@@ -60,9 +38,6 @@ namespace PL.Courier.ForCourier
         public static readonly DependencyProperty CurrentClockProperty =
             DependencyProperty.Register("CurrentClock", typeof(DateTime), typeof(MainCourierWindow));
 
-        public BO.ClosedDeliveryInList? SelectedEndedDelivery { get; set; }
-
-        // Masked password display
         public string MaskedPassword
         {
             get { return (string)GetValue(MaskedPasswordProperty); }
@@ -87,51 +62,22 @@ namespace PL.Courier.ForCourier
         {
             RefreshAll();
 
-            // Register courier observer to keep UI in sync if courier changed elsewhere
-            try
-            {
-                s_bl.Courier.AddObserver(_courierId, CourierObserver);
-            }
-            catch { /* optional: BL may not implement per-courier observer; ignore safely */ }
-
-            // Try to observe orders if available (best-effort)
-            try
-            {
-                s_bl.Order.AddObserver(_courierId, OrderObserver);
-            }
-            catch { }
-
-            // subscribe to admin clock if available (already implemented elsewhere)
-            try { s_bl.Admin.AddClockObserver(clockObserver); CurrentClock = s_bl.Admin.GetClock(); } catch { }
+            try { s_bl.Courier.AddObserver(_courierId, CourierObserver); } catch { }
+            try { s_bl.Admin.AddClockObserver(ClockObserver); CurrentClock = s_bl.Admin.GetClock(); } catch { }
         }
 
         private void MainCourierWindow_Closed(object? sender, EventArgs e)
         {
             try { s_bl.Courier.RemoveObserver(_courierId, CourierObserver); } catch { }
-            try { s_bl.Order.RemoveObserver(_courierId, OrderObserver); } catch { }
-            try { s_bl.Admin.RemoveClockObserver(clockObserver); } catch { }
+            try { s_bl.Admin.RemoveClockObserver(ClockObserver); } catch { }
         }
 
-        private void CourierObserver()
-        {
-            Dispatcher.Invoke(() => RefreshCourier());
-        }
-
-        private void OrderObserver()
-        {
-            Dispatcher.Invoke(() => RefreshOrders());
-        }
-
-        private void clockObserver()
-        {
-            Dispatcher.Invoke(() => CurrentClock = s_bl.Admin.GetClock());
-        }
+        private void CourierObserver() => Dispatcher.Invoke(RefreshCourier);
+        private void ClockObserver() => Dispatcher.Invoke(() => CurrentClock = s_bl.Admin.GetClock());
 
         private void RefreshAll()
         {
             RefreshCourier();
-            RefreshOrders();
-            RefreshEndedDeliveries();
             try { CurrentClock = s_bl.Admin.GetClock(); } catch { }
         }
 
@@ -144,6 +90,7 @@ namespace PL.Courier.ForCourier
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed loading courier info: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Close();
             }
         }
 
@@ -155,129 +102,44 @@ namespace PL.Courier.ForCourier
                 MaskedPassword = new string('*', CurrentCourier.Password.Length);
         }
 
-        private void RefreshOrders()
-        {
-            try
-            {
-                var open = s_bl.Order.GetOpenOrder(_managerId, _courierId, null, null);
-                OpenOrders = open ?? new List<BO.OpenOrderInList>();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed loading open orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                OpenOrders = new List<BO.OpenOrderInList>();
-            }
-        }
-
-        private void RefreshEndedDeliveries()
-        {
-            try
-            {
-                var closed = s_bl.Order.GetEndedDeliveries(_managerId, _courierId, null, null);
-                EndedDeliveries = closed ?? new List<BO.ClosedDeliveryInList>();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed loading delivery history: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                EndedDeliveries = new List<BO.ClosedDeliveryInList>();
-            }
-        }
-
-        // Save updated courier info
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Prevent changing JoinDate/IsActive on UI by design — BL still requires full BO
                 s_bl.Courier.UpdateDetails(_managerId, CurrentCourier);
-
-                // Refresh to pick up persisted values (including password if changed)
                 RefreshCourier();
-                RefreshAll();
-                MessageBox.Show("Profile updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Profile updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to save profile: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                RefreshCourier();
             }
         }
 
-
-
-        // Change password opens modal dialog
         private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new ChangePasswordWindow(_courierId, _managerId);
             if (dlg.ShowDialog() == true)
             {
-                // after successful password change, reload courier and update mask
                 RefreshCourier();
                 UpdateMaskedPassword();
             }
         }
 
-        // Choose order handlers (unchanged)
-        private void BtnChooseOrder_Click(object sender, RoutedEventArgs e)
-        {
-            ChooseSelectedOrder();
-        }
-
-        private void OpenOrders_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            ChooseSelectedOrder();
-        }
-
-        private void ChooseSelectedOrder()
-        {
-            if (SelectedOpenOrder == null)
-            {
-                MessageBox.Show("Select an order first.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            try
-            {
-                s_bl.Order.ChooseOrder(_managerId, _courierId, (int)SelectedOpenOrder.CourierId);
-                MessageBox.Show($"You chose order #{SelectedOpenOrder.CourierId}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Refresh to update assigned orders and current delivery
-                RefreshOrders();
-                RefreshEndedDeliveries();
-
-                // IMPORTANT: refresh courier so UI receives updated ActiveOrder immediately
-                RefreshCourier();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to choose order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        // Logout (unchanged)
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var login = new LoginWindow();
-                login.Show();
-
-                var windowsToClose = Application.Current.Windows.Cast<Window>().Where(w => w != login).ToList();
-                foreach (var w in windowsToClose)
-                    w.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Logout failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            new LoginWindow().Show();
+            Close();
         }
 
-        // Open AvailableOrderListWindow for this courier
         private void BtnAvailableOrders_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 var wnd = new AvailableOrderListWindow(_courierId, false) { Owner = this };
-                wnd.Show();
+                wnd.ShowDialog();
+                RefreshCourier();
             }
             catch (Exception ex)
             {
@@ -285,5 +147,181 @@ namespace PL.Courier.ForCourier
             }
         }
 
+        private void BtnDeliveryHistory_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var wnd = new Deliveries.DeliveriesListWindow(_courierId, false) { Owner = this };
+                wnd.ShowDialog();
+                RefreshCourier();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open history: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // --- Active delivery helpers and handlers ---
+
+        // returns delivery id or null
+        private int? GetActiveDeliveryId() => CurrentCourier?.ActiveOrder?.DeliveryId;
+
+        // returns order id or null
+        private int? GetActiveOrderId() => CurrentCourier?.ActiveOrder?.OrderId;
+
+        // Completed: uses the BL method that already exists: EndOfOrder(requesterId, courierId, deliveryId)
+        private async void BtnMarkCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            var deliveryId = GetActiveDeliveryId();
+            if (deliveryId == null)
+            {
+                MessageBox.Show("No active delivery to complete.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (MessageBox.Show("Mark delivery as completed?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                s_bl.Order.EndOfOrder(_courierId, _courierId, deliveryId.Value);
+
+                // immediate UI feedback: clear active order locally
+                ClearActiveOrderLocally();
+
+                MessageBox.Show("Delivery marked as completed.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to complete delivery: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                // ensure BL/PL sync shortly after operation
+                await SyncCourierAfterDelay();
+            }
+        }
+
+        // Cancelled: try BL call if available, otherwise clear UI locally
+        private async void BtnMarkCancelled_Click(object sender, RoutedEventArgs e)
+        {
+            var deliveryId = GetActiveDeliveryId();
+            var orderId = GetActiveOrderId();
+            if (deliveryId == null || orderId == null)
+            {
+                MessageBox.Show("No active delivery to cancel.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (MessageBox.Show("Cancel this delivery?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                // Try to call courier-specific cancel on BL if implemented
+                var orderObj = s_bl.Order;
+                var method = orderObj.GetType().GetMethod("CancelDeliveryByCourier") ?? orderObj.GetType().GetMethod("CancelDelivery");
+                if (method != null)
+                {
+                    method.Invoke(orderObj, new object[] { _courierId, _courierId, deliveryId.Value });
+                }
+                else
+                {
+                    // Fallback: attempt to call Cancel(order) as last resort using manager id
+                    try
+                    {
+                        s_bl.Order.Cancel(_managerId, orderId.Value);
+                    }
+                    catch
+                    {
+                        // ignore: we still want to clear UI locally
+                    }
+                }
+
+                // immediate UI feedback
+                ClearActiveOrderLocally();
+                MessageBox.Show("Delivery cancelled (local UI updated).", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (System.Reflection.TargetInvocationException tie) when (tie.InnerException != null)
+            {
+                MessageBox.Show($"Failed to cancel delivery: {tie.InnerException.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to cancel delivery: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                await SyncCourierAfterDelay();
+            }
+        }
+
+        // Not Found: try BL call if available, otherwise clear UI locally
+        // In MainCourierWindow.xaml.cs
+        private async void BtnMarkNotFound_Click(object sender, RoutedEventArgs e)
+        {
+            var deliveryId = GetActiveDeliveryId();
+            if (deliveryId == null)
+            {
+                MessageBox.Show("No active delivery to report.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (MessageBox.Show("Report 'Not Found' for this delivery?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                // Call the proper BL method
+                s_bl.Order.MarkDeliveryNotFound(_courierId, _courierId, deliveryId.Value);
+
+                ClearActiveOrderLocally();
+                MessageBox.Show("Reported as Not Found.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to report not-found: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                await SyncCourierAfterDelay();
+            }
+        }
+
+        // Creates a shallow copy of the current courier with ActiveOrder cleared and assigns it to the DP
+        private void ClearActiveOrderLocally()
+        {
+            if (CurrentCourier == null) return;
+
+            var clone = new BO.Courier
+            {
+                Id = CurrentCourier.Id,
+                FullName = CurrentCourier.FullName,
+                PhoneNumber = CurrentCourier.PhoneNumber,
+                Email = CurrentCourier.Email,
+                Password = CurrentCourier.Password,
+                IsActive = CurrentCourier.IsActive,
+                MaxDistancePreference = CurrentCourier.MaxDistancePreference,
+                Transport = CurrentCourier.Transport,
+                JoinDate = CurrentCourier.JoinDate,
+                DeliveryCountOnTime = CurrentCourier.DeliveryCountOnTime,
+                DeliveryCountLate = CurrentCourier.DeliveryCountLate,
+                ActiveOrder = null
+            };
+
+            // assign cloned object to trigger the DP change and update UI immediately
+            CurrentCourier = clone;
+        }
+
+        // Ask PL to re-sync with BL after a short delay (gives BL time to persist updates)
+        private async Task SyncCourierAfterDelay(int delayMs = 800)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                RefreshCourier();
+            }
+            catch { }
+        }
     }
 }

@@ -14,4 +14,5 @@ public interface IOrder : IObservable{
     void ChooseOrder(int id, int courierId, int orderId);
     IEnumerable<BO.ClosedDeliveryInList> GetEndedDeliveries(int id, int courierI, OrderTypes? filter, OrderInListOptions? sort );
     IEnumerable<BO.OpenOrderInList> GetOpenOrder(int id, int courierI, OrderTypes? filter, OrderInListOptions? sort);
+    void MarkDeliveryNotFound(int requesterId, int courierId, int deliveryId);
 }
