@@ -190,7 +190,7 @@ namespace PL.Courier.ForCourier
 
                 // Refresh to pick up persisted values (including password if changed)
                 RefreshCourier();
-
+                RefreshAll();
                 MessageBox.Show("Profile updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -199,10 +199,7 @@ namespace PL.Courier.ForCourier
             }
         }
 
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshAll();
-        }
+ 
 
         // Change password opens modal dialog
         private void BtnChangePassword_Click(object sender, RoutedEventArgs e)

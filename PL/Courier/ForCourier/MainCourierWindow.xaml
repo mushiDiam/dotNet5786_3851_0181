@@ -145,11 +145,6 @@
 
                 <!-- Bottom Section: small actions -->
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <Button Content="Refresh" 
-                            Click="BtnRefresh_Click" 
-                            Style="{StaticResource TimeButton}"
-                            Margin="0,0,8,0"
-                            Padding="12,6"/>
                     <Button Content="Save Profile" 
                             Click="BtnSave_Click" 
                             Style="{StaticResource ModernButton}"
@@ -221,7 +216,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Profile Panel -->
-                        <Border Background="#FAFAFA" CornerRadius="6" Padding="12" Margin="0,0,0,10">
+                        <Border Background="#FAFAFA" CornerRadius="6" Padding="12" Grid.RowSpan="3" Margin="0,0,0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="360"/>
@@ -274,6 +269,11 @@
                                         <CheckBox IsChecked="{Binding CurrentCourier.IsActive}" IsEnabled="False" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
+                                <Button Content="💾 Save Profile" 
+                                    Click="BtnSave_Click" 
+                                    Style="{StaticResource SuccessButton}"
+                                    Margin="0,339,229,10"
+                                    Padding="12,6"/>
 
                                 <!-- Current delivery summary -->
                                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
