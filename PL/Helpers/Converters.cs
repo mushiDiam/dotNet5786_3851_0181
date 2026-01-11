@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace PL
+namespace PL.Helpers
 {
     // Converts "Update" -> True (IsReadOnly = True)
     // Converts "Add" / Other -> False (IsReadOnly = False)

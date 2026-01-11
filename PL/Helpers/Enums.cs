@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-namespace PL;
+namespace PL.Helpers;
  
 public class OrderTypesCollection : IEnumerable
 {
