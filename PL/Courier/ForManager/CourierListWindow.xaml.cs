@@ -26,16 +26,12 @@ namespace PL.Courier.ForManager
         // -----------------------------------------------------------------------
         // Filter & Sort Properties (Standard C# Properties)
         // -----------------------------------------------------------------------
-        // Note: According to instructions, these are standard properties, NOT DependencyProperties.
-        // Implication: Changing them in code does NOT automatically update the UI (must reset manually).
-
         public BO.Transportation TransportFilter { get; set; } = BO.Transportation.None;
         public BO.CourierInListOptions? SelectedSort { get; set; } = null;
 
         // -----------------------------------------------------------------------
         // Dependency Properties (Only for List and Selection)
         // -----------------------------------------------------------------------
-
         public IEnumerable<BO.CourierInList> CourierInList
         {
             get { return (IEnumerable<BO.CourierInList>)GetValue(CourierInListProperty); }
@@ -49,29 +45,19 @@ namespace PL.Courier.ForManager
         // -----------------------------------------------------------------------
         // Event Handlers
         // -----------------------------------------------------------------------
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshList();
-            // Register Observer only if implemented in BL
-            try { 
-                s_bl.Courier.AddObserver(CourierListObserver);
-            } 
-            catch { }
+            try { s_bl.Courier.AddObserver(CourierListObserver); } catch { }
         }
 
         private void Window_Closed(object? sender, EventArgs e)
         {
-            // Unregister Observer
-            try { 
-                s_bl.Courier.RemoveObserver(CourierListObserver); 
-            } 
-            catch { }
+            try { s_bl.Courier.RemoveObserver(CourierListObserver); } catch { }
         }
 
         private void CourierListObserver()
         {
-            // UI updates must run on Dispatcher
             Dispatcher.Invoke(() => RefreshList());
         }
 
@@ -79,10 +65,10 @@ namespace PL.Courier.ForManager
         {
             try
             {
-                // 1. Fetch & Sort (via BL)
+                // Ask BL for sorted list (SelectedSort passed to BL)
                 var allCouriers = s_bl.Courier.GetCouriers(AdminId, null, SelectedSort);
 
-                // 2. Filter (via PL)
+                // Apply transport filter in PL
                 var filtered = (TransportFilter == BO.Transportation.None) ?
                     allCouriers :
                     allCouriers.Where(c => c.Transport == TransportFilter);
@@ -98,27 +84,37 @@ namespace PL.Courier.ForManager
         // -----------------------------------------------------------------------
         // UI Interaction
         // -----------------------------------------------------------------------
-
         private void btnClearSort_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Reset logic properties
+            // Reset logic properties
             TransportFilter = BO.Transportation.None;
             SelectedSort = null;
 
-            // 2. Reset UI Controls manually (because properties are not DPs)
+            // Reset UI Controls manually (because properties are not DPs)
             cbFilter.SelectedValue = BO.Transportation.None;
-            cbSort.SelectedIndex = -1; // Clear selection
+            cbSort.SelectedIndex = -1;
 
             RefreshList();
         }
 
+        // Ensure selection handlers update the logic properties before refreshing
         private void cbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cbSort.SelectedItem is BO.CourierInListOptions sort)
+                SelectedSort = sort;
+            else
+                SelectedSort = null;
+
             RefreshList();
         }
 
         private void cbTransport_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cbFilter.SelectedItem is BO.Transportation t)
+                TransportFilter = t;
+            else
+                TransportFilter = BO.Transportation.None;
+
             RefreshList();
         }
 
@@ -126,7 +122,6 @@ namespace PL.Courier.ForManager
         {
             if (SelectedCourier != null)
             {
-                // Open for Update - using Show() to allow multi-window observation
                 CourierWindow courierWindow = new CourierWindow(SelectedCourier.Id);
                 courierWindow.Show();
             }
@@ -134,21 +129,33 @@ namespace PL.Courier.ForManager
 
         private void btnAddCourier_Click(object sender, RoutedEventArgs e)
         {
-            // Open for Add
             CourierWindow courierWindow = new CourierWindow();
             courierWindow.Show();
         }
 
+        // IMPORTANT: guard deletion and refresh afterwards
         private void btnDeleteCourier_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is BO.CourierInList courierToDelete)
             {
+                // Check deletability: no completed deliveries and no active order
+                // We assume OrdersOnTime + OrdersLate == 0 and CurrentOrderId == null mean deletable
+                bool hasPastDeliveries = (courierToDelete.OrdersOnTime + courierToDelete.OrdersLate) > 0;
+                bool hasActiveOrder = courierToDelete.CurrentOrderId.HasValue;
+
+                if (hasPastDeliveries || hasActiveOrder)
+                {
+                    MessageBox.Show("Courier cannot be deleted because they have deliveries or an active order.", "Cannot delete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
                 var result = MessageBox.Show($"Delete {courierToDelete.FullName}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
                         s_bl.Courier.Delete(AdminId, courierToDelete.Id);
+                        RefreshList();
                     }
                     catch (Exception ex)
                     {

@@ -21,6 +21,18 @@
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
+        <!-- Added DangerButton style to resolve XDG-0001 -->
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderBrush" Value="#B71C1C"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
         <conv:EnumToBrushConverter x:Key="EnumToBrush"/>
     </Window.Resources>
 
@@ -175,6 +187,31 @@
                                HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Actions" Width="110">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <Button Content="Delete" Click="btnDeleteCourier_Click" DataContext="{Binding}">
+                        <Button.Style>
+                          <Style TargetType="Button" BasedOn="{StaticResource DangerButton}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Margin" Value="5"/>
+                            <Style.Triggers>
+                              <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                  <Condition Binding="{Binding OrdersOnTime}" Value="0"/>
+                                  <Condition Binding="{Binding OrdersLate}" Value="0"/>
+                                  <Condition Binding="{Binding CurrentOrderId}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                              </MultiDataTrigger>
+                            </Style.Triggers>
+                          </Style>
+                        </Button.Style>
+                      </Button>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
             </DataGrid.Columns>

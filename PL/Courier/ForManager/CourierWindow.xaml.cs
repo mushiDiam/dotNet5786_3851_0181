@@ -2,6 +2,7 @@
 using System.Windows;
 using BlApi;
 using BO;
+using PL.AvailableOrders;
 
 namespace PL.Courier.ForManager
 {
@@ -181,6 +182,39 @@ namespace PL.Courier.ForManager
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        // New: Open the active order details if courier has one in progress.
+        private void BtnOpenOrder_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (CurrentCourier?.ActiveOrder == null)
+                {
+                    MessageBox.Show("This courier does not have an active order.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                int managerId = s_bl.Admin.GetConfig().ManagerId;
+                int orderId = CurrentCourier.ActiveOrder.OrderId;
+
+                var order = s_bl.Order.Details(managerId, orderId);
+                if (order == null)
+                {
+                    MessageBox.Show("Order details not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var wnd = new OrderDetailsWindow(order)
+                {
+                    Owner = this
+                };
+                wnd.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

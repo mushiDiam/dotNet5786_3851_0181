@@ -139,6 +139,21 @@
             <Button Content="{Binding ButtonText}" Click="BtnSave_Click" 
                     Width="120" Height="35" Background="#4CAF50" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"/>
 
+            <!-- Open Active Order button: visible only when CurrentCourier.ActiveOrder is NOT null -->
+            <Button Content="Open Active Order" Click="BtnOpenOrder_Click" Width="140" Height="35" Margin="0,0,10,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <!-- hide when no active order -->
+                            <DataTrigger Binding="{Binding CurrentCourier.ActiveOrder}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
             <Button Content="Cancel" Click="BtnCancel_Click" Width="80" Height="35"/>
         </StackPanel>
     </Grid>
