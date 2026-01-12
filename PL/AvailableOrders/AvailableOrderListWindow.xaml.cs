@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Input;
 using BlApi;
 using BO;
-using PL;
 
 namespace PL
 {
@@ -15,6 +14,10 @@ namespace PL
         private readonly int _requesterId;
         private readonly int _managerId;
         private readonly bool _isManager;
+
+        // Optional pre-filters (used when opened from summary)
+        private readonly OrderStatus? _filterOrderStatus;
+        private readonly ScheduleStatus? _filterScheduleStatus;
 
         // Property for Binding to the View
         public Visibility CourierVisibility { get; set; }
@@ -29,8 +32,13 @@ namespace PL
             public TimeSpan? RemainingTime { get; init; }
         }
 
-        public AvailableOrderListWindow(int requesterId, bool isManager = false)
+        // Added optional filter parameters with defaults to preserve existing calls.
+        public AvailableOrderListWindow(int requesterId, bool isManager = false, OrderStatus? orderStatusFilter = null, ScheduleStatus? scheduleStatusFilter = null)
         {
+            // Set filters before InitializeComponent so RefreshList can use them when Loaded triggers
+            _filterOrderStatus = orderStatusFilter;
+            _filterScheduleStatus = scheduleStatusFilter;
+
             // Determine visibility before InitializeComponent
             CourierVisibility = isManager ? Visibility.Collapsed : Visibility.Visible;
 
@@ -67,13 +75,26 @@ namespace PL
                 if (_isManager)
                 {
                     var orders = s_bl.Order.GetOrders(_managerId, null, null, null)?.ToList() ?? new List<BO.OrderInList>();
-                    var list = orders.Select(o => new OrderView { OrderId = o.OrderId, AirDistance = o.AirDistance, ScheduleStatus = o.ScheduleStatus, RemainingTime = o.RemainingTime }).ToList();
+
+                    // apply pre-filters (OrderStatus and/or ScheduleStatus) on the lightweight list
+                    var filtered = orders.Where(o =>
+                        (!_filterOrderStatus.HasValue || o.OrderStatus == _filterOrderStatus.Value) &&
+                        (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
+                        .ToList();
+
+                    var list = filtered.Select(o => new OrderView { OrderId = o.OrderId, AirDistance = o.AirDistance, ScheduleStatus = o.ScheduleStatus, RemainingTime = o.RemainingTime }).ToList();
                     dgOrders.ItemsSource = list;
                 }
                 else
                 {
                     var openFromBl = s_bl.Order.GetOpenOrder(_managerId, _requesterId, null, null)?.ToList() ?? new List<BO.OpenOrderInList>();
-                    var blList = openFromBl.Select(o => new OrderView { OrderId = o.OrderId, FullAddress = o.FullAddress ?? "", AirDistance = o.AirDistance, ScheduleStatus = o.ScheduleStatus, RemainingTime = o.RemainingTime }).ToList();
+
+                    var filtered = openFromBl.Where(o =>
+                        (!_filterOrderStatus.HasValue) &&
+                        (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
+                        .ToList();
+
+                    var blList = filtered.Select(o => new OrderView { OrderId = o.OrderId, FullAddress = o.FullAddress ?? "", AirDistance = o.AirDistance, ScheduleStatus = o.ScheduleStatus, RemainingTime = o.RemainingTime }).ToList();
                     dgOrders.ItemsSource = blList;
                 }
             }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL.Deliveries"
         mc:Ignorable="d"
-        Title="Delivery List" Height="520" Width="900"
+        Title="Delivery List" Height="560" Width="900"
         WindowStartupLocation="CenterScreen" 
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
         Background="#F5F5F5">
@@ -62,11 +62,13 @@
             </Border.Effect>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>   <!-- Overview -->
+                    <RowDefinition Height="Auto"/>   <!-- Summary -->
+                    <RowDefinition Height="Auto"/>   <!-- Sort / Filter controls -->
                     <RowDefinition Height="12"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>      <!-- DataGrid -->
                     <RowDefinition Height="12"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>   <!-- Bottom buttons -->
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
@@ -74,7 +76,20 @@
                     <TextBlock Text="Overview of shipments" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <DataGrid x:Name="dgDeliveries" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" RowHeight="30"
+                <!-- Summary area: fixed (no scrolling) -->
+                <WrapPanel Grid.Row="1" x:Name="wpSummary" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8" ItemHeight="36" ItemWidth="220" />
+
+                <!-- Sorting and Filtering controls (both populated with the same enum fields) -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8" >
+                    <TextBlock Text="Sort by:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="cmbSort" Width="220" Margin="0,0,16,0" SelectionChanged="SortCombo_SelectionChanged"/>
+
+                    <TextBlock Text="Filter by:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                    <ComboBox x:Name="cmbFilter" Width="220" Margin="0,0,8,0" SelectionChanged="FilterCombo_SelectionChanged"/>
+                    <Button Content="Clear" Width="80" Click="BtnClearFilterSort_Click" Style="{StaticResource ModernButton}" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <DataGrid x:Name="dgDeliveries" Grid.Row="4" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" RowHeight="30"
                           MouseDoubleClick="dgDeliveries_MouseDoubleClick">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding OrderId}" Width="60"/>
@@ -87,7 +102,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Refresh" Width="110" Margin="0,0,8,0" Click="BtnRefresh_Click" Style="{StaticResource ModernButton}"/>
                     <Button Content="Close" Width="100" Click="BtnClose_Click" Style="{StaticResource DangerButton}"/>
                 </StackPanel>
