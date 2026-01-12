@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using BlApi;
 using BO;
+using PL.AvailableOrders;
 
 namespace PL
 {
@@ -21,6 +22,7 @@ namespace PL
 
         // Property for Binding to the View
         public Visibility CourierVisibility { get; set; }
+        public Visibility ManagerVisibility { get; set; } // <-- added
 
         private sealed class OrderView
         {
@@ -41,6 +43,7 @@ namespace PL
 
             // Determine visibility before InitializeComponent
             CourierVisibility = isManager ? Visibility.Collapsed : Visibility.Visible;
+            ManagerVisibility = isManager ? Visibility.Visible : Visibility.Collapsed; // <-- set manager visibility
 
             InitializeComponent();
             DataContext = this;
@@ -151,6 +154,24 @@ namespace PL
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to choose order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // New: open OrderDetailsWindow in Add mode (reuses same window)
+        private void BtnAddOrder_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var wnd = new OrderDetailsWindow(_managerId, true, true)
+                {
+                    Owner = this
+                };
+                // Open non-modal so manager can still access the list while adding
+                wnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open Add Order window: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

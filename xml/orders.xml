@@ -650,4 +650,18 @@
     <Volume>2</Volume>
     <OrderType>Bike</OrderType>
   </Order>
+  <Order>
+    <Id>51</Id>
+    <AdderssOfOrder>קניון מלחה ירושלים</AdderssOfOrder>
+    <Latitude>31.75166</Latitude>
+    <Longitude>35.1873901</Longitude>
+    <CustomerName>mushi</CustomerName>
+    <CustomerPhone>12834217748</CustomerPhone>
+    <CreatedAt>2026-01-12T16:54:01.2721446+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>1</Weight>
+    <Volume>1</Volume>
+    <OrderType>Car</OrderType>
+    <Description />
+  </Order>
 </ArrayOfOrder>

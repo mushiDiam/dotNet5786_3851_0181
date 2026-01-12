@@ -290,9 +290,32 @@ internal static class OrderManager{
         if (string.IsNullOrWhiteSpace(order.FullAddress))
             throw new BlInvalidValueException("Order address is required.");
 
-        if (double.IsNaN(order.Latitude) || order.Latitude < -90 || order.Latitude > 90 ||
-            double.IsNaN(order.Longitude) || order.Longitude < -180 || order.Longitude > 180)
+        // Resolve coordinates from address if not provided
+        if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude) || (order.Latitude == 0 && order.Longitude == 0))
+        {
+            // reuse the geocoding helper already in this class (async) synchronously
+            var coords = GetCoordinatesFromAddressAsync(order.FullAddress).GetAwaiter().GetResult();
+            if (coords.Lat == null || coords.Lon == null)
+                throw new BlInvalidValueException("Unable to resolve address coordinates.");
+
+            order.Latitude = coords.Lat.Value;
+            order.Longitude = coords.Lon.Value;
+        }
+
+        // Validate coordinates are now set
+        if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude))
             throw new BlInvalidValueException("Order coordinates are invalid.");
+
+        // compute air distance using company coordinates from DAL config
+        var companyLat = s_dal.Config.CompanyLatitude ?? double.NaN;
+        var companyLon = s_dal.Config.CompanyLongitude ?? double.NaN;
+        if (double.IsNaN(companyLat) || double.IsNaN(companyLon))
+            throw new BlInvalidValueException("Company coordinates are not configured.");
+
+        // Use existing helper GetAirDistance (returns km)
+        order.AirDistance = GetAirDistance(order.Latitude, order.Longitude, companyLat, companyLon);
+
+        // convert and persist
         DO.Order doOrder = ConvertToDal(order);
         try
         {
@@ -393,7 +416,7 @@ internal static class OrderManager{
         try
         {
             // 3. REUSE the static client (Do NOT use 'using' here)
-            string json = await s_client.GetStringAsync(url);
+            string json = await s_client.GetStringAsync(url).ConfigureAwait(false);
 
             using JsonDocument doc = JsonDocument.Parse(json);
             var root = doc.RootElement;

@@ -87,6 +87,13 @@
                         Click="BtnChoose_Click" 
                         Style="{StaticResource ModernButton}"/>
 
+                    <Button x:Name="BtnAddOrder" Content="+ Add Order"
+                            Visibility="{Binding ManagerVisibility}"
+                            Width="130"
+                            Margin="0,0,8,0"
+                            Click="BtnAddOrder_Click"
+                            Style="{StaticResource ModernButton}"/>
+
                     <Button Content="Close" Width="100" Click="BtnClose_Click" Style="{StaticResource DangerButton}"/>
                 </StackPanel>
             </Grid>

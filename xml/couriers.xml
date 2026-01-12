@@ -212,7 +212,7 @@
   <Courier>
     <Id>224851116</Id>
     <Active>false</Active>
-    <MaxDeliveryDistance>29.285406120051192</MaxDeliveryDistance>
+    <MaxDeliveryDistance>52</MaxDeliveryDistance>
     <JoinDate>2023-10-03T15:32:33.8244981+03:00</JoinDate>
     <OrderType>Car</OrderType>
     <Name>Noga Arbel</Name>

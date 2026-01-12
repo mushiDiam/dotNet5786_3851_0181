@@ -4,10 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL.AvailableOrders"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:bo="clr-namespace:BO;assembly=BL"
         mc:Ignorable="d"
         Title="Order Details" Height="520" Width="900"
-        WindowStartupLocation="CenterOwner" Background="#F5F5F5">
+        WindowStartupLocation="CenterOwner" Background="#F5F5F5"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
+
     <Window.Resources>
+        <ObjectDataProvider x:Key="OrderTypesCollection" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="bo:OrderTypes"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="#2196F3"/>
             <Setter Property="Foreground" Value="White"/>
@@ -68,6 +78,7 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
+
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="110"/>
@@ -90,7 +101,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Order ID" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Right"/>
-                    <TextBlock Text="{Binding OrderId}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding Path=OrderId}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -105,37 +116,54 @@
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Top">
                     <TextBlock Text="MAIN" FontWeight="Bold" Foreground="#1565C0" Margin="0,0,0,8"/>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Address:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding FullAddress}" TextWrapping="Wrap" Width="220"/>
+                        <TextBox Text="{Binding FullAddress, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
+                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Customer:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding CustomerName}" />
+                        <TextBox Text="{Binding CustomerName, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
+                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Phone:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding CustomerPhone}" />
+                        <TextBox Text="{Binding CustomerPhone, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
+                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Type:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding OrderType}" />
+                        <ComboBox ItemsSource="{Binding Source={StaticResource OrderTypesCollection}}" 
+                                  SelectedItem="{Binding OrderType, Mode=TwoWay}"
+                                  Width="220" 
+                                  IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Fragile:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Fragile}" />
+                        <CheckBox IsChecked="{Binding Fragile, Mode=TwoWay}" IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"
+                                  VerticalAlignment="Center"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Weight:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Weight}" />
+                        <TextBox Text="{Binding Weight, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
+                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Volume:" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Volume}" />
+                        <TextBox Text="{Binding Volume, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
+                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <TextBlock Text="Description" FontWeight="Bold" Foreground="#1565C0" Margin="0,12,0,6"/>
-                    <TextBox Text="{Binding Description}" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Height="90" TextWrapping="Wrap"/>
+                    <TextBox Text="{Binding Description, Mode=TwoWay}" Style="{StaticResource ModernTextBox}" Height="90" TextWrapping="Wrap"
+                             IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
@@ -188,6 +216,7 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
             <Button Content="Close" Click="BtnClose_Click" Style="{StaticResource DangerButton}" Margin="0,0,8,0" Width="100"/>
             <Button x:Name="BtnAccept" Content="Accept Order" Click="BtnAccept_Click" Style="{StaticResource SuccessButton}" Width="120"/>
+            <Button x:Name="BtnSave" Content="Add Order" Click="BtnSave_Click" Style="{StaticResource SuccessButton}" Width="120" Visibility="Collapsed" Margin="8,0,0,0"/>
         </StackPanel>
     </Grid>
 </Window>
