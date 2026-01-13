@@ -45,7 +45,7 @@ namespace PL.AvailableOrders
         public static readonly DependencyProperty IsAddModeProperty =
             DependencyProperty.Register(nameof(IsAddMode), typeof(bool), typeof(OrderDetailsWindow), new PropertyMetadata(false));
 
-        // New: indicates whether fields should be editable (Add-mode OR manager + open/in-progress)
+        // New: indicates whether fields should be editable (Add-mode OR manager + open/in-progress with active courier)
         public bool IsEditable
         {
             get { return (bool)GetValue(IsEditableProperty); }
@@ -137,12 +137,45 @@ namespace PL.AvailableOrders
 
                     AcceptVisibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
 
-                    // Set editability: add-mode OR manager + (Open or InProgress)
-                    IsEditable = IsAddMode || (_isManager && (boOrder.OrderStatus == OrderStatus.Open || boOrder.OrderStatus == OrderStatus.InProgress));
+                    // Determine whether any assigned courier is active (safe lookup)
+                    bool hasActiveCourier = false;
+                    try
+                    {
+                        if (boOrder.Deliveries != null)
+                        {
+                            foreach (var d in boOrder.Deliveries)
+                            {
+                                if (d.CourierId.HasValue)
+                                {
+                                    try
+                                    {
+                                        var courier = s_bl.Courier.Details(_managerId, d.CourierId.Value);
+                                        if (courier != null && courier.IsActive)
+                                        {
+                                            hasActiveCourier = true;
+                                            break;
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        // ignore errors from courier lookup - treat as not active
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // any unexpected failure in checking deliveries -> treat as not having active courier
+                        hasActiveCourier = false;
+                    }
 
-                    // Show update button only to manager (visibility controlled in code-behind)
+                    // Set editability: add-mode OR manager + (Open OR (InProgress AND assigned active courier))
+                    IsEditable = IsAddMode || (_isManager && (boOrder.OrderStatus == OrderStatus.Open || (boOrder.OrderStatus == OrderStatus.InProgress && hasActiveCourier)));
+
+                    // Show update button only to manager when editable
                     if (BtnUpdate != null)
-                        BtnUpdate.Visibility = _isManager ? Visibility.Visible : Visibility.Collapsed;
+                        BtnUpdate.Visibility = (_isManager && IsEditable) ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception ex)

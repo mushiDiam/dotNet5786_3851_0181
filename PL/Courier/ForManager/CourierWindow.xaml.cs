@@ -198,14 +198,8 @@ namespace PL.Courier.ForManager
                 int managerId = s_bl.Admin.GetConfig().ManagerId;
                 int orderId = CurrentCourier.ActiveOrder.OrderId;
 
-                var order = s_bl.Order.Details(managerId, orderId);
-                if (order == null)
-                {
-                    MessageBox.Show("Order details not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var wnd = new OrderDetailsWindow(order)
+                // Use manager-aware constructor so LoadOrderDetails runs and sets IsEditable correctly
+                var wnd = new OrderDetailsWindow(managerId, orderId, isManager: true)
                 {
                     Owner = this
                 };
