@@ -16,6 +16,24 @@ namespace PL.AvailableOrders
         private readonly int _requesterId;
         private readonly int _orderId;
         private readonly bool _isManager;
+        private readonly int _managerId;
+
+        // Bindable visibility properties (no x:Name usage in XAML)
+        public Visibility DeleteVisibility
+        {
+            get { return (Visibility)GetValue(DeleteVisibilityProperty); }
+            set { SetValue(DeleteVisibilityProperty, value); }
+        }
+        public static readonly DependencyProperty DeleteVisibilityProperty =
+            DependencyProperty.Register(nameof(DeleteVisibility), typeof(Visibility), typeof(OrderDetailsWindow), new PropertyMetadata(Visibility.Collapsed));
+
+        public Visibility AcceptVisibility
+        {
+            get { return (Visibility)GetValue(AcceptVisibilityProperty); }
+            set { SetValue(AcceptVisibilityProperty, value); }
+        }
+        public static readonly DependencyProperty AcceptVisibilityProperty =
+            DependencyProperty.Register(nameof(AcceptVisibility), typeof(Visibility), typeof(OrderDetailsWindow), new PropertyMetadata(Visibility.Visible));
 
         // New: indicates add-mode (true when creating a new order)
         public bool IsAddMode
@@ -36,8 +54,8 @@ namespace PL.AvailableOrders
         public OrderDetailsWindow(BO.Order order) : this()
         {
             DataContext = order;
-            BtnAccept.Visibility = Visibility.Collapsed;
-            BtnSave.Visibility = Visibility.Collapsed;
+            AcceptVisibility = Visibility.Collapsed;
+            DeleteVisibility = Visibility.Collapsed;
             IsAddMode = false;
         }
 
@@ -48,13 +66,10 @@ namespace PL.AvailableOrders
             _requesterId = requesterId;
             _orderId = orderId;
             _isManager = isManager;
+            _managerId = s_bl.Admin.GetConfig().ManagerId;
 
             IsAddMode = false;
-
-            // Logic: Managers should not Accept
-            BtnAccept.Visibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
-            BtnSave.Visibility = Visibility.Collapsed;
-
+            AcceptVisibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
             LoadOrderDetails();
         }
 
@@ -65,11 +80,12 @@ namespace PL.AvailableOrders
             InitializeComponent();
             _requesterId = requesterId;
             _isManager = isManager;
+            _managerId = s_bl.Admin.GetConfig().ManagerId;
             IsAddMode = isAddMode;
 
-            // Add-mode specific UI
-            BtnAccept.Visibility = Visibility.Collapsed;
-            BtnSave.Visibility = IsAddMode ? Visibility.Visible : Visibility.Collapsed;
+            AcceptVisibility = Visibility.Collapsed;
+            DeleteVisibility = Visibility.Collapsed;
+            IsAddMode = isAddMode;
 
             // create an empty BO.Order for binding/editing
             var newOrder = new BO.Order
@@ -96,9 +112,16 @@ namespace PL.AvailableOrders
         {
             try
             {
-                int adminId = s_bl.Admin.GetConfig().ManagerId;
-                var order = s_bl.Order.Details(adminId, _orderId);
+                var order = s_bl.Order.Details(s_bl.Admin.GetConfig().ManagerId, _orderId);
                 DataContext = order;
+
+                if (DataContext is BO.Order boOrder)
+                {
+                    DeleteVisibility = (_isManager && (boOrder.OrderStatus == OrderStatus.Open || boOrder.OrderStatus == OrderStatus.InProgress))
+                        ? Visibility.Visible : Visibility.Collapsed;
+
+                    AcceptVisibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
@@ -134,9 +157,7 @@ namespace PL.AvailableOrders
         {
             try
             {
-                if (!IsAddMode)
-                    return;
-
+                if (!IsAddMode) return;
                 if (DataContext is not BO.Order newOrder)
                 {
                     MessageBox.Show("Invalid order data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -165,6 +186,37 @@ namespace PL.AvailableOrders
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to add order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not BO.Order boOrder) return;
+
+            if (!_isManager)
+            {
+                MessageBox.Show("Only manager can delete orders.", "Unauthorized", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (boOrder.OrderStatus == OrderStatus.Closed || boOrder.OrderStatus == OrderStatus.Denied || boOrder.OrderStatus == OrderStatus.Cancelled)
+            {
+                MessageBox.Show("Order cannot be deleted.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var confirm = MessageBox.Show($"Are you sure you want to delete order #{boOrder.Id}?", "Confirm delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+
+            try
+            {
+                s_bl.Order.Cancel(_managerId, boOrder.Id);
+                MessageBox.Show("Order deleted.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

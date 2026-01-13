@@ -28,6 +28,7 @@
         </Style>
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#f44336"/>
+            <Setter Property="Foreground" Value="White"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#da190b"/>
@@ -74,6 +75,30 @@
                         <DataGridTextColumn Header="Air (km)" Binding="{Binding AirDistance, StringFormat=N2}" Width="110"/>
                         <DataGridTextColumn Header="Status" Binding="{Binding ScheduleStatus}" Width="120"/>
                         <DataGridTextColumn Header="Remaining" Binding="{Binding RemainingTime}" Width="120"/>
+
+                        <!-- Cancel column: visible only to managers (bind to ManagerVisibility on the window) -->
+                        <DataGridTemplateColumn Header="Cancel" Width="56">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="CancelOrder_Click" Padding="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74D;" FontSize="16" Foreground="White"/>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource DangerButton}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding OrderStatus}" Value="Open">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding OrderStatus}" Value="InProgress">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 
@@ -87,7 +112,7 @@
                         Click="BtnChoose_Click" 
                         Style="{StaticResource ModernButton}"/>
 
-                    <Button x:Name="BtnAddOrder" Content="+ Add Order"
+                    <Button Content="+ Add Order"
                             Visibility="{Binding ManagerVisibility}"
                             Width="130"
                             Margin="0,0,8,0"

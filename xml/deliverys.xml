@@ -200,4 +200,34 @@
     <EndOfOrder>Completed</EndOfOrder>
     <TimeOfDelivery>2026-01-12T16:01:28.9127059+02:00</TimeOfDelivery>
   </Delivery>
+  <Delivery>
+    <Id>21</Id>
+    <OrderId>21</OrderId>
+    <CourierId>0</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2026-01-13T14:28:01.8753348+02:00</StartOfDelivery>
+    <ActualDistance>0</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2026-01-13T14:28:01.8753355+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>22</Id>
+    <OrderId>22</OrderId>
+    <CourierId>0</CourierId>
+    <OrderType>Bike</OrderType>
+    <StartOfDelivery>2026-01-13T14:28:06.7752227+02:00</StartOfDelivery>
+    <ActualDistance>0</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2026-01-13T14:28:06.7752239+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>23</Id>
+    <OrderId>23</OrderId>
+    <CourierId>0</CourierId>
+    <OrderType>Walking</OrderType>
+    <StartOfDelivery>2026-01-13T14:56:13.9629341+02:00</StartOfDelivery>
+    <ActualDistance>0</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2026-01-13T14:56:13.9629347+02:00</TimeOfDelivery>
+  </Delivery>
 </ArrayOfDelivery>
