@@ -120,19 +120,19 @@
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Address:" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding FullAddress, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
-                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                 IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Customer:" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding CustomerName, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
-                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                 IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Phone:" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding CustomerPhone, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
-                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                 IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
@@ -140,30 +140,30 @@
                         <ComboBox ItemsSource="{Binding Source={StaticResource OrderTypesCollection}}" 
                                   SelectedItem="{Binding OrderType, Mode=TwoWay}"
                                   Width="220" 
-                                  IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                  IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Fragile:" VerticalAlignment="Center"/>
-                        <CheckBox IsChecked="{Binding Fragile, Mode=TwoWay}" IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"
+                        <CheckBox IsChecked="{Binding Fragile, Mode=TwoWay}" IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"
                                   VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Weight:" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding Weight, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
-                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                 IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,6">
                         <TextBlock Width="120" Text="Volume:" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding Volume, Mode=TwoWay}" Width="220" Style="{StaticResource ModernTextBox}"
-                                 IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                 IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <TextBlock Text="Description" FontWeight="Bold" Foreground="#1565C0" Margin="0,12,0,6"/>
                     <TextBox Text="{Binding Description, Mode=TwoWay}" Style="{StaticResource ModernTextBox}" Height="90" TextWrapping="Wrap"
-                             IsEnabled="{Binding IsAddMode, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                             IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" VerticalAlignment="Top">
@@ -227,6 +227,18 @@
                             Width="100" 
                             Visibility="{Binding Path=DeleteVisibility, RelativeSource={RelativeSource AncestorType=Window}}" 
                             Margin="8,0,0,0"/>
+
+            <!-- Update button for manager. Enabled only when IsEditable (add-mode OR manager + open/in-progress) -->
+            <Button x:Name="BtnUpdate"
+                    Content="עדכון"
+                    Click="BtnUpdate_Click"
+                    Style="{StaticResource SuccessButton}"
+                    Width="120"
+                    Margin="8,0,0,0"
+                    IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Visibility="Collapsed"
+                    ToolTip="לא ניתן לעדכן — ההזמנה סגורה"/>
+
             <Button Content="Add Order" Click="BtnSave_Click" Style="{StaticResource SuccessButton}" Width="120" Visibility="Collapsed" Margin="8,0,0,0"/>
         </StackPanel>
     </Grid>

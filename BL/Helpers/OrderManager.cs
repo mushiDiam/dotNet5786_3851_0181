@@ -346,17 +346,61 @@ internal static class OrderManager{
     {
         if (order is null)
             throw new BlInvalidValueException("Order cannot be null.");
-        DO.Order doOrder = ConvertToDal(order);
+
+        DO.Order existingDoOrder;
         try
         {
-            s_dal.Order.Update(doOrder);
+            existingDoOrder = s_dal.Order.Read(order.Id);
         }
         catch (DalDoesNotExistException ex)
         {
             throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
         }
-        Observers.NotifyItemUpdated(order.Id); //stage 5
-        Observers.NotifyListUpdated(); //stage 5
+
+        // Determine current BO order status (Open/InProgress => editable; others => closed)
+        var currentStatus = CalculateOrderStatus(order.Id);
+        if (currentStatus == OrderStatus.Closed || currentStatus == OrderStatus.Denied || currentStatus == OrderStatus.Cancelled)
+            throw new BlInvalidOperationException("Cannot update a closed order.");
+
+        // Whitelist: only these fields may be updated
+        // Adjust the list below if business requires different fields
+        var updatedDoOrder = existingDoOrder with
+        {
+            AdderssOfOrder = string.IsNullOrWhiteSpace(order.FullAddress) ? existingDoOrder.AdderssOfOrder : order.FullAddress,
+            CustomerName = string.IsNullOrWhiteSpace(order.CustomerName) ? existingDoOrder.CustomerName : order.CustomerName,
+            CustomerPhone = string.IsNullOrWhiteSpace(order.CustomerPhone) ? existingDoOrder.CustomerPhone : order.CustomerPhone,
+            Description = order.Description ?? existingDoOrder.Description,
+            Weight = order.Weight,
+            Volume = order.Volume,
+            Fragile = order.Fragile,
+            OrderType = (DO.OrderType)order.OrderType,
+            Latitude = double.IsNaN(order.Latitude) ? existingDoOrder.Latitude : order.Latitude,
+            Longitude = double.IsNaN(order.Longitude) ? existingDoOrder.Longitude : order.Longitude,
+            // Keep CreatedAt and Id unchanged
+        };
+
+        // If address changed and coordinates are invalid, try resolving coordinates
+        if (!string.Equals(existingDoOrder.AdderssOfOrder, updatedDoOrder.AdderssOfOrder, StringComparison.OrdinalIgnoreCase) &&
+            (updatedDoOrder.Latitude == 0 && updatedDoOrder.Longitude == 0))
+        {
+            var coords = GetCoordinatesFromAddressAsync(updatedDoOrder.AdderssOfOrder).GetAwaiter().GetResult();
+            if (coords.Lat.HasValue && coords.Lon.HasValue)
+            {
+                updatedDoOrder = updatedDoOrder with { Latitude = coords.Lat.Value, Longitude = coords.Lon.Value };
+            }
+        }
+
+        try
+        {
+            s_dal.Order.Update(updatedDoOrder);
+        }
+        catch (DalDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
+        }
+
+        Observers.NotifyItemUpdated(order.Id);
+        Observers.NotifyListUpdated();
     }
     internal static void Delete(int orderId)
     {

@@ -71,16 +71,6 @@
     <TimeOfDelivery>2025-12-27T17:32:33.9186589+02:00</TimeOfDelivery>
   </Delivery>
   <Delivery>
-    <Id>9</Id>
-    <OrderId>9</OrderId>
-    <CourierId>290855372</CourierId>
-    <OrderType>Car</OrderType>
-    <StartOfDelivery>2025-11-07T03:32:33.9310243+02:00</StartOfDelivery>
-    <ActualDistance>1.2741367258191145</ActualDistance>
-    <EndOfOrder xsi:nil="true" />
-    <TimeOfDelivery xsi:nil="true" />
-  </Delivery>
-  <Delivery>
     <Id>10</Id>
     <OrderId>10</OrderId>
     <CourierId>360436225</CourierId>
@@ -229,5 +219,25 @@
     <ActualDistance>0</ActualDistance>
     <EndOfOrder>Canceled</EndOfOrder>
     <TimeOfDelivery>2026-01-13T14:56:13.9629347+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>24</Id>
+    <OrderId>24</OrderId>
+    <CourierId>0</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2026-01-13T20:11:20.1121523+02:00</StartOfDelivery>
+    <ActualDistance>0</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2026-01-13T20:11:20.112154+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>9</Id>
+    <OrderId>9</OrderId>
+    <CourierId>290855372</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2025-11-07T03:32:33.9310243+02:00</StartOfDelivery>
+    <ActualDistance>1.2741367258191145</ActualDistance>
+    <EndOfOrder>Canceled</EndOfOrder>
+    <TimeOfDelivery>2026-01-13T20:13:25.4465338+02:00</TimeOfDelivery>
   </Delivery>
 </ArrayOfDelivery>

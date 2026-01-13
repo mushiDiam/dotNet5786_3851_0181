@@ -45,6 +45,15 @@ namespace PL.AvailableOrders
         public static readonly DependencyProperty IsAddModeProperty =
             DependencyProperty.Register(nameof(IsAddMode), typeof(bool), typeof(OrderDetailsWindow), new PropertyMetadata(false));
 
+        // New: indicates whether fields should be editable (Add-mode OR manager + open/in-progress)
+        public bool IsEditable
+        {
+            get { return (bool)GetValue(IsEditableProperty); }
+            set { SetValue(IsEditableProperty, value); }
+        }
+        public static readonly DependencyProperty IsEditableProperty =
+            DependencyProperty.Register(nameof(IsEditable), typeof(bool), typeof(OrderDetailsWindow), new PropertyMetadata(false));
+
         public OrderDetailsWindow()
         {
             InitializeComponent();
@@ -57,6 +66,8 @@ namespace PL.AvailableOrders
             AcceptVisibility = Visibility.Collapsed;
             DeleteVisibility = Visibility.Collapsed;
             IsAddMode = false;
+            // Viewing a BO.Order: not editable by default
+            IsEditable = false;
         }
 
         // View existing order (used by manager / courier)
@@ -106,6 +117,10 @@ namespace PL.AvailableOrders
             };
 
             DataContext = newOrder;
+
+            // Add-mode should be editable
+            IsEditable = true;
+            // Update button is not relevant in add-mode; remain collapsed
         }
 
         private void LoadOrderDetails()
@@ -121,6 +136,13 @@ namespace PL.AvailableOrders
                         ? Visibility.Visible : Visibility.Collapsed;
 
                     AcceptVisibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
+
+                    // Set editability: add-mode OR manager + (Open or InProgress)
+                    IsEditable = IsAddMode || (_isManager && (boOrder.OrderStatus == OrderStatus.Open || boOrder.OrderStatus == OrderStatus.InProgress));
+
+                    // Show update button only to manager (visibility controlled in code-behind)
+                    if (BtnUpdate != null)
+                        BtnUpdate.Visibility = _isManager ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -186,6 +208,44 @@ namespace PL.AvailableOrders
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to add order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Update (manager) - validate and call BL.UpdateDetails
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsEditable)
+            {
+                MessageBox.Show("לא ניתן לעדכן — ההזמנה סגורה או אין הרשאות.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (DataContext is not BO.Order boOrder)
+            {
+                MessageBox.Show("Invalid order data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                // Minimal validation example
+                if (string.IsNullOrWhiteSpace(boOrder.FullAddress))
+                {
+                    MessageBox.Show("Address is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Call BL. Use manager id to authorize update.
+                s_bl.Order.UpdateDetails(_managerId, boOrder);
+
+                MessageBox.Show("העדכון בוצע בהצלחה", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Reload to reflect recalculated fields/status
+                LoadOrderDetails();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
