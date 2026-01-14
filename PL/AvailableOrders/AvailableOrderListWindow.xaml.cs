@@ -18,18 +18,49 @@ namespace PL
         private readonly int _requesterId;
         private readonly int _managerId;
 
-        // Optional pre-filters (used when opened from summary)
         private readonly OrderStatus? _filterOrderStatus;
         private readonly ScheduleStatus? _filterScheduleStatus;
 
-        // Property for Binding to the View
-        // Remove the property declaration for CourierVisibility at the top of the class:
-     
+        // --- Data Sources for Binding ---
+        public enum SortOption { None, OrderId, Status, Distance }
+        public IEnumerable<SortOption> SortOptionsList { get; } = Enum.GetValues(typeof(SortOption)).Cast<SortOption>();
+        public IEnumerable<BO.OrderStatus> StatusOptionsList { get; } = Enum.GetValues(typeof(BO.OrderStatus)).Cast<BO.OrderStatus>();
 
-        // Keep only the property with the getter below, which avoids the ambiguity:
+        // --- Binding Properties ---
+        private IEnumerable<OrderView> _ordersList;
+        public IEnumerable<OrderView> OrdersList
+        {
+            get => _ordersList;
+            set { _ordersList = value; OnPropertyChanged(); }
+        }
+
+        private OrderView _selectedOrder;
+        public OrderView SelectedOrder
+        {
+            get => _selectedOrder;
+            set { _selectedOrder = value; OnPropertyChanged(); }
+        }
+
+        private SortOption _selectedSort = SortOption.None;
+        public SortOption SelectedSort
+        {
+            get => _selectedSort;
+            set { _selectedSort = value; OnPropertyChanged(); RefreshList(); }
+        }
+
+        private BO.OrderStatus? _selectedFilterStatus;
+        public BO.OrderStatus? SelectedFilterStatus
+        {
+            get => _selectedFilterStatus;
+            set { _selectedFilterStatus = value; OnPropertyChanged(); RefreshList(); }
+        }
+
+        // --- Visibility Properties ---
         public Visibility CourierVisibility => IsManager ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ManagerVisibility => IsManager ? Visibility.Visible : Visibility.Collapsed;
 
-        private sealed class OrderView
+        // View Model
+        public class OrderView
         {
             public int OrderId { get; init; }
             public string CustomerName { get; init; } = "";
@@ -37,7 +68,7 @@ namespace PL
             public double AirDistance { get; init; }
             public BO.ScheduleStatus? ScheduleStatus { get; init; }
             public TimeSpan? RemainingTime { get; init; }
-            public BO.OrderStatus OrderStatus { get; init; } // used by template triggers
+            public BO.OrderStatus OrderStatus { get; init; }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -56,15 +87,11 @@ namespace PL
             }
         }
 
-        // Exposed to XAML binding: column will be Visible only for managers
-        public Visibility ManagerVisibility => IsManager ? Visibility.Visible : Visibility.Collapsed;
-
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         public AvailableOrderListWindow(int requesterId, bool isManager = false, OrderStatus? orderStatusFilter = null, ScheduleStatus? scheduleStatusFilter = null)
         {
-            // Set filters before InitializeComponent so RefreshList can use them when Loaded triggers
             _filterOrderStatus = orderStatusFilter;
             _filterScheduleStatus = scheduleStatusFilter;
 
@@ -73,6 +100,10 @@ namespace PL
             _requesterId = requesterId;
             _managerId = s_bl.Admin.GetConfig().ManagerId;
             IsManager = isManager;
+
+            // Apply pre-filter if passed in constructor
+            if (_filterOrderStatus.HasValue)
+                _selectedFilterStatus = _filterOrderStatus.Value;
 
             Loaded += AvailableOrderListWindow_Loaded;
             Closed += AvailableOrderListWindow_Closed;
@@ -89,62 +120,90 @@ namespace PL
             try { s_bl.Order.RemoveObserver(OrderObserver); } catch { }
         }
 
-        private void OrderObserver()
+        private void OrderObserver() => Dispatcher.Invoke(RefreshList);
+
+        private void BtnClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(RefreshList);
+            // Resetting properties triggers RefreshList via the setters
+            SelectedSort = SortOption.None;
+            SelectedFilterStatus = null;
         }
 
         private void RefreshList()
         {
             try
             {
-                var cancelColumn = dgOrders.Columns.FirstOrDefault(c => c.Header.ToString() == "Cancel");
-                if (cancelColumn != null)
-                {
-                    cancelColumn.Visibility = IsManager ? Visibility.Visible : Visibility.Collapsed;
-                }
+                IEnumerable<OrderView> list;
+
                 if (IsManager)
                 {
                     var orders = s_bl.Order.GetOrders(_managerId, null, null, null)?.ToList() ?? new List<BO.OrderInList>();
+
+                    // Filter
                     var filtered = orders.Where(o =>
+                        (!SelectedFilterStatus.HasValue || o.OrderStatus == SelectedFilterStatus.Value) &&
                         (!_filterOrderStatus.HasValue || o.OrderStatus == _filterOrderStatus.Value) &&
                         (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
                         .ToList();
 
-                    var list = filtered.Select(o => new OrderView {
+                    // Convert
+                    list = filtered.Select(o => new OrderView
+                    {
                         OrderId = o.OrderId,
+                        CustomerName = "",
+                        FullAddress = "",
                         AirDistance = o.AirDistance,
                         ScheduleStatus = o.ScheduleStatus,
                         RemainingTime = o.RemainingTime,
-                        OrderStatus = o.OrderStatus,
-                        CustomerName = "" }).ToList();
-
-                    dgOrders.ItemsSource = list;
+                        OrderStatus = o.OrderStatus
+                    });
                 }
                 else
                 {
                     var openFromBl = s_bl.Order.GetOpenOrder(_managerId, _requesterId, null, null)?.ToList() ?? new List<BO.OpenOrderInList>();
+
                     var filtered = openFromBl.Where(o =>
+                        (!SelectedFilterStatus.HasValue || SelectedFilterStatus.Value == OrderStatus.Open) &&
                         (!_filterOrderStatus.HasValue) &&
                         (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
                         .ToList();
 
-                    var blList = filtered.Select(o => new OrderView {
+                    list = filtered.Select(o => new OrderView
+                    {
                         OrderId = o.OrderId,
                         FullAddress = o.FullAddress ?? "",
                         AirDistance = o.AirDistance,
                         ScheduleStatus = o.ScheduleStatus,
                         RemainingTime = o.RemainingTime,
                         OrderStatus = OrderStatus.Open,
-                        CustomerName = "" }).ToList();
-
-                    dgOrders.ItemsSource = blList;
+                        CustomerName = ""           
+                    });
                 }
+
+                // Sort
+                switch (SelectedSort)
+                {
+                    case SortOption.OrderId:
+                        list = list.OrderBy(o => o.OrderId);
+                        break;
+                    case SortOption.Status:
+                        list = list.OrderBy(o => o.OrderStatus);
+                        break;
+                    case SortOption.Distance:
+                        list = list.OrderBy(o => o.AirDistance);
+                        break;
+                    default:
+                        list = list.OrderByDescending(o => o.OrderId);
+                        break;
+                }
+
+                // Update the Bound Property (No direct UI access)
+                OrdersList = list.ToList();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed loading available orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                dgOrders.ItemsSource = new List<OrderView>();
+                MessageBox.Show($"Failed loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                OrdersList = new List<OrderView>();
             }
         }
 
@@ -152,16 +211,17 @@ namespace PL
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (dgOrders.SelectedItem is not OrderView sel) return;
+            // We can use the sender (DataGrid) or the Bound Property
+            if (SelectedOrder == null) return;
 
             try
             {
-                var detailsWindow = new PL.AvailableOrders.OrderDetailsWindow(_requesterId, sel.OrderId, IsManager) { Owner = this };
+                var detailsWindow = new PL.AvailableOrders.OrderDetailsWindow(_requesterId, SelectedOrder.OrderId, IsManager) { Owner = this };
                 detailsWindow.Show();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open order details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -173,19 +233,22 @@ namespace PL
 
         private void BtnChoose_Click(object sender, RoutedEventArgs e)
         {
-            if (dgOrders.SelectedItem is not OrderView sel)
+            // Use Bound Property instead of accessing DataGrid
+            if (SelectedOrder == null)
             {
                 MessageBox.Show("Please select an order first.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
+
             try
             {
                 if (IsManager)
                 {
-                    MessageBox.Show("Managers cannot choose an order on behalf of a courier.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Managers cannot choose orders.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
-                int orderId = sel.OrderId;
+
+                int orderId = SelectedOrder.OrderId;
                 s_bl.Order.ChooseOrder(_requesterId, _requesterId, orderId);
                 MessageBox.Show($"You chose order #{orderId}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 RefreshList();
@@ -196,7 +259,6 @@ namespace PL
             }
         }
 
-        // New: per-row Cancel handler (manager-only)
         private void CancelOrder_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn) return;
@@ -204,29 +266,22 @@ namespace PL
 
             if (!IsManager)
             {
-                MessageBox.Show("Only manager can cancel orders.", "Unauthorized", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Unauthorized.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Only allow cancelling Open or InProgress (guard, although button visibility already enforces this)
-            if (view.OrderStatus != OrderStatus.Open && view.OrderStatus != OrderStatus.InProgress)
-            {
-                MessageBox.Show("Order cannot be cancelled.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            var confirm = MessageBox.Show($"Are you sure you want to delete Order #{view.OrderId}?", "Confirm delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var confirm = MessageBox.Show($"Delete Order #{view.OrderId}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
 
             try
             {
                 s_bl.Order.Cancel(_managerId, view.OrderId);
-                MessageBox.Show($"Order #{view.OrderId} cancelled.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Order cancelled.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 RefreshList();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to cancel order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -234,16 +289,9 @@ namespace PL
         {
             try
             {
-                var wnd = new OrderDetailsWindow(_managerId, true, true)
-                {
-                    Owner = this
-                };
-                wnd.Show();
+                new OrderDetailsWindow(_managerId, true, true) { Owner = this }.Show();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to open Add Order window: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch { }
         }
     }
 }

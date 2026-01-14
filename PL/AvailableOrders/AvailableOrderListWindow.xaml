@@ -1,8 +1,11 @@
 ﻿<Window x:Class="PL.AvailableOrderListWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Available Orders" Height="520" Width="820"
-        WindowStartupLocation="CenterOwner" DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" Background="#F5F5F5">
+        Title="Available Orders" Height="560" Width="820"
+        WindowStartupLocation="CenterOwner" 
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+        Background="#F5F5F5">
+
     <Window.Resources>
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="#2196F3"/>
@@ -26,6 +29,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#f44336"/>
             <Setter Property="Foreground" Value="White"/>
@@ -36,6 +40,7 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
+
     <Grid>
         <Border Background="#1565C0" Height="96" VerticalAlignment="Top">
             <Grid Margin="18,0">
@@ -53,8 +58,10 @@
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.12"/>
             </Border.Effect>
+
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="12"/>
                     <RowDefinition Height="*"/>
@@ -64,19 +71,42 @@
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
                     <TextBlock Text="🔎" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="Select an order to accept" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="Select an order to accept / manage" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <DataGrid x:Name="dgOrders" Grid.Row="2" AutoGenerateColumns="False" MouseDoubleClick="DataGrid_MouseDoubleClick" CanUserAddRows="False" IsReadOnly="True" RowHeight="30">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="OrderId" Binding="{Binding OrderId}" Width="90"/>
-                        <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="180"/>
-                        <DataGridTextColumn Header="Address" Binding="{Binding FullAddress}" Width="*"/>
-                        <DataGridTextColumn Header="Air (km)" Binding="{Binding AirDistance, StringFormat=N2}" Width="110"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding ScheduleStatus}" Width="120"/>
-                        <DataGridTextColumn Header="Remaining" Binding="{Binding RemainingTime}" Width="120"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="Sort By:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
+                    <ComboBox Width="120" Margin="0,0,15,0" 
+                              ItemsSource="{Binding SortOptionsList}"
+                              SelectedItem="{Binding SelectedSort, Mode=TwoWay}"
+                              VerticalContentAlignment="Center"/>
 
-                        <!-- Cancel column: visible only to managers (bind to ManagerVisibility on the window) -->
+                    <TextBlock Text="Filter Status:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
+                    <ComboBox Width="120" Margin="0,0,10,0" 
+                              ItemsSource="{Binding StatusOptionsList}"
+                              SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay}"
+                              VerticalContentAlignment="Center"/>
+
+                    <Button Content="Clear" Click="BtnClearFilters_Click" Style="{StaticResource ModernButton}" Height="28" Padding="10,2" FontSize="12"/>
+                </StackPanel>
+
+                <DataGrid Grid.Row="3" 
+                          ItemsSource="{Binding OrdersList}"
+                          SelectedItem="{Binding SelectedOrder, Mode=TwoWay}"
+                          AutoGenerateColumns="False" 
+                          MouseDoubleClick="DataGrid_MouseDoubleClick" 
+                          CanUserAddRows="False" 
+                          IsReadOnly="True" 
+                          RowHeight="30">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="OrderId" Binding="{Binding OrderId}" Width="70"/>
+                        <DataGridTextColumn Header="Customer" Binding="{Binding CustomerName}" Width="140"/>
+                        <DataGridTextColumn Header="Address" Binding="{Binding FullAddress}" Width="*"/>
+                        <DataGridTextColumn Header="Air (km)" Binding="{Binding AirDistance, StringFormat=N2}" Width="80"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding OrderStatus}" Width="100"/>
+                        <DataGridTextColumn Header="Sched. Status" Binding="{Binding ScheduleStatus}" Width="100"/>
+                        <DataGridTextColumn Header="Time" Binding="{Binding RemainingTime}" Width="100"/>
+
                         <DataGridTemplateColumn Header="Cancel" Width="56">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -102,15 +132,15 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Refresh" Width="110" Margin="0,0,8,0" Click="BtnRefresh_Click" Style="{StaticResource ModernButton}"/>
 
                     <Button Content="Choose Selected" 
-                        Visibility="{Binding CourierVisibility}" 
-                        Width="150" 
-                        Margin="0,0,8,0" 
-                        Click="BtnChoose_Click" 
-                        Style="{StaticResource ModernButton}"/>
+                            Visibility="{Binding CourierVisibility}" 
+                            Width="150" 
+                            Margin="0,0,8,0" 
+                            Click="BtnChoose_Click" 
+                            Style="{StaticResource ModernButton}"/>
 
                     <Button Content="+ Add Order"
                             Visibility="{Binding ManagerVisibility}"
