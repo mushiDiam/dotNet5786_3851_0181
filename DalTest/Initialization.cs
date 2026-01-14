@@ -105,7 +105,7 @@ public static class Initialization
         {
             var addr = addresses[s_rand.Next(addresses.Length)];
             var cust = customers[s_rand.Next(customers.Length)];
-            var createdAt = DateTime.Now.AddDays(-s_rand.Next(1, 90));
+            var createdAt = DateTime.Now.AddDays(-s_rand.Next(1, 5));
 
             var order = new Order(
                 Id: 0,
@@ -129,7 +129,7 @@ public static class Initialization
     {
         foreach (var order in s_dal!.Order.ReadAll().Take(20))
         {
-            var availableCouriers = s_dal!.Courier.ReadAll();
+            var availableCouriers = s_dal!.Courier.ReadAll().Where(c=>c.Active);
 
             if (!availableCouriers.Any()) continue;
 

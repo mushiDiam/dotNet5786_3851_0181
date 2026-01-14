@@ -125,7 +125,7 @@ namespace PL.Login
                 {
                     if (config.ManagerPassword == password)
                     {
-                        OpenWindowAndClearInputs(new MainWindow());
+                        OpenWindowAndKeepLogin(new MainWindow());
                         return;
                     }
                     else
@@ -141,13 +141,13 @@ namespace PL.Login
 
                 if (role == JobTypes.Manager)
                 {
-                    OpenWindowAndClearInputs(new MainWindow());
+                    OpenWindowAndKeepLogin(new MainWindow());
                     return;
                 }
 
                 if (role == JobTypes.Courier)
                 {
-                    OpenWindowAndClearInputs(new PL.Courier.ForCourier.MainCourierWindow(id));
+                    OpenWindowAndKeepLogin(new PL.Courier.ForCourier.MainCourierWindow(id));
                     return;
                 }
 
@@ -176,19 +176,23 @@ namespace PL.Login
         }
 
         /// <summary>
-        /// Opens the target window and ensures it appears on top.
+        /// Opens the target window while keeping the login window open.
+        /// Clears inputs so another user can log in.
         /// </summary>
-        private void OpenWindowAndClearInputs(Window targetWindow)
+        private void OpenWindowAndKeepLogin(Window targetWindow)
         {
-            // Clear inputs first (without setting focus)
+            // Clear inputs so the next user can log in
             txtId.Text = string.Empty;
             pwdBox.Password = string.Empty;
             ClearInlineErrors();
 
-            // Show and activate the new window so it appears on top
+            // Show the new window (login window stays open)
             targetWindow.Show();
             targetWindow.Activate();
             targetWindow.Focus();
+
+            // Optionally minimize login window to reduce clutter, remove if you want it visible
+            // this.WindowState = WindowState.Minimized;
         }
 
         private void BtnLeave_Click(object sender, RoutedEventArgs e)

@@ -159,17 +159,18 @@ internal static class OrderManager{
         DateTime maxDeliveryTime = OrderTime.Add(s_dal.Config.MaxDeliveryTime);
         TimeSpan riskRange = s_dal.Config.RiskRange;
 
-        // No delivery record => treat as open
+        // 1. Order has no delivery yet (Open)
         if (del == null)
         {
-            if (DateTime.Now > maxDeliveryTime)
+            // FIX: Use s_dal.Config.Clock instead of DateTime.Now
+            if (s_dal.Config.Clock > maxDeliveryTime)
                 return ScheduleStatus.Late;
 
-            var remainingToMax = maxDeliveryTime - DateTime.Now;
+            var remainingToMax = maxDeliveryTime - s_dal.Config.Clock;
             return remainingToMax <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
         }
 
-        // Completed delivery -> compare end time against max allowed delivery time
+        // 2. Delivery Completed
         if (del.EndOfOrder == DO.EndOfOrder.Completed)
         {
             if (del.TimeOfDelivery.HasValue && del.TimeOfDelivery.Value <= maxDeliveryTime)
@@ -177,11 +178,12 @@ internal static class OrderManager{
             return ScheduleStatus.Late;
         }
 
-        // Delivery exists but not finished (in progress)
-        if (DateTime.Now > maxDeliveryTime)
+        // 3. Delivery In Progress
+        // FIX: Use s_dal.Config.Clock instead of DateTime.Now
+        if (s_dal.Config.Clock > maxDeliveryTime)
             return ScheduleStatus.Late;
 
-        var remaining = maxDeliveryTime - DateTime.Now;
+        var remaining = maxDeliveryTime - s_dal.Config.Clock;
         return remaining <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
     }
     private static double GetAirDistance(double lat1, double lon1, double lat2, double lon2)
