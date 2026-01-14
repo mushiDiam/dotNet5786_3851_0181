@@ -304,7 +304,7 @@ namespace PL
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        // Add Order Button Click (Manager Only)
         private void BtnAddOrder_Click(object sender, RoutedEventArgs e)
         {
             try
