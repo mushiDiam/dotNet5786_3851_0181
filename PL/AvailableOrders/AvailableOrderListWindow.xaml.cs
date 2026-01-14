@@ -139,12 +139,18 @@ namespace PL
                 {
                     var orders = s_bl.Order.GetOrders(_managerId, null, null, null)?.ToList() ?? new List<BO.OrderInList>();
 
+                    // For managers, only show Open and InProgress orders
+                    orders = orders.Where(o => o.OrderStatus == BO.OrderStatus.Open ||
+                                       o.OrderStatus == BO.OrderStatus.InProgress).ToList();
+
                     // Filter
                     var filtered = orders.Where(o =>
                         (!SelectedFilterStatus.HasValue || o.OrderStatus == SelectedFilterStatus.Value) &&
                         (!_filterOrderStatus.HasValue || o.OrderStatus == _filterOrderStatus.Value) &&
                         (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
                         .ToList();
+
+                    
 
                     // Fetch full BO.Order details per order and cache them to avoid duplicate calls
                     var detailsCache = new Dictionary<int, BO.Order?>(filtered.Count);

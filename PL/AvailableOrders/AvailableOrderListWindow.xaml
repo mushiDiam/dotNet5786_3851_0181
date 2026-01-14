@@ -115,13 +115,23 @@
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource DangerButton}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
+
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding OrderStatus}" Value="Open">
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding OrderStatus}" Value="Open"/>
+                                                            <Condition Binding="{Binding DataContext.IsManager, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
                                                         <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding OrderStatus}" Value="InProgress">
+                                                    </MultiDataTrigger>
+
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding OrderStatus}" Value="InProgress"/>
+                                                            <Condition Binding="{Binding DataContext.IsManager, RelativeSource={RelativeSource AncestorType=Window}}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
                                                         <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
+                                                    </MultiDataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>

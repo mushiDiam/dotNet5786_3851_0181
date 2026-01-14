@@ -12,6 +12,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <ObjectDataProvider x:Key="OrderTypesCollection" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="bo:OrderTypes"/>
@@ -230,7 +231,7 @@
 
             <!-- Update button for manager. Enabled only when IsEditable (add-mode OR manager + open/in-progress) -->
             <Button x:Name="BtnUpdate"
-                    Content="update"
+                    Content="Update"
                     Click="BtnUpdate_Click"
                     Style="{StaticResource SuccessButton}"
                     Width="120"
@@ -239,7 +240,14 @@
                     Visibility="Collapsed"
                     ToolTip="לא ניתן לעדכן — ההזמנה סגורה"/>
 
-            <Button Content="Add Order" Click="BtnSave_Click" Style="{StaticResource SuccessButton}" Width="120" Visibility="Collapsed" Margin="8,0,0,0"/>
+            <Button Content="Add Order" 
+                    Click="BtnSave_Click" 
+                    Style="{StaticResource SuccessButton}" 
+                    Width="120" 
+                    Margin="8,0,0,0"
+                    Visibility="{Binding Path=IsAddMode, 
+                             RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, 
+                             Converter={StaticResource BoolToVis}}"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -18,7 +18,9 @@ namespace PL
     {
         // Access to the Business Logic layer
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-        private static readonly int managerId = s_bl.Admin.GetConfig().ManagerId;
+        
+        // Changed from static field to instance property to get current value
+        private int ManagerId => s_bl.Admin.GetConfig().ManagerId;
 
         #region Dependency Properties
 
@@ -267,7 +269,7 @@ namespace PL
         {
             try
             {
-                var wnd = new AvailableOrderListWindow(managerId, true) { Owner = this };
+                var wnd = new AvailableOrderListWindow(ManagerId, true) { Owner = this };
                 wnd.Show();
             }
             catch (Exception ex)
@@ -299,7 +301,7 @@ namespace PL
 
         private void BtnAllDeliveries_Click(object sender, RoutedEventArgs e)
         {
-            var wnd = new PL.Deliveries.DeliveriesListWindow(managerId, true);
+            var wnd = new PL.Deliveries.DeliveriesListWindow(ManagerId, true);
             wnd.ShowDialog();
         }
     }
