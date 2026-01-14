@@ -285,7 +285,7 @@ namespace PL.AvailableOrders
         }
 
         // Update (manager) - validate and call BL.UpdateDetails
-        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (!IsEditable)
             {
@@ -309,7 +309,7 @@ namespace PL.AvailableOrders
                 }
 
                 // Call BL. Use manager id to authorize update.
-                s_bl.Order.UpdateDetails(_managerId, boOrder);
+                await s_bl.Order.UpdateDetails(_managerId, boOrder);
 
                 MessageBox.Show("העדכון בוצע בהצלחה", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -352,5 +352,6 @@ namespace PL.AvailableOrders
                 MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
     }
 }

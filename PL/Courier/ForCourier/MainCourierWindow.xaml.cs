@@ -277,7 +277,7 @@ namespace PL.Courier.ForCourier
 
         // Not Found: try BL call if available, otherwise clear UI locally
         // In MainCourierWindow.xaml.cs
-        private async void BtnMarkNotFound_Click(object sender, RoutedEventArgs e)
+        private async void BtnMarkUnreached_Click(object sender, RoutedEventArgs e)
         {
             var deliveryId = GetActiveDeliveryId();
             if (deliveryId == null)
@@ -286,7 +286,7 @@ namespace PL.Courier.ForCourier
                 return;
             }
 
-            if (MessageBox.Show("Report 'Not Found' for this delivery?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            if (MessageBox.Show("Report 'Unreached' for this delivery?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
                 return;
 
             try
@@ -295,11 +295,11 @@ namespace PL.Courier.ForCourier
                 s_bl.Order.MarkDeliveryNotFound(_courierId, _courierId, deliveryId.Value);
 
                 ClearActiveOrderLocally();
-                MessageBox.Show("Reported as Not Found.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Reported as Unreached.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to report not-found: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to report Unreached: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

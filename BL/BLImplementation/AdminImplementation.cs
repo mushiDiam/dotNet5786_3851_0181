@@ -60,6 +60,6 @@ internal class AdminImplementation : IAdmin
     #endregion Stage 5
 
     // Delegate the geocoding request to BL helper (no PL-level HTTP/json logic).
-    public Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
-        => OrderManager.GetCoordinatesFromAddressAsync(address);
+    public async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
+        => await OrderManager.GetCoordinatesFromAddressAsync(address);
 }

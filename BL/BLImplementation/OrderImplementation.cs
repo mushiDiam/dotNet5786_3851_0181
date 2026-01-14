@@ -15,11 +15,11 @@ using System.Collections.Specialized;
 
 internal class OrderImplementation : BlApi.IOrder
 {
-    public void Add(int id, BO.Order order)
+    public async Task Add(int id, BO.Order order)
     {
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only admin can add orders");
-        OrderManager.CreateOrder(order);
+        await Task.Run(() => OrderManager.CreateOrder(order));
     }
 
     public void Cancel(int id, int orderId)
@@ -292,11 +292,11 @@ internal class OrderImplementation : BlApi.IOrder
         return OrderManager.GetOrders(filter, obj, sort);
     }
 
-    public void UpdateDetails(int id, BO.Order order)
+    public async Task UpdateDetails(int id, BO.Order order)
     {
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can get orders");
-        OrderManager.Update(order);
+        await OrderManager.Update(order);
     }
     // In OrderImplementation.cs
     public void MarkDeliveryNotFound(int requesterId, int courierId, int deliveryId)

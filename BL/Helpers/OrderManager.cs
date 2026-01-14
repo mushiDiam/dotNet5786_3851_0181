@@ -329,7 +329,7 @@ internal static class OrderManager{
 
         return deliveries;
     }
-    internal static void CreateOrder(BO.Order order)
+    internal static async void CreateOrder(BO.Order order)
     {
         if (order is null)
             throw new BlInvalidValueException("Order cannot be null.");
@@ -341,7 +341,7 @@ internal static class OrderManager{
         if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude) || (order.Latitude == 0 && order.Longitude == 0))
         {
             // reuse the geocoding helper already in this class (async) synchronously
-            var coords = GetCoordinatesFromAddressAsync(order.FullAddress).GetAwaiter().GetResult();
+            var coords = await GetCoordinatesFromAddressAsync(order.FullAddress);
             if (coords.Lat == null || coords.Lon == null)
                 throw new BlInvalidValueException("Unable to resolve address coordinates.");
 
@@ -389,7 +389,7 @@ internal static class OrderManager{
             return null;
         return ConvertToBO(doOrder);
     }
-    internal static void Update(BO.Order order)
+    internal static async Task Update(BO.Order order)
     {
         if (order is null)
             throw new BlInvalidValueException("Order cannot be null.");
@@ -430,7 +430,7 @@ internal static class OrderManager{
         if (!string.Equals(existingDoOrder.AdderssOfOrder, updatedDoOrder.AdderssOfOrder, StringComparison.OrdinalIgnoreCase) &&
             (updatedDoOrder.Latitude == 0 && updatedDoOrder.Longitude == 0))
         {
-            var coords = GetCoordinatesFromAddressAsync(updatedDoOrder.AdderssOfOrder).GetAwaiter().GetResult();
+            var coords = await GetCoordinatesFromAddressAsync(updatedDoOrder.AdderssOfOrder);
             if (coords.Lat.HasValue && coords.Lon.HasValue)
             {
                 updatedDoOrder = updatedDoOrder with { Latitude = coords.Lat.Value, Longitude = coords.Lon.Value };

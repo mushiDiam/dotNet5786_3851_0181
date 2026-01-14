@@ -325,9 +325,9 @@
                                                         Width="84" Height="32" FontSize="12" Padding="6"
                                                         Margin="0,0,8,0"/>
 
-                                                <Button x:Name="BtnMarkNotFound"
+                                                <Button x:Name="BtnMarkUnreached"
                                                         Content="Unreached"
-                                                        Click="BtnMarkNotFound_Click"
+                                                        Click="BtnMarkUnreached_Click"
                                                         Style="{StaticResource DangerButton}"
                                                         Width="84" Height="32" FontSize="12" Padding="6"/>
                                             </StackPanel>
