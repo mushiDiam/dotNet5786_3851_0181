@@ -146,16 +146,36 @@ namespace PL
                         (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
                         .ToList();
 
-                    // Convert
-                    list = filtered.Select(o => new OrderView
+                    // Fetch full BO.Order details per order and cache them to avoid duplicate calls
+                    var detailsCache = new Dictionary<int, BO.Order?>(filtered.Count);
+                    list = filtered.Select(o =>
                     {
-                        OrderId = o.OrderId,
-                        CustomerName = "",
-                        FullAddress = "",
-                        AirDistance = o.AirDistance,
-                        ScheduleStatus = o.ScheduleStatus,
-                        RemainingTime = o.RemainingTime,
-                        OrderStatus = o.OrderStatus
+                        BO.Order? boOrder = null;
+                        try
+                        {
+                            if (!detailsCache.TryGetValue(o.OrderId, out boOrder))
+                            {
+                                boOrder = s_bl.Order.Details(_managerId, o.OrderId);
+                                detailsCache[o.OrderId] = boOrder;
+                            }
+                        }
+                        catch
+                        {
+                            // swallow - if details can't be loaded, show empty name/address
+                            boOrder = null;
+                            detailsCache[o.OrderId] = null;
+                        }
+
+                        return new OrderView
+                        {
+                            OrderId = o.OrderId,
+                            CustomerName = boOrder?.CustomerName ?? string.Empty,
+                            FullAddress = boOrder?.FullAddress ?? string.Empty,
+                            AirDistance = o.AirDistance,
+                            ScheduleStatus = o.ScheduleStatus,
+                            RemainingTime = o.RemainingTime,
+                            OrderStatus = o.OrderStatus
+                        };
                     });
                 }
                 else

@@ -1,12 +1,13 @@
-﻿using BlApi;
-using BlImplementation;
-using BO;
-using DalApi;
-using DO;
+﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text.Json;
+using BlApi;
+using BlImplementation;
+using BO;
+using DalApi;
+using DO;
 namespace Helpers;
 
 internal static class OrderManager{
@@ -29,6 +30,12 @@ internal static class OrderManager{
         {
             Id = doOrder.Id,
             OrderType = (BO.OrderTypes)doOrder.OrderType,
+            // Shipment / contact fields that were previously missing:
+            FullAddress = doOrder.AdderssOfOrder,
+            CustomerName = doOrder.CustomerName,
+            CustomerPhone = doOrder.CustomerPhone,
+            Description = doOrder.Description,
+
             Latitude = doOrder.Latitude,
             Longitude = doOrder.Longitude,
             AirDistance = GetAirDistance(doOrder.Latitude, doOrder.Longitude, (double)s_dal.Config.CompanyLatitude, (double)s_dal.Config.CompanyLongitude),

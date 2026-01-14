@@ -664,4 +664,17 @@
     <OrderType>Car</OrderType>
     <Description />
   </Order>
+  <Order>
+    <Id>26</Id>
+    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Latitude>32.089</Latitude>
+    <Longitude>34.769</Longitude>
+    <CustomerName>Yossi Bar</CustomerName>
+    <CustomerPhone>052-9610112</CustomerPhone>
+    <CreatedAt>2026-01-02T15:32:34.1559606+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>15</Weight>
+    <Volume>2</Volume>
+    <OrderType>Walking</OrderType>
+  </Order>
 </ArrayOfOrder>
