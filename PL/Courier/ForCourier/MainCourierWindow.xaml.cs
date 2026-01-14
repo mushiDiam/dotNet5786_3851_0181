@@ -148,7 +148,7 @@ namespace PL.Courier.ForCourier
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            new LoginWindow().Show();
+            LoginWindow.ShowSingle();
             Close();
         }
 

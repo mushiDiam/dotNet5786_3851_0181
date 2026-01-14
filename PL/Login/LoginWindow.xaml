@@ -123,20 +123,24 @@
 
         <!-- Content Card: positioned BELOW the header to avoid overlap -->
         <Border Background="White" CornerRadius="8" Padding="20" Width="420"
-                VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,79,0,0" Height="275">
+                VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,100,0,0" Height="338">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15"/>
             </Border.Effect>
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>   <!-- title -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- title -->
                     <RowDefinition Height="12"/>
-                    <RowDefinition Height="Auto"/>   <!-- inputs (stacked vertically) -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- inputs (stacked vertically) -->
                     <RowDefinition Height="12"/>
-                    <RowDefinition Height="Auto"/>   <!-- buttons -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- buttons -->
                     <RowDefinition Height="12"/>
-                    <RowDefinition Height="Auto"/>   <!-- status -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- status -->
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Vertical" Grid.Row="0">
@@ -148,11 +152,15 @@
                 <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,6,0,0">
                     <StackPanel Orientation="Vertical" Margin="0,0,0,8">
                         <TextBlock Text="ID:" Foreground="#333" Margin="0,0,0,6"/>
+                        <!-- Inline ID error (bound to property on DataContext/Window) - NO x:Name -->
+                        <TextBlock Foreground="Red" FontWeight="SemiBold" Text="{Binding IdErrorText}" Visibility="{Binding IdErrorVisibility}" TextWrapping="Wrap" Margin="0,0,0,6"/>
                         <TextBox x:Name="txtId" Height="34" VerticalAlignment="Top" Style="{StaticResource ModernTextBox}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Password:" Foreground="#333" Margin="0,0,0,6"/>
+                        <!-- Inline Password error (bound to property on DataContext/Window) - NO x:Name -->
+                        <TextBlock Foreground="Red" FontWeight="SemiBold" Text="{Binding PasswordErrorText}" Visibility="{Binding PasswordErrorVisibility}" TextWrapping="Wrap" Margin="0,0,0,6"/>
                         <PasswordBox x:Name="pwdBox" Height="34" VerticalAlignment="Top" Style="{StaticResource ModernPasswordBox}"/>
                     </StackPanel>
                 </StackPanel>

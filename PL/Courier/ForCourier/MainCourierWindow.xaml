@@ -326,7 +326,7 @@
                                                         Margin="0,0,8,0"/>
 
                                                 <Button x:Name="BtnMarkNotFound"
-                                                        Content="Not Found"
+                                                        Content="Unreached"
                                                         Click="BtnMarkNotFound_Click"
                                                         Style="{StaticResource DangerButton}"
                                                         Width="84" Height="32" FontSize="12" Padding="6"/>

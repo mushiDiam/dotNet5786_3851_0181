@@ -212,7 +212,7 @@
   <Courier>
     <Id>328684489</Id>
     <Active>true</Active>
-    <MaxDeliveryDistance>50</MaxDeliveryDistance>
+    <MaxDeliveryDistance>56</MaxDeliveryDistance>
     <JoinDate>2025-01-03T15:32:33.7429353+02:00</JoinDate>
     <OrderType>Car</OrderType>
     <Name>Avi Gold</Name>

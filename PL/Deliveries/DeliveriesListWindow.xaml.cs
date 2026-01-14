@@ -4,73 +4,153 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using BlApi;
 using BO;
-using PL;
 using PL.AvailableOrders;
 
 namespace PL.Deliveries
 {
-    /// <summary>
-    /// Interaction logic for DeliveriesListWindow.xaml
-    /// </summary>
-    public partial class DeliveriesListWindow : Window
+    public partial class DeliveriesListWindow : Window, INotifyPropertyChanged
     {
         private static readonly IBl s_bl = Factory.Get();
         private readonly int _requesterId;
         private readonly bool _isManager;
         private readonly int _managerIdConfig;
 
-        // Lightweight view model for the grid
+        // --- Binding Properties ---
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        // 1. DataGrid Source
+        private IEnumerable<DeliveryView> _deliveryItems;
+        public IEnumerable<DeliveryView> DeliveryItems
+        {
+            get => _deliveryItems;
+            set { _deliveryItems = value; OnPropertyChanged(); }
+        }
+
+        // 2. DataGrid Selection
+        private DeliveryView _selectedDelivery;
+        public DeliveryView SelectedDelivery
+        {
+            get => _selectedDelivery;
+            set { _selectedDelivery = value; OnPropertyChanged(); }
+        }
+
+        // 3. Summary Buttons Source
+        private IEnumerable<SummaryItem> _summaryItems;
+        public IEnumerable<SummaryItem> SummaryItems
+        {
+            get => _summaryItems;
+            set { _summaryItems = value; OnPropertyChanged(); }
+        }
+
+        // 4. ComboBox Sources
+        public IEnumerable<OrderInListOptions> SortOptionsList { get; } = Enum.GetValues(typeof(OrderInListOptions)).Cast<OrderInListOptions>();
+        public IEnumerable<OrderInListOptions> FilterOptionsList { get; } = Enum.GetValues(typeof(OrderInListOptions)).Cast<OrderInListOptions>();
+
+        // 5. ComboBox Selections (Trigger Refresh on change)
+        private OrderInListOptions? _selectedSort;
+        public OrderInListOptions? SelectedSort
+        {
+            get => _selectedSort;
+            set { _selectedSort = value; OnPropertyChanged(); RefreshList(); }
+        }
+
+        private OrderInListOptions? _selectedFilter;
+        public OrderInListOptions? SelectedFilter
+        {
+            get => _selectedFilter;
+            set { _selectedFilter = value; OnPropertyChanged(); RefreshList(); }
+        }
+
+        // --- View Models ---
+
         public class DeliveryView
         {
             public int DeliveryId { get; set; }
             public int OrderId { get; set; }
             public string CustomerName { get; set; }
             public string CourierName { get; set; }
-            // Use string so the UI shows exactly the delivery end status (or order status fallback)
             public string Status { get; set; }
             public DateTime? PickedUp { get; set; }
             public DateTime? Delivered { get; set; }
             public string Address { get; set; }
         }
 
+        public class SummaryItem
+        {
+            public string Label { get; set; }
+            public OrderStatus Status { get; set; }
+            public ScheduleStatus SchedStatus { get; set; }
+        }
+
+        // --- Constructor & Initialization ---
+
         public DeliveriesListWindow(int requesterId, bool isManager)
         {
             InitializeComponent();
+            DataContext = this; // Set DataContext for binding
+
             _requesterId = requesterId;
             _isManager = isManager;
             _managerIdConfig = s_bl.Admin.GetConfig().ManagerId;
 
-            // Populate both ComboBoxes with the same enum values (fields usable for sorting/filtering)
-            cmbSort.ItemsSource = Enum.GetValues(typeof(OrderInListOptions)).Cast<OrderInListOptions>();
-            cmbFilter.ItemsSource = Enum.GetValues(typeof(OrderInListOptions)).Cast<OrderInListOptions>();
+            // Set default sort without triggering immediate refresh (optional, handled by Loaded)
+            _selectedSort = OrderInListOptions.OrderId;
 
-            // Optionally set default selection
-            cmbSort.SelectedItem = OrderInListOptions.OrderId;
-
-            RefreshList();
+            // Events for Observer Pattern
+            Loaded += Window_Loaded;
+            Closed += Window_Closed;
         }
 
-        private void RefreshList(OrderInListOptions? sortBy = null, OrderInListOptions? filterBy = null)
+        // --- Observer Logic (Synchronization) ---
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshList();
+            try { s_bl.Order.AddObserver(DeliveryListObserver); } catch { }
+        }
+
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            try { s_bl.Order.RemoveObserver(DeliveryListObserver); } catch { }
+        }
+
+        private void DeliveryListObserver()
+        {
+            Dispatcher.Invoke(() => RefreshList());
+        }
+
+        // --- Main Logic ---
+
+        private void RefreshList()
         {
             try
             {
-                // 1. Get the list of lightweight orders (OrderInList)
+                // 1. Get raw orders
                 var rawList = s_bl.Order.GetOrders(_managerIdConfig, null, null, null);
-
-                // 2. Normalize to a list of full BO.Order objects.
                 var allOrders = new List<BO.Order>();
 
-                foreach (var item in rawList)
+                // 2. Fetch full details (heavy operation, but required by logic provided)
+                if (rawList != null)
                 {
-                    int id = item.OrderId;
-                    BO.Order fullOrder = s_bl.Order.Details(_managerIdConfig, id);
-                    if (fullOrder != null)
-                        allOrders.Add(fullOrder);
+                    foreach (var item in rawList)
+                    {
+                        try
+                        {
+                            var full = s_bl.Order.Details(_managerIdConfig, item.OrderId);
+                            if (full != null) allOrders.Add(full);
+                        }
+                        catch { /* Ignore deleted orders during loop */ }
+                    }
                 }
 
-                // 3. Filter logic by requester (manager or courier)
+                // 3. Filter by User Role
                 IEnumerable<BO.Order> filteredOrders;
                 if (_isManager)
                 {
@@ -83,23 +163,21 @@ namespace PL.Deliveries
                         o.Deliveries.Any(d => d.CourierId == _requesterId));
                 }
 
-                // Refresh the summary counts UI based on the filtered orders
-                RefreshSummary(filteredOrders);
+                var filteredList = filteredOrders.ToList();
 
-                // 4. Convert to View Model for DataGrid
-                var gridQuery = filteredOrders.Select(o =>
+                // 4. Update Summary (Top Section)
+                UpdateSummary(filteredList);
+
+                // 5. Map to DeliveryView
+                var query = filteredList.Select(o =>
                 {
                     BO.DeliveryPerOrderInList? relevantDelivery = null;
 
                     if (_isManager)
-                    {
                         relevantDelivery = o.Deliveries?.LastOrDefault();
-                    }
                     else
-                    {
                         relevantDelivery = o.Deliveries?.Where(d => d.CourierId == _requesterId).LastOrDefault()
                                          ?? o.Deliveries?.LastOrDefault();
-                    }
 
                     string statusText = relevantDelivery?.OrderStatus?.ToString() ?? o.OrderStatus.ToString();
 
@@ -116,70 +194,54 @@ namespace PL.Deliveries
                     };
                 });
 
-                // 5. Apply filtering based on selected enum field. Both combo boxes use the same enum list.
-                if (filterBy.HasValue)
+                // 6. Apply UI Filtering
+                if (SelectedFilter.HasValue)
                 {
-                    switch (filterBy.Value)
+                    switch (SelectedFilter.Value)
                     {
                         case OrderInListOptions.DeliveryId:
-                            gridQuery = gridQuery.Where(x => x.DeliveryId != 0);
-                            break;
-                        case OrderInListOptions.OrderId:
-                            // no-op: all rows have OrderId
-                            break;
+                            query = query.Where(x => x.DeliveryId != 0); break;
                         case OrderInListOptions.OrderStatus:
-                            gridQuery = gridQuery.Where(x => !string.IsNullOrWhiteSpace(x.Status));
-                            break;
+                            query = query.Where(x => !string.IsNullOrWhiteSpace(x.Status)); break;
                         case OrderInListOptions.CompletionTime:
-                            gridQuery = gridQuery.Where(x => x.Delivered.HasValue);
-                            break;
-                        default:
-                            break;
+                            query = query.Where(x => x.Delivered.HasValue); break;
                     }
                 }
 
-                // 6. Apply sorting based on selected enum field.
-                if (sortBy.HasValue)
+                // 7. Apply UI Sorting
+                if (SelectedSort.HasValue)
                 {
-                    switch (sortBy.Value)
+                    switch (SelectedSort.Value)
                     {
                         case OrderInListOptions.DeliveryId:
-                            gridQuery = gridQuery.OrderByDescending(x => x.DeliveryId);
-                            break;
+                            query = query.OrderByDescending(x => x.DeliveryId); break;
                         case OrderInListOptions.OrderId:
-                            gridQuery = gridQuery.OrderByDescending(x => x.OrderId);
-                            break;
+                            query = query.OrderByDescending(x => x.OrderId); break;
                         case OrderInListOptions.OrderStatus:
-                            gridQuery = gridQuery.OrderBy(x => x.Status);
-                            break;
+                            query = query.OrderBy(x => x.Status); break;
                         case OrderInListOptions.CompletionTime:
-                            gridQuery = gridQuery.OrderBy(x => x.Delivered);
-                            break;
+                            query = query.OrderBy(x => x.Delivered); break;
                         default:
-                            gridQuery = gridQuery.OrderByDescending(x => x.OrderId);
-                            break;
+                            query = query.OrderByDescending(x => x.OrderId); break;
                     }
                 }
                 else
                 {
-                    gridQuery = gridQuery.OrderByDescending(x => x.OrderId);
+                    query = query.OrderByDescending(x => x.OrderId);
                 }
 
-                var gridData = gridQuery.ToList();
-                dgDeliveries.ItemsSource = gridData;
+                // 8. Update Bound Property
+                DeliveryItems = query.ToList();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load deliveries: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to load deliveries: {ex.Message}");
             }
         }
 
-        // Build and populate the summary counts of orders by OrderStatus x ScheduleStatus.
-        // Clicking a count opens the Order list window pre-filtered for that combination.
-        private void RefreshSummary(IEnumerable<BO.Order> filteredOrders)
+        private void UpdateSummary(List<BO.Order> orders)
         {
-            wpSummary.Children.Clear();
-
+            var newSummary = new List<SummaryItem>();
             var orderStatuses = Enum.GetValues(typeof(BO.OrderStatus)).Cast<BO.OrderStatus>();
             var scheduleStatuses = Enum.GetValues(typeof(BO.ScheduleStatus)).Cast<BO.ScheduleStatus>();
 
@@ -187,34 +249,31 @@ namespace PL.Deliveries
             {
                 foreach (var ss in scheduleStatuses)
                 {
-                    int count = filteredOrders.Count(o => o.OrderStatus == os && o.ScheduleStatus == ss);
-
-                    // show only combos with any items to reduce clutter
-                    if (count == 0) continue;
-
-                    var btn = new Button
+                    int count = orders.Count(o => o.OrderStatus == os && o.ScheduleStatus == ss);
+                    if (count > 0)
                     {
-                        Content = $"{os} / {ss}: {count}",
-                        Margin = new Thickness(4),
-                        Padding = new Thickness(8, 4, 8, 4),
-                        MinWidth = 180,
-                        Tag = Tuple.Create(os, ss),
-                        Style = (Style)FindResource("ModernButton")
-                    };
-                    btn.Click += SummaryButton_Click;
-                    wpSummary.Children.Add(btn);
+                        newSummary.Add(new SummaryItem
+                        {
+                            Label = $"{os} / {ss}: {count}",
+                            Status = os,
+                            SchedStatus = ss
+                        });
+                    }
                 }
             }
+            SummaryItems = newSummary;
         }
 
-        private void SummaryButton_Click(object? sender, RoutedEventArgs e)
+        // --- Event Handlers ---
+
+        // Button in Summary ItemsControl
+        private void SummaryButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is Tuple<BO.OrderStatus, BO.ScheduleStatus> tag)
+            if (sender is Button btn && btn.DataContext is SummaryItem item)
             {
                 try
                 {
-                    // Open the order list window pre-filtered for the selected status combination.
-                    var wnd = new AvailableOrderListWindow(_managerIdConfig, true, tag.Item1, tag.Item2)
+                    var wnd = new AvailableOrderListWindow(_managerIdConfig, true, item.Status, item.SchedStatus)
                     {
                         Owner = this
                     };
@@ -222,83 +281,47 @@ namespace PL.Deliveries
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to open filtered order list: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error opening list: {ex.Message}");
                 }
             }
         }
 
-        // Helper to safely read selected enum value from ComboBox.
-        private static OrderInListOptions? GetSelectedOrderInListOption(ComboBox cb)
-        {
-            return cb?.SelectedItem is OrderInListOptions val ? val : (OrderInListOptions?)null;
-        }
-
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            var sortSel = GetSelectedOrderInListOption(cmbSort);
-            var filterSel = GetSelectedOrderInListOption(cmbFilter);
-            RefreshList(sortSel, filterSel);
-        }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void SortCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            var sortSel = GetSelectedOrderInListOption(cmbSort);
-            var filterSel = GetSelectedOrderInListOption(cmbFilter);
-            RefreshList(sortSel, filterSel);
-        }
-
-        private void FilterCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            var sortSel = GetSelectedOrderInListOption(cmbSort);
-            var filterSel = GetSelectedOrderInListOption(cmbFilter);
-            RefreshList(sortSel, filterSel);
-        }
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e) => RefreshList();
 
         private void BtnClearFilterSort_Click(object sender, RoutedEventArgs e)
         {
-            cmbSort.SelectedItem = null;
-            cmbFilter.SelectedItem = null;
-            RefreshList();
+            // Resetting properties triggers refresh via setter
+            SelectedSort = null;
+            SelectedFilter = null;
         }
 
-        // Opens OrderDetailsWindow when a delivery row is double-clicked.
-        // Ensure the window shows the actual end-status of the delivery that was double-clicked.
+        private void BtnClose_Click(object sender, RoutedEventArgs e) => Close();
+
         private void dgDeliveries_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (dgDeliveries.SelectedItem is not DeliveryView dv) return;
+            if (SelectedDelivery == null) return;
 
             try
             {
-                var order = s_bl.Order.Details(_managerIdConfig, dv.OrderId);
-                if (order == null)
-                {
-                    MessageBox.Show("Order details not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+                var order = s_bl.Order.Details(_managerIdConfig, SelectedDelivery.OrderId);
+                if (order == null) return;
 
-                if (dv.DeliveryId != 0 && order.Deliveries != null)
+                // Attempt to match status to specific delivery
+                if (SelectedDelivery.DeliveryId != 0 && order.Deliveries != null)
                 {
-                    var matching = order.Deliveries.FirstOrDefault(d => d.DeliveryId == dv.DeliveryId);
+                    var matching = order.Deliveries.FirstOrDefault(d => d.DeliveryId == SelectedDelivery.DeliveryId);
                     if (matching != null && matching.OrderStatus.HasValue)
                     {
                         order.OrderStatus = matching.OrderStatus.Value;
                     }
                 }
 
-                var wnd = new OrderDetailsWindow(order)
-                {
-                    Owner = this
-                };
+                var wnd = new OrderDetailsWindow(order) { Owner = this };
                 wnd.ShowDialog();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open order details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error details: {ex.Message}");
             }
         }
     }

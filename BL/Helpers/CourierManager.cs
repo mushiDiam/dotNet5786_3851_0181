@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using BO;
 using DalApi;
 using DO;
@@ -93,6 +94,10 @@ internal static class CourierManager
         // Validate courier max distance does not exceed company maximum
         if (courier.MaxDistancePreference > companyMax.Value)
             throw new BlInvalidValueException($"Courier maximum distance ({courier.MaxDistancePreference} km) cannot exceed company maximum ({companyMax.Value} km).");
+
+        // Validate company coordinates configured
+        if (!s_dal.Config.CompanyLatitude.HasValue || !s_dal.Config.CompanyLongitude.HasValue)
+            throw new BlInvalidValueException("Company coordinates are not configured.");
 
         try
         {
@@ -269,7 +274,7 @@ internal static class CourierManager
                     OrderType = boOrder?.OrderType ?? (BO.OrderTypes)activeDelivery.OrderType,
                     Description = boOrder?.Description ?? string.Empty,
                     Address = boOrder?.FullAddress ?? (boOrder == null ? string.Empty : boOrder.FullAddress),
-                    AirDistance = boOrder?.AirDistance ?? 0,
+                    AirDistance = boOrder?.AirDistance ?? 0.0, // FIX: use boOrder.AirDistance if available, else 0.0
                     ActualDistance = activeDelivery.ActualDistance,
                     CustomerName = boOrder?.CustomerName ?? string.Empty,
                     CustomerPhone = boOrder?.CustomerPhone ?? string.Empty,

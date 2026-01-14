@@ -248,19 +248,28 @@ internal static class OrderManager{
         if (delivery.CourierId != courierId)
             throw new BlUnauthorizedAccessException("Courier can only mark their own deliveries");
 
-        DO.Delivery updatedDelivery = delivery with
+        // Remove the delivery record so the order becomes available (Open) again.
+        // Deleting preserves the intended behavior: CalculateOrderStatus will treat orders
+        // with no delivery record as Open.
+        try
         {
-            EndOfOrder = DO.EndOfOrder.Unreached,
-            TimeOfDelivery = DateTime.Now
-        };
+            s_dal.Delivery.Delete(deliveryId);
+        }
+        catch (DalDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException($"Delivery {deliveryId} not found", ex);
+        }
 
-        s_dal.Delivery.Update(updatedDelivery);
+        // Notify delivery observers so PL can update lists/details.
+        try { DeliveryManager.Observers.NotifyListUpdated(); } catch { }
+        try { DeliveryManager.Observers.NotifyItemUpdated(deliveryId); } catch { }
 
-        // notify delivery observers (by delivery id) and order observers (by order id)
-        Observers.NotifyItemUpdated(deliveryId);
-        Observers.NotifyListUpdated();
-        try { OrderManager.Observers.NotifyItemUpdated(updatedDelivery.OrderId); } catch { }
-        try { if (updatedDelivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updatedDelivery.CourierId); } catch { }
+        // Notify order observers (by order id) so order status becomes Open in PL.
+        try { Observers.NotifyItemUpdated(delivery.OrderId); } catch { }
+        try { Observers.NotifyListUpdated(); } catch { }
+
+        // Notify courier observers (so courier detail UI updates)
+        try { if (delivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(delivery.CourierId); } catch { }
     }
 
     /// <summary>

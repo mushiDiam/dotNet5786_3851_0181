@@ -280,12 +280,12 @@ namespace PL
         {
             try
             {
-                // show login window first
-                var login = new LoginWindow();
-                login.Show();
+                // Show the single login window instance
+                LoginWindow.ShowSingle();
 
-                // close all other windows except the new login window
-                var windowsToClose = Application.Current.Windows.Cast<Window>().Where(w => w != login).ToList();
+                // close all other windows except the login window
+                var windowsToClose = Application.Current.Windows.Cast<Window>()
+                    .Where(w => w is not LoginWindow).ToList();
                 foreach (var w in windowsToClose)
                     w.Close();
             }
