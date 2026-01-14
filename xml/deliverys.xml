@@ -210,4 +210,14 @@
     <EndOfOrder>Completed</EndOfOrder>
     <TimeOfDelivery>2026-01-14T20:15:21.4420197+02:00</TimeOfDelivery>
   </Delivery>
+  <Delivery>
+    <Id>22</Id>
+    <OrderId>49</OrderId>
+    <CourierId>353804293</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2026-01-14T20:14:08.448012+02:00</StartOfDelivery>
+    <ActualDistance xsi:nil="true" />
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2026-01-14T20:22:51.943371+02:00</TimeOfDelivery>
+  </Delivery>
 </ArrayOfDelivery>

@@ -55,6 +55,7 @@ namespace PL
                 MessageBox.Show($"Failed to initialize in-memory DAL:\n\n{ex.GetType().Name}: {ex.Message}\n\nStack:\n{ex.StackTrace}",
                                 "Initialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            PL.Login.LoginWindow.ShowSingle();
         }
     }
 }

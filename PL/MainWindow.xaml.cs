@@ -280,22 +280,10 @@ namespace PL
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                // Show the single login window instance
-                LoginWindow.ShowSingle();
-
-                // close all other windows except the login window
-                var windowsToClose = Application.Current.Windows.Cast<Window>()
-                    .Where(w => w is not LoginWindow).ToList();
-                foreach (var w in windowsToClose)
-                    w.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Logout failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            LoginWindow.ShowSingle();
+            Close(); // close ONLY MainWindow
         }
+
 
         #endregion
 

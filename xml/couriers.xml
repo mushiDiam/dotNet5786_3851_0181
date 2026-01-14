@@ -34,17 +34,6 @@
     <Password>1234</Password>
   </Courier>
   <Courier>
-    <Id>353804293</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>3.4926771033413946</MaxDeliveryDistance>
-    <JoinDate>2025-01-23T20:14:08.507671+02:00</JoinDate>
-    <OrderType>Bike</OrderType>
-    <Name>Maya Dan</Name>
-    <Phone>050-3555716</Phone>
-    <Email>maya.dan@mail.com</Email>
-    <Password>1234</Password>
-  </Courier>
-  <Courier>
     <Id>307034292</Id>
     <Active>false</Active>
     <MaxDeliveryDistance>19.4438927032802</MaxDeliveryDistance>
@@ -218,6 +207,17 @@
     <Name>Noga Arbel</Name>
     <Phone>050-3204140</Phone>
     <Email>noga.arbel@mail.com</Email>
+    <Password>1234</Password>
+  </Courier>
+  <Courier>
+    <Id>353804293</Id>
+    <Active>true</Active>
+    <MaxDeliveryDistance>100</MaxDeliveryDistance>
+    <JoinDate>2025-01-23T20:14:08.507671+02:00</JoinDate>
+    <OrderType>Bike</OrderType>
+    <Name>Maya Dan</Name>
+    <Phone>050-3555716</Phone>
+    <Email>maya.dan@mail.com</Email>
     <Password>1234</Password>
   </Courier>
 </ArrayOfCourier>

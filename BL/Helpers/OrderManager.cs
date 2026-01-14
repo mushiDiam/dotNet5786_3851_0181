@@ -231,40 +231,45 @@ internal static class OrderManager{
     }
     private static TimeSpan CalculateRemainingTime(int orderId)
     {
+        DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
 
-        DO.Delivery del = DeliveryManager.GetDelivery(orderId);
-        if (del == null)
+        // 1. If no delivery, no remaining time estimate
+        if (del == null) return TimeSpan.Zero;
+
+        // 2. If finished, remaining time is zero
+        if (del.EndOfOrder == DO.EndOfOrder.Completed) return TimeSpan.Zero;
+
+        // 3. If In Progress (Started)
+        if (del.StartOfDelivery != default) 
         {
-            //order has no delivery yet
-            return TimeSpan.Zero;
-        }
-        if (del.EndOfOrder == DO.EndOfOrder.Completed)
-        {
-            return TimeSpan.Zero;
-        }
-        DO.OrderType shiftType = del.OrderType;
-        double delSpeed = 0;
-        switch (shiftType)
-        {
-            case DO.OrderType.Car:
-                delSpeed = s_dal.Config.AverageCarSpeed;
-                break;
-            case DO.OrderType.Bike:
-                delSpeed = s_dal.Config.AverageBikeSpeed;
-                break;
-            case DO.OrderType.Motorcycle:
-                delSpeed = s_dal.Config.AverageMotorcycleSpeed;
-                break;
-            case DO.OrderType.Walking:
-                delSpeed = s_dal.Config.AverageWalkingSpeed;
-                break;
+            // Calculate total travel duration (Distance / Speed)
+            DO.OrderType shiftType = del.OrderType;
+            double delSpeed = shiftType switch
+            {
+                DO.OrderType.Car => s_dal.Config.AverageCarSpeed,
+                DO.OrderType.Motorcycle => s_dal.Config.AverageMotorcycleSpeed,
+                DO.OrderType.Bike => s_dal.Config.AverageBikeSpeed,
+                DO.OrderType.Walking => s_dal.Config.AverageWalkingSpeed,
+                _ => 1 // avoid division by zero
+            };
 
+            double distance = del.ActualDistance ?? 0;
+            double hours = distance / delSpeed;
+
+            // Total expected duration (+ 5 mins buffer)
+            TimeSpan totalDuration = TimeSpan.FromHours(hours).Add(TimeSpan.FromMinutes(5));
+
+            // Calculate exact ETA
+            DateTime eta = del.StartOfDelivery.Add(totalDuration);
+
+            // Remaining = ETA - Current Simulator Time
+            TimeSpan remaining = eta - s_dal.Config.Clock;
+
+            // Return the remaining time (ensure it doesn't show negative)
+            return remaining < TimeSpan.Zero ? TimeSpan.Zero : remaining;
         }
-        double distance = del.ActualDistance ?? 0;
 
-        double hours = distance / delSpeed;
-
-        return TimeSpan.FromHours(hours);
+        return TimeSpan.Zero;
     }
     // In OrderManager.cs (in the Helpers folder)
     internal static void MarkDeliveryNotFound(int courierId, int deliveryId)

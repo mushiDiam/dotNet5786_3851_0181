@@ -7,6 +7,7 @@ using BlApi;
 using BO;
 using PL.Courier;
 
+
 namespace PL.Login
 {
     /// <summary>
@@ -74,14 +75,23 @@ namespace PL.Login
             ClearInlineErrors();
 
             // Track when window is closed to clear the instance
-            Closed += (s, e) =>
+            Closing += LoginWindow_Closing;
+        }
+        private void LoginWindow_Closing(object? sender, CancelEventArgs e)
+        {
+            // If this is the LAST visible window → exit app
+            if (Application.Current.Windows
+                .OfType<Window>()
+                .All(w => w == this || !w.IsVisible))
             {
-                lock (_lock)
-                {
-                    if (_instance == this)
-                        _instance = null;
-                }
-            };
+                // real shutdown
+                Application.Current.Shutdown();
+                return;
+            }
+
+            // otherwise: this is a logout flow → hide
+            e.Cancel = true;
+            Hide();
         }
 
         /// <summary>
