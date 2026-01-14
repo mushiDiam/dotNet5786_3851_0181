@@ -230,7 +230,7 @@
 
             <!-- Update button for manager. Enabled only when IsEditable (add-mode OR manager + open/in-progress) -->
             <Button x:Name="BtnUpdate"
-                    Content="עדכון"
+                    Content="update"
                     Click="BtnUpdate_Click"
                     Style="{StaticResource SuccessButton}"
                     Width="120"

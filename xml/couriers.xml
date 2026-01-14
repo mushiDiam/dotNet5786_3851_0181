@@ -12,17 +12,6 @@
     <Password>1234</Password>
   </Courier>
   <Courier>
-    <Id>272048490</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>6.042092492193692</MaxDeliveryDistance>
-    <JoinDate>2024-07-18T15:32:33.6343139+03:00</JoinDate>
-    <OrderType>Bike</OrderType>
-    <Name>Eli Cohen</Name>
-    <Phone>050-7184020</Phone>
-    <Email>eli.cohen@mail.com</Email>
-    <Password>1234</Password>
-  </Courier>
-  <Courier>
     <Id>203196343</Id>
     <Active>true</Active>
     <MaxDeliveryDistance>5.539927693578241</MaxDeliveryDistance>
@@ -122,17 +111,6 @@
     <Password>1234</Password>
   </Courier>
   <Courier>
-    <Id>328684489</Id>
-    <Active>false</Active>
-    <MaxDeliveryDistance>1.7751553653123964</MaxDeliveryDistance>
-    <JoinDate>2025-01-03T15:32:33.7429353+02:00</JoinDate>
-    <OrderType>Walking</OrderType>
-    <Name>Avi Gold</Name>
-    <Phone>050-1557990</Phone>
-    <Email>avi.gold@mail.com</Email>
-    <Password>1234</Password>
-  </Courier>
-  <Courier>
     <Id>360436225</Id>
     <Active>true</Active>
     <MaxDeliveryDistance>1.9921080434380138</MaxDeliveryDistance>
@@ -218,6 +196,28 @@
     <Name>Noga Arbel</Name>
     <Phone>050-2972138</Phone>
     <Email>noga.arbel@mail.com</Email>
+    <Password>1234</Password>
+  </Courier>
+  <Courier>
+    <Id>272048490</Id>
+    <Active>false</Active>
+    <MaxDeliveryDistance>6.042092492193692</MaxDeliveryDistance>
+    <JoinDate>2024-07-18T15:32:33.6343139+03:00</JoinDate>
+    <OrderType>Motorcycle</OrderType>
+    <Name>Eli Cohen</Name>
+    <Phone>050-7184020</Phone>
+    <Email>eli.cohen@mail.com</Email>
+    <Password>1234</Password>
+  </Courier>
+  <Courier>
+    <Id>328684489</Id>
+    <Active>true</Active>
+    <MaxDeliveryDistance>50</MaxDeliveryDistance>
+    <JoinDate>2025-01-03T15:32:33.7429353+02:00</JoinDate>
+    <OrderType>Car</OrderType>
+    <Name>Avi Gold</Name>
+    <Phone>050-1557990</Phone>
+    <Email>avi.gold@mail.com</Email>
     <Password>1234</Password>
   </Courier>
 </ArrayOfCourier>

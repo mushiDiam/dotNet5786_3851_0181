@@ -161,6 +161,21 @@ namespace PL.Courier.ForManager
             {
                 int managerId = s_bl.Admin.GetConfig().ManagerId;
 
+                // Validate company max delivery distance before add/update
+                var cfg = s_bl.Admin.GetConfig();
+                // Use MaxiumDistance (note the spelling) instead of MaxDeliveryDistance
+                if (cfg.MaxiumDistance <= 0)
+                {
+                    MessageBox.Show("Company maximum delivery distance is not configured. Contact the administrator.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (CurrentCourier.MaxDistancePreference > cfg.MaxiumDistance)
+                {
+                    MessageBox.Show($"Courier max distance cannot exceed company maximum ({cfg.MaxiumDistance} km).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 if (ButtonText == "Add")
                 {
                     s_bl.Courier.Add(managerId, CurrentCourier);

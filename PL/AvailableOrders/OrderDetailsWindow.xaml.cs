@@ -82,6 +82,9 @@ namespace PL.AvailableOrders
             IsAddMode = false;
             AcceptVisibility = _isManager ? Visibility.Collapsed : Visibility.Visible;
             LoadOrderDetails();
+
+            Loaded += Window_Loaded;
+            Closed += Window_Closed;
         }
 
         // New constructor: Add mode (reused details window for creating new order)
@@ -122,7 +125,44 @@ namespace PL.AvailableOrders
             IsEditable = true;
             // Update button is not relevant in add-mode; remain collapsed
         }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!IsAddMode)
+            {
+                try { s_bl.Order.AddObserver(SingleOrderObserver); } catch { }
+            }
+        }
 
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            if (!IsAddMode)
+            {
+                try { s_bl.Order.RemoveObserver(SingleOrderObserver); } catch { }
+            }
+        }
+        private void SingleOrderObserver()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    // Reload the specific order details
+                    var updatedOrder = s_bl.Order.Details(_managerId, _orderId);
+
+                    // Update the DataContext so the UI reflects the new status/courier
+                    DataContext = updatedOrder;
+
+                    // Re-run logic to determine if buttons should be enabled/visible
+                    LoadOrderDetails();
+                }
+                catch (Exception)
+                {
+                    // Handle case where order might have been deleted while viewing
+                    MessageBox.Show("This order is no longer available.", "Order Deleted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Close();
+                }
+            });
+        }
         private void LoadOrderDetails()
         {
             try

@@ -81,12 +81,12 @@ namespace PL
         private void AvailableOrderListWindow_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshList();
-            try { s_bl.Order.AddObserver(_requesterId, OrderObserver); } catch { }
+            try { s_bl.Order.AddObserver(OrderObserver); } catch { }
         }
 
         private void AvailableOrderListWindow_Closed(object? sender, EventArgs e)
         {
-            try { s_bl.Order.RemoveObserver(_requesterId, OrderObserver); } catch { }
+            try { s_bl.Order.RemoveObserver(OrderObserver); } catch { }
         }
 
         private void OrderObserver()

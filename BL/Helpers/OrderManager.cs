@@ -238,19 +238,22 @@ internal static class OrderManager{
         if (delivery == null)
             throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
 
-        // Verify this courier owns this delivery
         if (delivery.CourierId != courierId)
             throw new BlUnauthorizedAccessException("Courier can only mark their own deliveries");
 
         DO.Delivery updatedDelivery = delivery with
         {
-            EndOfOrder = DO.EndOfOrder.Unreached,  // Or use Denied/Failed based on your enum
+            EndOfOrder = DO.EndOfOrder.Unreached,
             TimeOfDelivery = DateTime.Now
         };
 
         s_dal.Delivery.Update(updatedDelivery);
+
+        // notify delivery observers (by delivery id) and order observers (by order id)
         Observers.NotifyItemUpdated(deliveryId);
         Observers.NotifyListUpdated();
+        try { OrderManager.Observers.NotifyItemUpdated(updatedDelivery.OrderId); } catch { }
+        try { if (updatedDelivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updatedDelivery.CourierId); } catch { }
     }
 
     /// <summary>
@@ -735,13 +738,22 @@ internal static class OrderManager{
             throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
         DO.Delivery updatedDelivery = delivery with
         {
-            EndOfOrder = DO.EndOfOrder.Completed, // Set status
-            TimeOfDelivery = DateTime.Now         // Set time
+            EndOfOrder = DO.EndOfOrder.Completed,
+            TimeOfDelivery = DateTime.Now
         };
 
-        // 4. Update DAL
         s_dal.Delivery.Update(updatedDelivery);
-        Observers.NotifyItemUpdated(deliveryId);//stage 5
-        Observers.NotifyListUpdated();//stage 5
+
+        // Notify delivery observers (deliveryId)
+        DeliveryManager.Observers.NotifyItemUpdated(deliveryId);
+        DeliveryManager.Observers.NotifyListUpdated();
+
+        // Notify order observers (orderId)
+        Observers.NotifyItemUpdated(updatedDelivery.OrderId);
+        Observers.NotifyListUpdated();
+
+        // Notify courier observers (courierId) so courier detail UI updates
+        try { if (updatedDelivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updatedDelivery.CourierId); } catch { }
+        
     }
 }

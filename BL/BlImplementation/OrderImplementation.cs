@@ -41,16 +41,30 @@ internal class OrderImplementation : BlApi.IOrder
         if (id != courierId)
             throw new BlUnauthorizedAccessException("Only the specific courier can choose an order for themselves");
 
-        // 2. Get the Order
+        // 2. Ensure courier exists and is active
+        BO.Courier courier;
+        try
+        {
+            courier = CourierManager.Read(courierId);
+        }
+        catch (BlDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException("Courier doesn't exist", ex);
+        }
+
+        if (!courier.IsActive)
+            throw new BlInvalidOperationException("Courier is not active and cannot pick up orders");
+
+        // 3. Get the Order
         BO.Order? order = OrderManager.Read(orderId);
         if (order == null)
             throw new BlDoesNotExistException("Order doesn't exist");
 
-        // 3. CRITICAL: Check that the order is strictly OPEN
+        // 4. CRITICAL: Check that the order is strictly OPEN
         if (order.OrderStatus != OrderStatus.Open)
             throw new BlInvalidOperationException("Cannot choose an order that is not Open (it might be Shipped, Delivered, or Cancelled)");
 
-        // 4. Create the delivery
+        // 5. Create the delivery (DeliveryManager will also re-check courier state)
         DeliveryManager.AssignDelivery(orderId, courierId);
     }
 
@@ -233,7 +247,7 @@ internal class OrderImplementation : BlApi.IOrder
             FullAddress = o.FullAddress,
             AirDistance = o.AirDistance,
 
-            // מונע תקיעה: לא מחשבים מסלול מלא בתוך הרשימה
+            // מונע תקיעה: לא מחשבים מסלול מלא dentro הרשימה
             ActualDistance = null,
 
             EstimatedTime = o.ExpectedDeliveryTime.HasValue ? o.ExpectedDeliveryTime.Value - DateTime.Now : null,

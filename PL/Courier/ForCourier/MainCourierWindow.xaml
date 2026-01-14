@@ -157,7 +157,24 @@
                                Margin="0,0,0,15"
                                Foreground="#333333"/>
 
-                    <Button Content="Available Orders" Click="BtnAvailableOrders_Click" Style="{StaticResource ModernButton}" Margin="0,0,0,8"/>
+                    <Button Content="Available Orders" Click="BtnAvailableOrders_Click" Margin="0,0,0,8">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ModernButton}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <!-- Hide when no CurrentCourier -->
+                                    <DataTrigger Binding="{Binding CurrentCourier}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                    <!-- Hide when courier is not active -->
+                                    <DataTrigger Binding="{Binding CurrentCourier.IsActive}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
                     <Button Content="Delivery History" Style="{StaticResource ModernButton}" Margin="0,0,0,8" Click="BtnDeliveryHistory_Click"/>
                     <Button Content="Logout" Click="BtnLogout_Click" Style="{StaticResource DangerButton}" Margin="0,280,0,0"/>
                 </StackPanel>

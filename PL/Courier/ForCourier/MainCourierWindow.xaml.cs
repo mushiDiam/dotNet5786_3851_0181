@@ -63,12 +63,14 @@ namespace PL.Courier.ForCourier
             RefreshAll();
 
             try { s_bl.Courier.AddObserver(_courierId, CourierObserver); } catch { }
+            try { s_bl.Order.AddObserver(_courierId, CourierObserver); } catch { }
             try { s_bl.Admin.AddClockObserver(ClockObserver); CurrentClock = s_bl.Admin.GetClock(); } catch { }
         }
 
         private void MainCourierWindow_Closed(object? sender, EventArgs e)
         {
             try { s_bl.Courier.RemoveObserver(_courierId, CourierObserver); } catch { }
+            try { s_bl.Order.RemoveObserver(_courierId, CourierObserver); } catch { }
             try { s_bl.Admin.RemoveClockObserver(ClockObserver); } catch { }
         }
 
@@ -106,6 +108,23 @@ namespace PL.Courier.ForCourier
         {
             try
             {
+                // Validate company max is configured and courier value is not greater
+                var cfg = s_bl.Admin.GetConfig();
+                // Use MaxiumDistance instead of MaxDeliveryDistance
+                if (cfg.MaxiumDistance == 0)
+                {
+                    MessageBox.Show("Company maximum delivery distance is not configured. Contact the administrator.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    RefreshCourier();
+                    return;
+                }
+
+                if (CurrentCourier.MaxDistancePreference > cfg.MaxiumDistance)
+                {
+                    MessageBox.Show($"Max distance cannot exceed company maximum ({cfg.MaxiumDistance} km).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    RefreshCourier();
+                    return;
+                }
+
                 s_bl.Courier.UpdateDetails(_managerId, CurrentCourier);
                 RefreshCourier();
                 MessageBox.Show("Profile updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

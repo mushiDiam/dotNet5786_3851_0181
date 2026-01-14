@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using BO;
 using DalApi;
@@ -60,26 +61,76 @@ internal static class CourierManager
     }
     internal static void Update(BO.Courier courier)
     {
+        if (courier is null)
+            throw new BlInvalidValueException("Courier cannot be null.");
+
+        // Ensure courier exists and get current state
+        BO.Courier existing;
         try
         {
-           s_dal.Courier.Update(ConvertToDal(courier));
+            existing = Read(courier.Id);
+        }
+        catch (BlDoesNotExistException ex)
+        {
+            throw new BlDoesNotExistException($"Courier with ID {courier.Id} does not exist.", ex);
+        }
+
+        // If courier has an active order, do not allow changing vehicle (Transport) or active flag
+        if (existing.ActiveOrder != null)
+        {
+            if (courier.Transport != existing.Transport)
+                throw new BlInvalidOperationException("Cannot change courier vehicle while they have an active order.");
+
+            if (courier.IsActive != existing.IsActive)
+                throw new BlInvalidOperationException("Cannot change courier active status while they have an active order.");
+        }
+
+        // Validate company max delivery distance configured
+        double? companyMax = s_dal.Config.MaxDeliveryDistance;
+        if (!companyMax.HasValue)
+            throw new BlInvalidOperationException("Company maximum delivery distance is not configured.");
+
+        // Validate courier max distance does not exceed company maximum
+        if (courier.MaxDistancePreference > companyMax.Value)
+            throw new BlInvalidValueException($"Courier maximum distance ({courier.MaxDistancePreference} km) cannot exceed company maximum ({companyMax.Value} km).");
+
+        try
+        {
+            s_dal.Courier.Update(ConvertToDal(courier));
         }
         catch (DalDoesNotExistException ex)
         {
             throw new BlDoesNotExistException("Courier with this ID Doesn't exists.", ex);
         }
+
         Observers.NotifyItemUpdated(courier.Id); //stage 5
         Observers.NotifyListUpdated(); //stage 5
     }
     public static void UpdateCourierActivity(DateTime oldClock, DateTime newClock)
     {
+        // Read all couriers snapshot
         DO.Courier[] couriers = s_dal.Courier.ReadAll().ToArray();
         foreach (var courier in couriers)
         {
-            if (courier.Active && (newClock - oldClock).TotalDays > 30)
+            try
             {
-                DO.Courier c = courier with { Active = false };
-                s_dal.Courier.Update(c);
+                // Only attempt deactivation when courier is currently active and time threshold exceeded
+                if (!courier.Active || (newClock - oldClock).TotalDays <= 30)
+                    continue;
+
+                // Prevent deactivation if courier currently has an active delivery (EndOfOrder == null)
+                bool hasActiveDelivery = s_dal.Delivery.ReadAll(d => d.CourierId == courier.Id && d.EndOfOrder == null).Any();
+                if (hasActiveDelivery)
+                    continue;
+
+                // Safe to deactivate
+                DO.Courier updated = courier with { Active = false };
+                s_dal.Courier.Update(updated);
+            }
+            catch
+            {
+                // Swallow per-existing pattern — do not interrupt the loop on single failure.
+                // Logging can be added here if desired.
             }
         }
         Observers.NotifyListUpdated(); //stage 5

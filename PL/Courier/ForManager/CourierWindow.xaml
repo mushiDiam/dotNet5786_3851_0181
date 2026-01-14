@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:bo="clr-namespace:BO;assembly=BL"
-        xmlns:local="clr-namespace:PL" 
+        xmlns:local="clr-namespace:PL.Helpers" 
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="580" Width="450"
         WindowStartupLocation="CenterScreen"
@@ -76,6 +76,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -127,11 +129,13 @@
 
                 <ComboBox ItemsSource="{Binding Source={StaticResource TransportOptionsCollection}}"
                           SelectedValue="{Binding CurrentCourier.Transport, Mode=TwoWay}"
-                          Height="25" Margin="0,0,0,10"/>
+                          Height="25" Margin="0,0,0,10"
+                          IsEnabled="{Binding CurrentCourier.ActiveOrder, Converter={StaticResource NullToBoolConverter}}"/>
 
                 <CheckBox Style="{StaticResource ToggleSwitchStyle}"
                           IsChecked="{Binding CurrentCourier.IsActive, Mode=TwoWay}" 
-                          Margin="0,5,0,0"/>
+                          Margin="0,5,0,0"
+                          IsEnabled="{Binding CurrentCourier.ActiveOrder, Converter={StaticResource NullToBoolConverter}}"/>
             </StackPanel>
         </Grid>
 
