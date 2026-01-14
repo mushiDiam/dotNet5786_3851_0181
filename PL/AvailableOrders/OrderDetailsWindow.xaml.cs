@@ -285,7 +285,7 @@ namespace PL.AvailableOrders
         }
 
         // Update (manager) - validate and call BL.UpdateDetails
-        private async Task BtnUpdate_Click(object sender, RoutedEventArgs e)
+        private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (!IsEditable)
             {
@@ -352,5 +352,6 @@ namespace PL.AvailableOrders
                 MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
     }
 }
