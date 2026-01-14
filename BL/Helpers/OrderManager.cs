@@ -26,24 +26,50 @@ internal static class OrderManager{
     }
     public static BO.Order ConvertToBO(DO.Order doOrder)
     {
+        // 1. Calculate Expected Delivery Time (ETA) based on Pickup Time
+        DateTime? expectedTime = null;
+        try
+        {
+            // Try to fetch the active delivery for this order
+            DO.Delivery? activeDelivery = DeliveryManager.GetDelivery(doOrder.Id);
+
+            // If a courier has picked it up (StartOfDelivery exists) and it's not finished
+            if (activeDelivery != null && activeDelivery.StartOfDelivery != default)
+            {
+                // Calculate pure travel duration (Distance / Speed)
+                TimeSpan travelDuration = CalculateRemainingTime(doOrder.Id);
+
+                // ETA = Pickup Time + Travel Duration + 5 minutes buffer (for parking/pickup)
+                expectedTime = activeDelivery.StartOfDelivery.Add(travelDuration).Add(TimeSpan.FromMinutes(5));
+            }
+        }
+        catch (BlDoesNotExistException)
+        {
+            // No delivery found -> ETA remains null (or you could set it to MaxDeliveryTime)
+            expectedTime = null;
+        }
+
         BO.Order boOrder = new BO.Order
         {
             Id = doOrder.Id,
             OrderType = (BO.OrderTypes)doOrder.OrderType,
-            // Shipment / contact fields that were previously missing:
             FullAddress = doOrder.AdderssOfOrder,
             CustomerName = doOrder.CustomerName,
             CustomerPhone = doOrder.CustomerPhone,
             Description = doOrder.Description,
-
             Latitude = doOrder.Latitude,
             Longitude = doOrder.Longitude,
+            // Use existing config for company coords
             AirDistance = GetAirDistance(doOrder.Latitude, doOrder.Longitude, (double)s_dal.Config.CompanyLatitude, (double)s_dal.Config.CompanyLongitude),
             Weight = doOrder.Weight,
             Volume = doOrder.Volume,
             Fragile = doOrder.Fragile,
             CreatedAt = doOrder.CreatedAt,
-            ExpectedDeliveryTime = doOrder.CreatedAt.Add(CalculateRemainingTime(doOrder.Id)),
+
+            // --- NEW ETA CALCULATION ---
+            ExpectedDeliveryTime = expectedTime,
+            // ---------------------------
+
             MaxDeliveryTime = doOrder.CreatedAt.Add(s_dal.Config.MaxDeliveryTime),
             OrderStatus = CalculateOrderStatus(doOrder.Id),
             ScheduleStatus = CalculateScheduleStatus(doOrder.Id, doOrder.CreatedAt),

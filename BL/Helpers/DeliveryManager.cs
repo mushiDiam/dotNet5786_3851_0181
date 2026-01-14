@@ -96,7 +96,7 @@ internal static class DeliveryManager
         {
             OrderId = orderId,
             CourierId = courierId,
-            StartOfDelivery = DateTime.Now,
+            StartOfDelivery = s_dal.Config.Clock,
             TimeOfDelivery = null,
             EndOfOrder = null // In-progress
         };
