@@ -119,6 +119,7 @@ internal static class DeliveryManager
         Observers.NotifyItemUpdated(created.Id);
         try { OrderManager.Observers.NotifyItemUpdated(orderId); } catch { }
         try { CourierManager.Observers.NotifyItemUpdated(courierId); } catch { }
+        try { OrderManager.Observers.NotifyListUpdated(); } catch { }
     }
     internal static void CreateMockDeliveryForCancellation(int orderId, DO.OrderType type)
     {
