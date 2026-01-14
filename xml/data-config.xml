@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <config>
-  <NextOrderId>52</NextOrderId>
-  <NextDeliveryId>30</NextDeliveryId>
-  <Clock>2026-01-12T15:32:33.6175153+02:00</Clock>
+  <NextOrderId>51</NextOrderId>
+  <NextDeliveryId>21</NextDeliveryId>
+  <Clock>2026-01-14T18:49:22.4437937+02:00</Clock>
   <ManagerId>10003</ManagerId>
   <ManagerPassword></ManagerPassword>
   <CompanyAddress>הוועד הלאומי 21 ירושלים</CompanyAddress>
