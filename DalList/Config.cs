@@ -1,4 +1,6 @@
-﻿namespace Dal;
+﻿using System.Runtime.CompilerServices;
+
+namespace Dal;
 /// <summary>
 /// Course Entity
 /// </summary>
@@ -27,25 +29,27 @@ internal static class Config
 {
     internal const int StartDeliveryId = 1; 
     private static int nextDeliveryId = StartDeliveryId;
-    internal static int NextDeliveryId { get => nextDeliveryId++; }
+    internal static int NextDeliveryId { [MethodImpl(MethodImplOptions.Synchronized)] get => nextDeliveryId++; }
 
     internal const int StartOrderId = 1;
     private static int nextOrderId = StartOrderId;
-    internal static int NextOrderId { get => nextOrderId++; } 
-    internal static DateTime Clock { get; set; } = DateTime.Now;
-    internal static int ManagerId { get; set; }
-    internal static string ManagerPassword { get; set; } = "";
-    internal static string? CompanyAddress { get; set; }
-    internal static double? CompanyLatitude { get; set; }
-    internal static double? CompanyLongitude { get; set; }
-    internal static double? MaxDeliveryDistance { get; set; }
-    internal static double AverageCarSpeed { get; set; }
-    internal static double AverageMotorcycleSpeed { get; set; }
-    internal static double AverageBikeSpeed { get; set; }
-    internal static double AverageWalkingSpeed { get; set; }
-    internal static TimeSpan MaxDeliveryTime { get; set; }
-    internal static TimeSpan RiskRange { get; set; }
-    internal static TimeSpan InactiveTime { get; set; }
+    internal static int NextOrderId { [MethodImpl(MethodImplOptions.Synchronized)] get => nextOrderId++; } 
+    internal static DateTime Clock { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; } = DateTime.Now;
+    internal static int ManagerId { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static string ManagerPassword { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; } = "";
+    internal static string? CompanyAddress { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double? CompanyLatitude { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double? CompanyLongitude { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double? MaxDeliveryDistance { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double AverageCarSpeed { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double AverageMotorcycleSpeed { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double AverageBikeSpeed { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static double AverageWalkingSpeed { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static TimeSpan MaxDeliveryTime { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static TimeSpan RiskRange { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    internal static TimeSpan InactiveTime { [MethodImpl(MethodImplOptions.Synchronized)] get; [MethodImpl(MethodImplOptions.Synchronized)] set; }
+    
+    [MethodImpl(MethodImplOptions.Synchronized)]
     internal static void Reset(){
         nextDeliveryId = StartDeliveryId;
         nextOrderId = StartOrderId;

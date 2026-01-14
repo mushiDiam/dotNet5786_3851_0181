@@ -3,9 +3,11 @@ using DalApi;
 using DO;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 internal class CourierImplementation : ICourier
 {
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Create(Courier item){
         List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
         if (Couriers.Exists(c => c.Id == item.Id))
@@ -15,6 +17,7 @@ internal class CourierImplementation : ICourier
         XMLTools.SaveListToXMLSerializer<Courier>(Couriers, Config.s_couriers_xml);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Delete(int id){
         List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
         if (Couriers.Exists(c => c.Id == id)){
@@ -25,25 +28,30 @@ internal class CourierImplementation : ICourier
         throw new DalDoesNotExistException($"Courier with ID= {id} doesn't exists");
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void DeleteAll(){
         XMLTools.SaveListToXMLSerializer<Courier>(new List<Courier>(), Config.s_couriers_xml);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public Courier? Read(int id){
         List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
         return Couriers.FirstOrDefault(item => item.Id == id);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public Courier? Read(Func<Courier, bool> filter){
         List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
         return Couriers.FirstOrDefault(filter);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public IEnumerable<Courier> ReadAll(Func<Courier, bool>? filter = null){
         List<Courier> Couriers = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);
         return filter == null ? Couriers : Couriers.Where(filter);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Update(Courier item)
     {
         List<Courier> list = XMLTools.LoadListFromXMLSerializer<Courier>(Config.s_couriers_xml);

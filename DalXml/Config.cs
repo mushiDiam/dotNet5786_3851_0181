@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace Dal;
@@ -12,11 +13,15 @@ internal static class Config
 
     internal static int NextOrderId{
         //get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextOrderId");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextOrderId");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextOrderId", value);
     }
     internal static int NextDeliveryId{
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextDeliveryId");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => XMLTools.SetConfigIntVal(s_data_config_xml, "NextDeliveryId", value);
     }
 
@@ -37,99 +42,147 @@ internal static class Config
     }
 
     // Clock stored as ISO 8601 round-trip string ("o")
-    internal static DateTime Clock{
-        get{
+    internal static DateTime Clock
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get
+        {
             var s = GetConfigStringVal(s_data_config_xml, "Clock");
             if (!string.IsNullOrWhiteSpace(s) &&
                 DateTime.TryParseExact(s, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dt))
                 return dt;
             return DateTime.Now;
         }
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "Clock", value.ToString("o"));
     }
 
-    internal static int ManagerId{
+    internal static int ManagerId
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToIntNullable("ManagerId") ?? 0;
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "ManagerId", value.ToString());
     }
 
-    internal static string ManagerPassword{
-        get{
+    internal static string ManagerPassword
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get
+        {
             var s = GetConfigStringVal(s_data_config_xml, "ManagerPassword");
             return s ?? string.Empty;
         }
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "ManagerPassword", value ?? string.Empty);
     }
 
-    internal static string? CompanyAddress{
+    internal static string? CompanyAddress
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => GetConfigStringVal(s_data_config_xml, "CompanyAddress");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "CompanyAddress", value);
     }
 
-    internal static double? CompanyLatitude{
+    internal static double? CompanyLatitude
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("CompanyLatitude");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "CompanyLatitude", value?.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double? CompanyLongitude{
+    internal static double? CompanyLongitude
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("CompanyLongitude");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "CompanyLongitude", value?.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double? MaxDeliveryDistance{
+    internal static double? MaxDeliveryDistance
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("MaxDeliveryDistance");
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryDistance", value?.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double AverageCarSpeed{
+    internal static double AverageCarSpeed
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageCarSpeed") ?? 0.0;
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "AverageCarSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double AverageMotorcycleSpeed{
+    internal static double AverageMotorcycleSpeed
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageMotorcycleSpeed") ?? 0.0;
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "AverageMotorcycleSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double AverageBikeSpeed{
+    internal static double AverageBikeSpeed
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageBikeSpeed") ?? 0.0;
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "AverageBikeSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static double AverageWalkingSpeed{
+    internal static double AverageWalkingSpeed
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageWalkingSpeed") ?? 0.0;
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "AverageWalkingSpeed", value.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static TimeSpan MaxDeliveryTime{
-        get{
+    internal static TimeSpan MaxDeliveryTime
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get
+        {
             var s = GetConfigStringVal(s_data_config_xml, "MaxDeliveryTime");
             if (TimeSpan.TryParse(s, CultureInfo.InvariantCulture, out var ts))
                 return ts;
             return TimeSpan.Zero;
         }
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryTime", value.ToString());
     }
 
-    internal static TimeSpan RiskRange{
-        get{
+    internal static TimeSpan RiskRange
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get
+        {
             var s = GetConfigStringVal(s_data_config_xml, "RiskRange");
             if (TimeSpan.TryParse(s, CultureInfo.InvariantCulture, out var ts))
                 return ts;
             return TimeSpan.Zero;
         }
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "RiskRange", value.ToString());
     }
 
-    internal static TimeSpan InactiveTime{
-        get{
+    internal static TimeSpan InactiveTime
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get
+        {
             var s = GetConfigStringVal(s_data_config_xml, "InactiveTime");
             if (TimeSpan.TryParse(s, CultureInfo.InvariantCulture, out var ts))
                 return ts;
             return TimeSpan.Zero;
         }
+        [MethodImpl(MethodImplOptions.Synchronized)]
         set => SetConfigStringVal(s_data_config_xml, "InactiveTime", value.ToString());
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
     internal static void Reset(){
         //NextDeliveryId = 1;
         // NextOrderId = 1;
