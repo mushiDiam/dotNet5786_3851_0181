@@ -214,7 +214,6 @@ internal class OrderImplementation : BlApi.IOrder
 
     public IEnumerable<OpenOrderInList> GetOpenOrder(int id, int courierId, OrderTypes? filter, OrderInListOptions? sort)
     {
-        // בדיקת הרשאות
         if (!AdminManager.IsAdmin(id) && id != courierId)
             throw new BlUnauthorizedAccessException("Only an admin or the courier themselves can get open orders");
 
@@ -222,15 +221,9 @@ internal class OrderImplementation : BlApi.IOrder
         if (courier is null)
             throw new BlDoesNotExistException($"Courier {courierId} not found");
 
-        // 1. שליפת כל ההזמנות
         var allOrders = OrderManager.ReadAll() ?? new List<BO.Order>();
 
         Debug.WriteLine("count of  orders within courier range: " + allOrders.Count());
-
-
-        // 2. סינון קריטי: רק הזמנות בסטטוס Open
-        // (מכיוון שאין CourierId ב-BO.Order, אנחנו מסתמכים על הסטטוס בלבד)
-
 
         var orderListToRet = from order in allOrders
                              let distance = order.AirDistance
@@ -243,13 +236,10 @@ internal class OrderImplementation : BlApi.IOrder
 
         var openOrders = orderListToRet;
 
-        // 3. סינון לפי סוג הזמנה
         if (filter.HasValue)
         {
             openOrders = openOrders.Where(o => o.OrderType == filter.Value);
         }
-
-        // 5. המרה (Projection)
         var projected = openOrders.Select(o => new OpenOrderInList
         {
             CourierId = courierId,
@@ -261,7 +251,6 @@ internal class OrderImplementation : BlApi.IOrder
             FullAddress = o.FullAddress,
             AirDistance = o.AirDistance,
 
-            // מונע תקיעה: לא מחשבים מסלול מלא dentro הרשימה
             ActualDistance = null,
 
             EstimatedTime = o.ExpectedDeliveryTime.HasValue ? o.ExpectedDeliveryTime.Value - DateTime.Now : null,
@@ -270,7 +259,6 @@ internal class OrderImplementation : BlApi.IOrder
             MaxDeliveryTime = o.MaxDeliveryTime
         });
 
-        // 6. מיון
         IOrderedEnumerable<OpenOrderInList> ordered;
         if (sort.HasValue)
         {
