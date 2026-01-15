@@ -12,6 +12,7 @@ internal class CourierImplementation : BlApi.ICourier
 {
     public void Add(int id, BO.Courier courierId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can add couriers");
         CourierManager.CreateCourier(courierId);
@@ -19,6 +20,7 @@ internal class CourierImplementation : BlApi.ICourier
 
     public void Delete(int id, int courierId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can delete couriers");
         CourierManager.Delete(courierId);
@@ -100,6 +102,7 @@ internal class CourierImplementation : BlApi.ICourier
 
     public void UpdateDetails(int id, BO.Courier courier)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only an admin can access couriers");
         CourierManager.Update(courier);

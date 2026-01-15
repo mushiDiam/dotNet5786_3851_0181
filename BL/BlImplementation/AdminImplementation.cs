@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 internal class AdminImplementation : IAdmin
 {
     public void ForwardClock(Times T){
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         DateTime newTime = AdminManager.Now;
         switch (T){
             case Times.Minute:
@@ -37,16 +38,21 @@ internal class AdminImplementation : IAdmin
     }
 
     public void InitializeDB(){
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         ResetDB();
         AdminManager.InitializeDB();
     }
 
     public void ResetDB(){
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         AdminManager.ResetDB();
     }
 
     public BO.Config GetConfig() => AdminManager.GetConfig();
-    public void SetConfig(BO.Config configuration) => AdminManager.SetConfig(configuration);
+    public void SetConfig(BO.Config configuration) {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.SetConfig(configuration);
+    }
 
     #region Stage 5
     public void AddClockObserver(Action clockObserver) =>
@@ -62,4 +68,16 @@ internal class AdminImplementation : IAdmin
     // Delegate the geocoding request to BL helper (no PL-level HTTP/json logic).
     public async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
         => await OrderManager.GetCoordinatesFromAddressAsync(address);
+
+    #region stage 7
+    public void StartSimulator(int interval)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();
+        AdminManager.Start(interval);
+    }
+
+    public void StopSimulator()
+    => AdminManager.Stop();
+
+    #endregion stage 7
 }

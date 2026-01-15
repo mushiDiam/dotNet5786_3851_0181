@@ -17,6 +17,7 @@ internal class OrderImplementation : BlApi.IOrder
 {
     public async Task Add(int id, BO.Order order)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (!AdminManager.IsAdmin(id)) throw new BlUnauthorizedAccessException("...");
 
         // 1. Async Network Call
@@ -33,6 +34,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void Cancel(int id, int orderId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         try
         {
             OrderManager.CancelOrder(orderId);
@@ -45,6 +47,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void ChooseOrder(int id, int courierId, int orderId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         // 1. Authorization: Ensure the requester is the courier taking the job
         // (Or allow Admin, but instructions imply courier self-selection)
         if (id != courierId)
@@ -108,6 +111,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void Delete(int id, int orderId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         throw new BlInvalidOperationException("Cannot delete an order");
     }
 
@@ -120,6 +124,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public void EndOfOrder(int id, int courierId, int deliveryId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (id != courierId)
             throw new BlUnauthorizedAccessException("Only couriers can only end their own deliveries");
         OrderManager.EndDelivery(courierId, deliveryId);
@@ -499,6 +504,7 @@ internal class OrderImplementation : BlApi.IOrder
 
     public async Task UpdateDetails(int id, BO.Order order)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (!AdminManager.IsAdmin(id))
             throw new BlUnauthorizedAccessException("Only admin can update orders");
 
@@ -536,6 +542,7 @@ internal class OrderImplementation : BlApi.IOrder
     // In OrderImplementation.cs
     public void MarkDeliveryNotFound(int requesterId, int courierId, int deliveryId)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         // Authorization check
         if (requesterId != courierId)
             throw new BlUnauthorizedAccessException("Only the courier can mark their own delivery as not found");

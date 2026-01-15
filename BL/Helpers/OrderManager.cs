@@ -13,6 +13,9 @@ using System.Collections.Concurrent;
 namespace Helpers;
 
 internal static class OrderManager{
+
+    private static readonly AsyncMutex s_periodicMutex = new(); //stage 7
+
     private static IDal s_dal = DalApi.Factory.Get;
 
     internal static ObserverManager Observers = new();
@@ -30,57 +33,61 @@ internal static class OrderManager{
     private static readonly ConcurrentDictionary<DistanceKey, double> s_distanceCache = new();
     public static BO.Order ConvertToBO(DO.Order doOrder)
     {
-        // 1. Calculate Expected Delivery Time (ETA) based on Pickup Time
-        DateTime? expectedTime = null;
-        try
+        lock (AdminManager.BlMutex)
         {
-            // Try to fetch the active delivery for this order
-            DO.Delivery? activeDelivery = DeliveryManager.GetDelivery(doOrder.Id);
-
-            // If a courier has picked it up (StartOfDelivery exists) and it's not finished
-            if (activeDelivery != null && activeDelivery.StartOfDelivery != default)
+            // 1. Calculate Expected Delivery Time (ETA) based on Pickup Time
+            DateTime? expectedTime = null;
+            try
             {
-                // Calculate pure travel duration (Distance / Speed)
-                TimeSpan travelDuration = CalculateRemainingTime(doOrder.Id);
+                // Try to fetch the active delivery for this order
+                DO.Delivery? activeDelivery = DeliveryManager.GetDelivery(doOrder.Id);
 
-                // ETA = Pickup Time + Travel Duration + 5 minutes buffer (for parking/pickup)
-                expectedTime = activeDelivery.StartOfDelivery.Add(travelDuration).Add(TimeSpan.FromMinutes(5));
+                // If a courier has picked it up (StartOfDelivery exists) and it's not finished
+                if (activeDelivery != null && activeDelivery.StartOfDelivery != default)
+                {
+                    // Calculate pure travel duration (Distance / Speed)
+                    TimeSpan travelDuration = CalculateRemainingTime(doOrder.Id);
+
+                    // ETA = Pickup Time + Travel Duration + 5 minutes buffer (for parking/pickup)
+                    expectedTime = activeDelivery.StartOfDelivery.Add(travelDuration).Add(TimeSpan.FromMinutes(5));
+                }
             }
+            catch (BlDoesNotExistException)
+            {
+                // No delivery found -> ETA remains null (or you could set it to MaxDeliveryTime)
+                expectedTime = null;
+            }
+
+            BO.Order boOrder = new BO.Order
+            {
+                Id = doOrder.Id,
+                OrderType = (BO.OrderTypes)doOrder.OrderType,
+                FullAddress = doOrder.Address,
+                CustomerName = doOrder.CustomerName,
+                CustomerPhone = doOrder.CustomerPhone,
+                Description = doOrder.Description,
+                Latitude = doOrder.Latitude,
+                Longitude = doOrder.Longitude,
+                // Use existing config for company coords
+                AirDistance = GetAirDistance(doOrder.Latitude, doOrder.Longitude, (double)s_dal.Config.CompanyLatitude, (double)s_dal.Config.CompanyLongitude),
+                Weight = doOrder.Weight,
+                Volume = doOrder.Volume,
+                Fragile = doOrder.Fragile,
+                CreatedAt = doOrder.CreatedAt,
+
+                // --- NEW ETA CALCULATION ---
+                ExpectedDeliveryTime = expectedTime,
+                // ---------------------------
+
+                MaxDeliveryTime = doOrder.CreatedAt.Add(s_dal.Config.MaxDeliveryTime),
+                OrderStatus = CalculateOrderStatus(doOrder.Id),
+                ScheduleStatus = CalculateScheduleStatus(doOrder.Id, doOrder.CreatedAt),
+                RemainingTime = CalculateRemainingTime(doOrder.Id),
+                Deliveries = GetAllDeliveriesForOrder(doOrder.Id)
+            };
+
+            return boOrder;
         }
-        catch (BlDoesNotExistException)
-        {
-            // No delivery found -> ETA remains null (or you could set it to MaxDeliveryTime)
-            expectedTime = null;
-        }
-
-        BO.Order boOrder = new BO.Order
-        {
-            Id = doOrder.Id,
-            OrderType = (BO.OrderTypes)doOrder.OrderType,
-            FullAddress = doOrder.Address,
-            CustomerName = doOrder.CustomerName,
-            CustomerPhone = doOrder.CustomerPhone,
-            Description = doOrder.Description,
-            Latitude = doOrder.Latitude,
-            Longitude = doOrder.Longitude,
-            // Use existing config for company coords
-            AirDistance = GetAirDistance(doOrder.Latitude, doOrder.Longitude, (double)s_dal.Config.CompanyLatitude, (double)s_dal.Config.CompanyLongitude),
-            Weight = doOrder.Weight,
-            Volume = doOrder.Volume,
-            Fragile = doOrder.Fragile,
-            CreatedAt = doOrder.CreatedAt,
-
-            // --- NEW ETA CALCULATION ---
-            ExpectedDeliveryTime = expectedTime,
-            // ---------------------------
-
-            MaxDeliveryTime = doOrder.CreatedAt.Add(s_dal.Config.MaxDeliveryTime),
-            OrderStatus = CalculateOrderStatus(doOrder.Id),
-            ScheduleStatus = CalculateScheduleStatus(doOrder.Id, doOrder.CreatedAt),
-            RemainingTime = CalculateRemainingTime(doOrder.Id),
-            Deliveries = GetAllDeliveriesForOrder(doOrder.Id)
-        };
-        return boOrder;
     }
     public static DO.Order ConvertToDal(BO.Order boOrder)
     {
@@ -185,36 +192,39 @@ internal static class OrderManager{
     /// <returns><see cref="ScheduleStatus"/> for the order.</returns>
     private static ScheduleStatus CalculateScheduleStatus(int orderId, DateTime OrderTime)
     {
-        DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
-        DateTime maxDeliveryTime = OrderTime.Add(s_dal.Config.MaxDeliveryTime);
-        TimeSpan riskRange = s_dal.Config.RiskRange;
-
-        // 1. Order has no delivery yet (Open)
-        if (del == null)
+        lock (AdminManager.BlMutex)
         {
+            DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
+            DateTime maxDeliveryTime = OrderTime.Add(s_dal.Config.MaxDeliveryTime);
+            TimeSpan riskRange = s_dal.Config.RiskRange;
+
+            // 1. Order has no delivery yet (Open)
+            if (del == null)
+            {
+                // FIX: Use s_dal.Config.Clock instead of DateTime.Now
+                if (s_dal.Config.Clock > maxDeliveryTime)
+                    return ScheduleStatus.Late;
+
+                var remainingToMax = maxDeliveryTime - s_dal.Config.Clock;
+                return remainingToMax <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
+            }
+
+            // 2. Delivery Completed
+            if (del.EndOfOrder == DO.EndOfOrder.Completed)
+            {
+                if (del.TimeOfDelivery.HasValue && del.TimeOfDelivery.Value <= maxDeliveryTime)
+                    return ScheduleStatus.OnTime;
+                return ScheduleStatus.Late;
+            }
+
+            // 3. Delivery In Progress
             // FIX: Use s_dal.Config.Clock instead of DateTime.Now
             if (s_dal.Config.Clock > maxDeliveryTime)
                 return ScheduleStatus.Late;
 
-            var remainingToMax = maxDeliveryTime - s_dal.Config.Clock;
-            return remainingToMax <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
+            var remaining = maxDeliveryTime - s_dal.Config.Clock;
+            return remaining <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
         }
-
-        // 2. Delivery Completed
-        if (del.EndOfOrder == DO.EndOfOrder.Completed)
-        {
-            if (del.TimeOfDelivery.HasValue && del.TimeOfDelivery.Value <= maxDeliveryTime)
-                return ScheduleStatus.OnTime;
-            return ScheduleStatus.Late;
-        }
-
-        // 3. Delivery In Progress
-        // FIX: Use s_dal.Config.Clock instead of DateTime.Now
-        if (s_dal.Config.Clock > maxDeliveryTime)
-            return ScheduleStatus.Late;
-
-        var remaining = maxDeliveryTime - s_dal.Config.Clock;
-        return remaining <= riskRange ? ScheduleStatus.InRisk : ScheduleStatus.OnTime;
     }
     private static double GetAirDistance(double lat1, double lon1, double lat2, double lon2)
     {
@@ -235,80 +245,90 @@ internal static class OrderManager{
     }
     private static TimeSpan CalculateRemainingTime(int orderId)
     {
-        DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
-
-        // 1. If no delivery, no remaining time estimate
-        if (del == null) return TimeSpan.Zero;
-
-        // 2. If finished, remaining time is zero
-        if (del.EndOfOrder == DO.EndOfOrder.Completed) return TimeSpan.Zero;
-
-        // 3. If In Progress (Started)
-        if (del.StartOfDelivery != default) 
+        lock (AdminManager.BlMutex)
         {
-            // Calculate total travel duration (Distance / Speed)
-            DO.OrderType shiftType = del.OrderType;
-            double delSpeed = shiftType switch
+            DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
+
+            // 1. If no delivery, no remaining time estimate
+            if (del == null) return TimeSpan.Zero;
+
+            // 2. If finished, remaining time is zero
+            if (del.EndOfOrder == DO.EndOfOrder.Completed) return TimeSpan.Zero;
+
+            // 3. If In Progress (Started)
+            if (del.StartOfDelivery != default)
             {
-                DO.OrderType.Car => s_dal.Config.AverageCarSpeed,
-                DO.OrderType.Motorcycle => s_dal.Config.AverageMotorcycleSpeed,
-                DO.OrderType.Bike => s_dal.Config.AverageBikeSpeed,
-                DO.OrderType.Walking => s_dal.Config.AverageWalkingSpeed,
-                _ => 1 // avoid division by zero
-            };
+                // Calculate total travel duration (Distance / Speed)
+                DO.OrderType shiftType = del.OrderType;
+                double delSpeed = shiftType switch
+                {
+                    DO.OrderType.Car => s_dal.Config.AverageCarSpeed,
+                    DO.OrderType.Motorcycle => s_dal.Config.AverageMotorcycleSpeed,
+                    DO.OrderType.Bike => s_dal.Config.AverageBikeSpeed,
+                    DO.OrderType.Walking => s_dal.Config.AverageWalkingSpeed,
+                    _ => 1 // avoid division by zero
+                };
 
-            double distance = del.ActualDistance ?? 0;
-            double hours = distance / delSpeed;
+                double distance = del.ActualDistance ?? 0;
+                double hours = distance / delSpeed;
 
-            // Total expected duration (+ 5 mins buffer)
-            TimeSpan totalDuration = TimeSpan.FromHours(hours).Add(TimeSpan.FromMinutes(5));
+                // Total expected duration (+ 5 mins buffer)
+                TimeSpan totalDuration = TimeSpan.FromHours(hours).Add(TimeSpan.FromMinutes(5));
 
-            // Calculate exact ETA
-            DateTime eta = del.StartOfDelivery.Add(totalDuration);
+                // Calculate exact ETA
+                DateTime eta = del.StartOfDelivery.Add(totalDuration);
 
-            // Remaining = ETA - Current Simulator Time
-            TimeSpan remaining = eta - s_dal.Config.Clock;
+                // Remaining = ETA - Current Simulator Time
+                TimeSpan remaining = eta - s_dal.Config.Clock;
 
-            // Return the remaining time (ensure it doesn't show negative)
-            return remaining < TimeSpan.Zero ? TimeSpan.Zero : remaining;
+                // Return the remaining time (ensure it doesn't show negative)
+                return remaining < TimeSpan.Zero ? TimeSpan.Zero : remaining;
+            }
+
+            return TimeSpan.Zero;
         }
-
-        return TimeSpan.Zero;
     }
     // In OrderManager.cs (in the Helpers folder)
     internal static void MarkDeliveryNotFound(int courierId, int deliveryId)
     {
-        DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
-        if (delivery == null)
-            throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
+        int orderId;
+        int actualCourierId;
 
-        if (delivery.CourierId != courierId)
-            throw new BlUnauthorizedAccessException("Courier can only mark their own deliveries");
-
-        // Remove the delivery record so the order becomes available (Open) again.
-        // Deleting preserves the intended behavior: CalculateOrderStatus will treat orders
-        // with no delivery record as Open.
-        try
+        lock (AdminManager.BlMutex)
         {
-            s_dal.Delivery.Delete(deliveryId);
-        }
-        catch (DalDoesNotExistException ex)
-        {
-            throw new BlDoesNotExistException($"Delivery {deliveryId} not found", ex);
+            DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
+            if (delivery == null)
+                throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
+            if (delivery.CourierId != courierId)
+                throw new BlUnauthorizedAccessException("Courier can only mark their own deliveries");
+
+            // Store values needed for observer notifications
+            orderId = delivery.OrderId;
+            actualCourierId = delivery.CourierId;
+
+            // Remove the delivery record so the order becomes available (Open) again.
+            // Deleting preserves the intended behavior: CalculateOrderStatus will treat orders
+            // with no delivery record as Open.
+            try
+            {
+                s_dal.Delivery.Delete(deliveryId);
+            }
+            catch (DalDoesNotExistException ex)
+            {
+                throw new BlDoesNotExistException($"Delivery {deliveryId} not found", ex);
+            }
         }
 
+        // Notify observers outside the lock
         // Notify delivery observers so PL can update lists/details.
         try { DeliveryManager.Observers.NotifyListUpdated(); } catch { }
         try { DeliveryManager.Observers.NotifyItemUpdated(deliveryId); } catch { }
-
         // Notify order observers (by order id) so order status becomes Open in PL.
-        try { Observers.NotifyItemUpdated(delivery.OrderId); } catch { }
+        try { Observers.NotifyItemUpdated(orderId); } catch { }
         try { Observers.NotifyListUpdated(); } catch { }
-
         // Notify courier observers (so courier detail UI updates)
-        try { if (delivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(delivery.CourierId); } catch { }
+        try { if (actualCourierId != 0) CourierManager.Observers.NotifyItemUpdated(actualCourierId); } catch { }
     }
-
     /// <summary>
     /// Return all deliveries (from the DAL) for the specified order id converted to
     /// <see cref="DeliveryPerOrderInList"/> instances for presentation/listing.
@@ -317,8 +337,10 @@ internal static class OrderManager{
     /// <returns>List of <see cref="DeliveryPerOrderInList"/> for the order.</returns>
     private static List<DeliveryPerOrderInList> GetAllDeliveriesForOrder(int orderId)
     {
-        // --- update GetAllDeliveriesForOrder mapping to set Delivery.OrderStatus using mapper ---
-        var deliveries = s_dal.Delivery.ReadAll(d => d.OrderId == orderId)
+        lock (AdminManager.BlMutex)
+        {
+            // --- update GetAllDeliveriesForOrder mapping to set Delivery.OrderStatus using mapper ---
+            var deliveries = s_dal.Delivery.ReadAll(d => d.OrderId == orderId)
             .Select(d =>
             {
                 var courier = s_dal.Courier.Read(c => c.Id == d.CourierId);
@@ -336,7 +358,8 @@ internal static class OrderManager{
             })
             .ToList();
 
-        return deliveries;
+            return deliveries;
+        }
     }
     // In OrderManager.cs (Internal Static Class)
 
@@ -363,14 +386,16 @@ internal static class OrderManager{
 
         // 4. Calculate Air Distance (CPU-bound calculation, safe to be synchronous)
         // Fetch company coordinates from DAL Configuration
-        double? companyLat = s_dal.Config.CompanyLatitude;
-        double? companyLon = s_dal.Config.CompanyLongitude;
-
-        if (companyLat != null && companyLon != null)
+        lock (AdminManager.BlMutex)
         {
-            order.AirDistance = GetAirDistance(order.Latitude, order.Longitude, companyLat.Value, companyLon.Value);
-        }
+            double? companyLat = s_dal.Config.CompanyLatitude;
+            double? companyLon = s_dal.Config.CompanyLongitude;
 
+            if (companyLat != null && companyLon != null)
+            {
+                order.AirDistance = GetAirDistance(order.Latitude, order.Longitude, companyLat.Value, companyLon.Value);
+            }
+        }
 
         // 5. Convert BO entity to DO (DAL) entity
         // (Ensure you have this mapping logic either here or in an extension method)
@@ -393,34 +418,36 @@ internal static class OrderManager{
         };
 
         // 6. Persist to Data Layer
-        try
+        lock (AdminManager.BlMutex)
         {
-            // Dal.Order.Add returns the new ID (int)
-            s_dal.Order.Create(doOrder);
+            try
+            {
+                // Dal.Order.Add returns the new ID (int)
+                s_dal.Order.Create(doOrder);
 
-            // Update the BO object with the new ID generated by DAL
-            if (doOrder.Id != 0)
-            {
-                order.Id = doOrder.Id;
-            }
-            else
-            {
-                // Option B: The "Black Box" DAL Fallback
-                // If DAL didn't update our object, we ask the DB: "What is the latest order?"
-                // We assume the one with the highest ID is the one we just added.
-                var allOrders = s_dal.Order.ReadAll();
-                if (allOrders.Any())
+                // Update the BO object with the new ID generated by DAL
+                if (doOrder.Id != 0)
                 {
-                    // Get the ID of the order created most recently (Max ID)
-                    order.Id = allOrders.Max(o => o.Id);
+                    order.Id = doOrder.Id;
+                }
+                else
+                {
+                    // Option B: The "Black Box" DAL Fallback
+                    // If DAL didn't update our object, we ask the DB: "What is the latest order?"
+                    // We assume the one with the highest ID is the one we just added.
+                    var allOrders = s_dal.Order.ReadAll();
+                    if (allOrders.Any())
+                    {
+                        // Get the ID of the order created most recently (Max ID)
+                        order.Id = allOrders.Max(o => o.Id);
+                    }
                 }
             }
+            catch (DO.DalAlreadyExistsException ex)
+            {
+                throw new BlAlreadyExistsException($"Order ID {order.Id} already exists.", ex);
+            }
         }
-        catch (DO.DalAlreadyExistsException ex)
-        {
-            throw new BlAlreadyExistsException($"Order ID {order.Id} already exists.", ex);
-        }
-
         // 7. Notify Observers (Stage 5 Requirement)
         // This updates the PL windows listening to list changes
         Observers.NotifyListUpdated();
@@ -430,7 +457,8 @@ internal static class OrderManager{
         DO.Order doOrder;
         try
         {
-            doOrder = s_dal.Order.Read(orderId);
+            lock (AdminManager.BlMutex)
+                doOrder = s_dal.Order.Read(orderId);
         }
         catch(DalDoesNotExistException ex)
         {
@@ -448,7 +476,8 @@ internal static class OrderManager{
         DO.Order existingDoOrder;
         try
         {
-            existingDoOrder = s_dal.Order.Read(order.Id);
+            lock (AdminManager.BlMutex)
+                existingDoOrder = s_dal.Order.Read(order.Id);
         }
         catch (DalDoesNotExistException ex)
         {
@@ -501,15 +530,17 @@ internal static class OrderManager{
         };
 
         // 5. Save
-        try
+        lock (AdminManager.BlMutex)
         {
-            s_dal.Order.Update(updatedDoOrder);
+            try
+            {
+                s_dal.Order.Update(updatedDoOrder);
+            }
+            catch (DalDoesNotExistException ex)
+            {
+                throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
+            }
         }
-        catch (DalDoesNotExistException ex)
-        {
-            throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
-        }
-
         Observers.NotifyItemUpdated(order.Id);
         Observers.NotifyListUpdated();
     }
@@ -517,7 +548,8 @@ internal static class OrderManager{
     {
         try
         {
-            s_dal.Order.Delete(orderId);
+            lock (AdminManager.BlMutex)
+                s_dal.Order.Delete(orderId);
         }
         catch (DalDoesNotExistException exception)
         {
@@ -528,28 +560,38 @@ internal static class OrderManager{
     }
     internal static IEnumerable<BO.Order> ReadAll(Func<BO.Order, bool>? filter = null)
     {
-        var doOrders = s_dal.Order.ReadAll();
-        var boOrders = doOrders.Select(doOrder => ConvertToBO(doOrder));
-        if (filter != null)
+        lock (AdminManager.BlMutex)
         {
-            boOrders = boOrders.Where(filter);
+            var doOrders = s_dal.Order.ReadAll();
+            var boOrders = doOrders.Select(doOrder => ConvertToBO(doOrder));
+            if (filter != null)
+            {
+                boOrders = boOrders.Where(filter);
+            }
+            return boOrders;
         }
-        return boOrders;
     }
     internal static void DeleteAll()
     {
-        s_dal.Order.DeleteAll();
+        lock (AdminManager.BlMutex)
+            s_dal.Order.DeleteAll();
         Observers.NotifyListUpdated(); //stage 5
     }
     public static async Task<double?> GetActualDistanceAsync(double latitude, double longitude, BO.Transportation transport)
     {
-        double? companyLat = s_dal.Config.CompanyLatitude;
-        double? companyLon = s_dal.Config.CompanyLongitude;
+        double? companyLat;
+        double? companyLon;
+
+        // --- DAL Access with Lock ---
+        lock (AdminManager.BlMutex)
+        {
+            companyLat = s_dal.Config.CompanyLatitude;
+            companyLon = s_dal.Config.CompanyLongitude;
+        }
 
         // --- Validation ---
         if (companyLat == null || companyLon == null)
             throw new BlInvalidValueException("Company coordinates are not configured.");
-
         if (double.IsNaN(latitude) || double.IsNaN(longitude) ||
             latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
             throw new BlInvalidValueException("Order coordinates are invalid.");
@@ -567,38 +609,31 @@ internal static class OrderManager{
             BO.Transportation.Car => "car",
             BO.Transportation.Motorcycle => "car",
             BO.Transportation.Bike => "bike",
-            BO.Transportation.Walking => "foot", 
+            BO.Transportation.Walking => "foot",
             _ => throw new BlInvalidValueException("Invalid transportation type")
         };
 
-        // --- URL Construction ---
-        string strLon1 = Convert.ToDouble(s_dal.Config.CompanyLongitude).ToString(CultureInfo.InvariantCulture);
-        string strLat1 = Convert.ToDouble(s_dal.Config.CompanyLatitude).ToString(CultureInfo.InvariantCulture);
+        // --- URL Construction (using local variables) ---
+        string strLon1 = companyLon.Value.ToString(CultureInfo.InvariantCulture);
+        string strLat1 = companyLat.Value.ToString(CultureInfo.InvariantCulture);
         string strLon2 = longitude.ToString(CultureInfo.InvariantCulture);
         string strLat2 = latitude.ToString(CultureInfo.InvariantCulture);
-
         string coordinates = $"{strLon1},{strLat1};{strLon2},{strLat2}";
         string url = $"https://router.project-osrm.org/route/v1/{profile}/{coordinates}?overview=false";
 
         try
         {
             string json = await s_client.GetStringAsync(url);
-
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
             var root = doc.RootElement;
-
             if (root.TryGetProperty("code", out var codeProp) && codeProp.GetString() != "Ok")
                 return null;
-
             var routes = root.GetProperty("routes");
             if (routes.GetArrayLength() == 0) return null;
-
             double meters = routes[0].GetProperty("distance").GetDouble();
             double km = Math.Round(meters / 1000.0, 2);
-
             // Cache Update
             s_distanceCache.TryAdd(key, km);
-
             return km;
         }
         catch (HttpRequestException) { return null; }
@@ -662,12 +697,16 @@ internal static class OrderManager{
         // 1. DEFERRED EXECUTION
         IEnumerable<BO.Order> boOrders = ReadAll();
 
-        // 2. PRE-LOAD DELIVERIES (The N+1 Fix)
-        var allDeliveries = s_dal.Delivery.ReadAll()
-            .GroupBy(d => d.OrderId)
-            .ToDictionary(g => g.Key, g => g.ToList());
+        // 2. PRE-LOAD DELIVERIES (The N+1 Fix) - Read with lock, then release
+        Dictionary<int, List<DO.Delivery>> allDeliveries;
+        lock (AdminManager.BlMutex)
+        {
+            allDeliveries = s_dal.Delivery.ReadAll()
+                .GroupBy(d => d.OrderId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+        }
 
-        // 3. FILTERING
+        // 3. FILTERING (outside lock)
         if (filter.HasValue && obj != null)
         {
             switch (filter)
@@ -736,7 +775,7 @@ internal static class OrderManager{
             }
         }
 
-        // 4. SORTING
+        // 4. SORTING (outside lock)
         if (!sort.HasValue)
         {
             boOrders = boOrders.OrderBy(o => o.OrderStatus);
@@ -747,7 +786,6 @@ internal static class OrderManager{
             {
                 case OrderInListOptions.DeliveryId:
                     boOrders = boOrders.OrderBy(o =>
-                        // Use TryGetValue logic inline or helper if complex
                         allDeliveries.TryGetValue(o.Id, out var dels)
                             ? dels.OrderByDescending(d => d.StartOfDelivery).FirstOrDefault()?.Id ?? int.MaxValue
                             : int.MaxValue
@@ -796,10 +834,9 @@ internal static class OrderManager{
             }
         }
 
-        // 5. PROJECTION
+        // 5. PROJECTION (outside lock)
         foreach (var order in boOrders)
         {
-            // Use TryGetValue efficiently
             var deliveriesForOrder = allDeliveries.TryGetValue(order.Id, out var dels)
                 ? dels
                 : new List<DO.Delivery>();
@@ -844,18 +881,20 @@ internal static class OrderManager{
     }
     internal static void EndDelivery(int courierId, int deliveryId)
     {
-
-        DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
-        if (delivery == null)
-            throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
-        DO.Delivery updatedDelivery = delivery with
+        DO.Delivery updatedDelivery;
+        lock (AdminManager.BlMutex)
         {
-            EndOfOrder = DO.EndOfOrder.Completed,
-            TimeOfDelivery = DateTime.Now
-        };
+            DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
+            if (delivery == null)
+                throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
+            updatedDelivery = delivery with
+            {
+                EndOfOrder = DO.EndOfOrder.Completed,
+                TimeOfDelivery = DateTime.Now
+            };
 
-        s_dal.Delivery.Update(updatedDelivery);
-
+            s_dal.Delivery.Update(updatedDelivery);
+        }
         // Notify delivery observers (deliveryId)
         DeliveryManager.Observers.NotifyItemUpdated(deliveryId);
         DeliveryManager.Observers.NotifyListUpdated();

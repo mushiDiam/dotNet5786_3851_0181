@@ -20,4 +20,11 @@ public interface IAdmin{
 
     // Geocoding helper exposed by BL so PL can request coordinates without doing HTTP/json itself.
     Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address);
+
+    #region Stage 7
+
+    void StartSimulator(int interval);
+    void StopSimulator();
+
+    #endregion Stage 7
 }
