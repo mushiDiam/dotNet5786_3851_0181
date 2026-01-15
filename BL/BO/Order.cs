@@ -22,7 +22,7 @@ namespace BO;
 /// <param name="Deliveries">List of deliveries for this order.</param>
 public class Order
 {
-    public int Id { get; init; }
+    public int Id { get; set; }
     public OrderTypes OrderType { get; set; }
     public string? Description { get; set; }
     public string FullAddress { get; set; }

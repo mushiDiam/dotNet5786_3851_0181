@@ -17,9 +17,18 @@ internal class OrderImplementation : BlApi.IOrder
 {
     public async Task Add(int id, BO.Order order)
     {
-        if (!AdminManager.IsAdmin(id))
-            throw new BlUnauthorizedAccessException("Only admin can add orders");
-        await Task.Run(() => OrderManager.CreateOrder(order));
+        if (!AdminManager.IsAdmin(id)) throw new BlUnauthorizedAccessException("...");
+
+        // 1. Async Network Call
+        var coords = await OrderManager.GetCoordinatesFromAddressAsync(order.FullAddress);
+
+        if (coords.Lat == null) throw new BlInvalidValueException("Address not found");
+
+        order.Latitude = coords.Lat.Value;
+        order.Longitude = coords.Lon.Value;
+
+        // 2. Call the Manager (which now has the ID fix)
+        OrderManager.CreateOrder(order);
     }
 
     public void Cancel(int id, int orderId)
@@ -291,12 +300,238 @@ internal class OrderImplementation : BlApi.IOrder
             throw new BlUnauthorizedAccessException("Only admin can get orders list");
         return OrderManager.GetOrders(filter, obj, sort);
     }
+    public async Task<IEnumerable<BO.OrderInList>> GetOrdersAsync(int id, BO.OrderInListOptions? filter, object? obj, BO.OrderInListOptions? sort)
+    {
+        // 1. Authorization
+        if (!AdminManager.IsAdmin(id))
+            throw new BlUnauthorizedAccessException("Only admin can get orders list");
+
+        // 2. Fetch Data (Synchronous)
+        IEnumerable<BO.Order> boOrders = OrderManager.ReadAll();
+
+        // Pre-load deliveries to prevent N+1 queries
+        var allDeliveries = DalApi.Factory.Get.Delivery.ReadAll()
+            .GroupBy(d => d.OrderId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // 3. Filtering (Done BEFORE network calls to save time)
+        if (filter.HasValue && obj != null)
+        {
+            switch (filter.Value)
+            {
+                case BO.OrderInListOptions.DeliveryId:
+                    if (obj is int deliveryId)
+                    {
+                        boOrders = boOrders.Where(o =>
+                            allDeliveries.TryGetValue(o.Id, out var dels) &&
+                            dels.Any(d => d.Id == deliveryId)
+                        );
+                    }
+                    else throw new BlInvalidOperationException("Filter value for DeliveryId must be an integer");
+                    break;
+
+                case BO.OrderInListOptions.OrderId:
+                    if (obj is int orderId)
+                        boOrders = boOrders.Where(o => o.Id == orderId);
+                    break;
+
+                case BO.OrderInListOptions.OrderType:
+                    if (obj is BO.OrderTypes type)
+                        boOrders = boOrders.Where(o => o.OrderType == type);
+                    break;
+
+                case BO.OrderInListOptions.AirDistance:
+                    if (obj is double maxDistance)
+                        boOrders = boOrders.Where(o => o.AirDistance <= maxDistance);
+                    break;
+
+                case BO.OrderInListOptions.OrderStatus:
+                    if (obj is BO.OrderStatus status)
+                        boOrders = boOrders.Where(o => o.OrderStatus == status);
+                    break;
+
+                case BO.OrderInListOptions.ScheduleStatus:
+                    if (obj is BO.ScheduleStatus schedStatus)
+                        boOrders = boOrders.Where(o => o.ScheduleStatus == schedStatus);
+                    break;
+
+                case BO.OrderInListOptions.RemainingTime:
+                    if (obj is TimeSpan maxRemaining)
+                        boOrders = boOrders.Where(o => o.RemainingTime <= maxRemaining);
+                    break;
+
+                case BO.OrderInListOptions.CompletionTime:
+                    if (obj is TimeSpan maxTime)
+                    {
+                        boOrders = boOrders.Where(o =>
+                        {
+                            if (!allDeliveries.TryGetValue(o.Id, out var dels)) return false;
+                            var lastCompleted = dels
+                                .Where(d => d.EndOfOrder == DO.EndOfOrder.Completed && d.TimeOfDelivery.HasValue)
+                                .OrderByDescending(d => d.TimeOfDelivery)
+                                .FirstOrDefault();
+
+                            if (lastCompleted == null) return false;
+                            return (lastCompleted.TimeOfDelivery!.Value - o.CreatedAt) <= maxTime;
+                        });
+                    }
+                    break;
+
+                case BO.OrderInListOptions.DeliveryCount:
+                    if (obj is int minCount)
+                    {
+                        boOrders = boOrders.Where(o =>
+                            allDeliveries.TryGetValue(o.Id, out var dels) && dels.Count >= minCount
+                        );
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // 4. Async Projection (Network Calls + DTO Creation)
+        var tasks = boOrders.Select(async order =>
+        {
+            // A. Get deliveries for this order
+            var deliveriesForOrder = allDeliveries.TryGetValue(order.Id, out var dels) ? dels : new List<DO.Delivery>();
+
+            // B. Calculate Completion Time (Logic inlined to ensure it works)
+            TimeSpan? compTime = null;
+            var completedDelivery = deliveriesForOrder
+                .Where(d => d.EndOfOrder == DO.EndOfOrder.Completed && d.TimeOfDelivery.HasValue)
+                .OrderByDescending(d => d.TimeOfDelivery)
+                .FirstOrDefault();
+            if (completedDelivery != null) compTime = completedDelivery.TimeOfDelivery!.Value - order.CreatedAt;
+
+            // C. Find Latest Delivery ID
+            var latestDelivery = deliveriesForOrder.OrderByDescending(d => d.StartOfDelivery).FirstOrDefault();
+
+            // D. Create the DTO
+            var dto = new BO.OrderInList
+            {
+                OrderId = order.Id,
+                DeliveryId = latestDelivery?.Id,
+                OrderType = order.OrderType,
+                AirDistance = order.AirDistance, // Default value
+                OrderStatus = order.OrderStatus,
+                ScheduleStatus = order.ScheduleStatus,
+                RemainingTime = order.RemainingTime,
+                CompletionTime = compTime ?? TimeSpan.Zero,
+                DeliveryCount = deliveriesForOrder.Count
+            };
+
+            // E. ASYNC NETWORK CALL (The Bonus Part)
+            // We calculate the real driving distance using the cache/network
+            BO.Transportation transport = (BO.Transportation)order.OrderType;
+
+            // Ensure OrderManager.GetActualDistanceAsync is accessible (internal/public)
+            double? realDistance = await OrderManager.GetActualDistanceAsync(order.Latitude, order.Longitude, transport);
+
+            if (realDistance.HasValue)
+            {
+                // Overwrite AirDistance with the Real Driving Distance
+                dto.AirDistance = realDistance.Value;
+            }
+
+            return dto;
+        });
+
+        // Run all calculations in parallel
+        var results = await Task.WhenAll(tasks);
+        var resultList = results.AsEnumerable();
+
+        // 5. Sorting
+        if (sort.HasValue)
+        {
+            switch (sort.Value)
+            {
+                case BO.OrderInListOptions.DeliveryId:
+                    resultList = resultList.OrderBy(o => o.DeliveryId ?? int.MaxValue);
+                    break;
+
+                case BO.OrderInListOptions.OrderId:
+                    resultList = resultList.OrderBy(o => o.OrderId);
+                    break;
+
+                case BO.OrderInListOptions.OrderType:
+                    resultList = resultList.OrderBy(o => o.OrderType);
+                    break;
+
+                case BO.OrderInListOptions.AirDistance:
+                    // This now sorts by Real Driving Distance because we updated the value above!
+                    resultList = resultList.OrderBy(o => o.AirDistance);
+                    break;
+
+                case BO.OrderInListOptions.OrderStatus:
+                    resultList = resultList.OrderBy(o => o.OrderStatus);
+                    break;
+
+                case BO.OrderInListOptions.ScheduleStatus:
+                    resultList = resultList.OrderBy(o => o.ScheduleStatus);
+                    break;
+
+                case BO.OrderInListOptions.RemainingTime:
+                    resultList = resultList.OrderBy(o => o.RemainingTime);
+                    break;
+
+                case BO.OrderInListOptions.CompletionTime:
+                    resultList = resultList.OrderBy(o => o.CompletionTime);
+                    break;
+
+                case BO.OrderInListOptions.DeliveryCount:
+                    resultList = resultList.OrderBy(o => o.DeliveryCount);
+                    break;
+
+                default:
+                    resultList = resultList.OrderBy(o => o.OrderStatus);
+                    break;
+            }
+        }
+        else
+        {
+            resultList = resultList.OrderBy(o => o.OrderStatus);
+        }
+
+        return resultList.ToList();
+    }
 
     public async Task UpdateDetails(int id, BO.Order order)
     {
         if (!AdminManager.IsAdmin(id))
-            throw new BlUnauthorizedAccessException("Only an admin can get orders");
-        await OrderManager.Update(order);
+            throw new BlUnauthorizedAccessException("Only admin can update orders");
+
+        // 1. Read the CURRENT state to see if address changed
+        // We can use the Manager to read (or call DAL directly if Manager isn't exposed)
+        BO.Order? oldOrder = OrderManager.Read(order.Id);
+        if (oldOrder == null) throw new BlDoesNotExistException("Order not found");
+
+        // 2. Check if Address Changed
+        // Note: compare strict string equality
+        if (order.FullAddress != oldOrder.FullAddress)
+        {
+            // 3. ASYNC NETWORK CALL
+            var coords = await OrderManager.GetCoordinatesFromAddressAsync(order.FullAddress);
+
+            if (coords.Lat == null || coords.Lon == null)
+            {
+                throw new BlInvalidValueException($"New address not found: {order.FullAddress}");
+            }
+
+            // Update the object before sending to Manager
+            order.Latitude = coords.Lat.Value;
+            order.Longitude = coords.Lon.Value;
+        }
+        else
+        {
+            // Address is same, ensure we don't accidentally send NaN
+            order.Latitude = oldOrder.Latitude;
+            order.Longitude = oldOrder.Longitude;
+        }
+
+        // 4. Call Synchronous Manager
+        OrderManager.Update(order);
     }
     // In OrderImplementation.cs
     public void MarkDeliveryNotFound(int requesterId, int courierId, int deliveryId)

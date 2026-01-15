@@ -109,7 +109,7 @@ public static class Initialization
 
             var order = new Order(
                 Id: 0,
-                AdderssOfOrder: addr.Address,
+                Address: addr.Address,
                 Latitude: addr.Lat,
                 Longitude: addr.Lon,
                 CustomerName: cust,

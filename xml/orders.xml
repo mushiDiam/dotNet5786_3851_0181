@@ -2,7 +2,7 @@
 <ArrayOfOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Order>
     <Id>1</Id>
-    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Address>Ibn Gabirol 50, Tel Aviv</Address>
     <Latitude>32.081</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -15,7 +15,7 @@
   </Order>
   <Order>
     <Id>2</Id>
-    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Address>Arlozorov 100, Tel Aviv</Address>
     <Latitude>32.084</Latitude>
     <Longitude>34.782</Longitude>
     <CustomerName>Eli Rahamim</CustomerName>
@@ -28,7 +28,7 @@
   </Order>
   <Order>
     <Id>3</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -41,7 +41,7 @@
   </Order>
   <Order>
     <Id>4</Id>
-    <AdderssOfOrder>King George 30, Tel Aviv</AdderssOfOrder>
+    <Address>King George 30, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -54,7 +54,7 @@
   </Order>
   <Order>
     <Id>5</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Yasmin Levi</CustomerName>
@@ -67,7 +67,7 @@
   </Order>
   <Order>
     <Id>6</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -80,7 +80,7 @@
   </Order>
   <Order>
     <Id>7</Id>
-    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Address>Ibn Gabirol 50, Tel Aviv</Address>
     <Latitude>32.081</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -93,7 +93,7 @@
   </Order>
   <Order>
     <Id>8</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -106,7 +106,7 @@
   </Order>
   <Order>
     <Id>9</Id>
-    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Address>Yigal Alon 90, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.794</Longitude>
     <CustomerName>Nitzan Tzur</CustomerName>
@@ -119,7 +119,7 @@
   </Order>
   <Order>
     <Id>10</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -132,7 +132,7 @@
   </Order>
   <Order>
     <Id>11</Id>
-    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Address>Arlozorov 100, Tel Aviv</Address>
     <Latitude>32.084</Latitude>
     <Longitude>34.782</Longitude>
     <CustomerName>Nitzan Tzur</CustomerName>
@@ -145,7 +145,7 @@
   </Order>
   <Order>
     <Id>12</Id>
-    <AdderssOfOrder>King George 30, Tel Aviv</AdderssOfOrder>
+    <Address>King George 30, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Yasmin Levi</CustomerName>
@@ -158,7 +158,7 @@
   </Order>
   <Order>
     <Id>13</Id>
-    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Address>Ibn Gabirol 50, Tel Aviv</Address>
     <Latitude>32.081</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Yasmin Levi</CustomerName>
@@ -171,7 +171,7 @@
   </Order>
   <Order>
     <Id>14</Id>
-    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Address>Arlozorov 100, Tel Aviv</Address>
     <Latitude>32.084</Latitude>
     <Longitude>34.782</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -184,7 +184,7 @@
   </Order>
   <Order>
     <Id>15</Id>
-    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Address>Arlozorov 100, Tel Aviv</Address>
     <Latitude>32.084</Latitude>
     <Longitude>34.782</Longitude>
     <CustomerName>Avi Gold</CustomerName>
@@ -197,7 +197,7 @@
   </Order>
   <Order>
     <Id>16</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -210,7 +210,7 @@
   </Order>
   <Order>
     <Id>17</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Nitzan Tzur</CustomerName>
@@ -223,7 +223,7 @@
   </Order>
   <Order>
     <Id>18</Id>
-    <AdderssOfOrder>Arlozorov 100, Tel Aviv</AdderssOfOrder>
+    <Address>Arlozorov 100, Tel Aviv</Address>
     <Latitude>32.084</Latitude>
     <Longitude>34.782</Longitude>
     <CustomerName>Adi Ben</CustomerName>
@@ -236,7 +236,7 @@
   </Order>
   <Order>
     <Id>19</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -249,7 +249,7 @@
   </Order>
   <Order>
     <Id>20</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -262,7 +262,7 @@
   </Order>
   <Order>
     <Id>21</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -275,7 +275,7 @@
   </Order>
   <Order>
     <Id>22</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Yasmin Levi</CustomerName>
@@ -288,7 +288,7 @@
   </Order>
   <Order>
     <Id>23</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Avi Gold</CustomerName>
@@ -301,7 +301,7 @@
   </Order>
   <Order>
     <Id>24</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -314,7 +314,7 @@
   </Order>
   <Order>
     <Id>25</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -327,7 +327,7 @@
   </Order>
   <Order>
     <Id>26</Id>
-    <AdderssOfOrder>King George 30, Tel Aviv</AdderssOfOrder>
+    <Address>King George 30, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Yasmin Levi</CustomerName>
@@ -340,7 +340,7 @@
   </Order>
   <Order>
     <Id>27</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -353,7 +353,7 @@
   </Order>
   <Order>
     <Id>28</Id>
-    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Address>HaMasger 9, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -366,7 +366,7 @@
   </Order>
   <Order>
     <Id>29</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Avi Gold</CustomerName>
@@ -379,7 +379,7 @@
   </Order>
   <Order>
     <Id>30</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -392,7 +392,7 @@
   </Order>
   <Order>
     <Id>31</Id>
-    <AdderssOfOrder>HaMasger 9, Tel Aviv</AdderssOfOrder>
+    <Address>HaMasger 9, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Avi Gold</CustomerName>
@@ -405,7 +405,7 @@
   </Order>
   <Order>
     <Id>32</Id>
-    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Address>Dizengoff 150, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Adi Ben</CustomerName>
@@ -418,7 +418,7 @@
   </Order>
   <Order>
     <Id>33</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -431,7 +431,7 @@
   </Order>
   <Order>
     <Id>34</Id>
-    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Address>Ibn Gabirol 50, Tel Aviv</Address>
     <Latitude>32.081</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -444,7 +444,7 @@
   </Order>
   <Order>
     <Id>35</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -457,7 +457,7 @@
   </Order>
   <Order>
     <Id>36</Id>
-    <AdderssOfOrder>Ibn Gabirol 50, Tel Aviv</AdderssOfOrder>
+    <Address>Ibn Gabirol 50, Tel Aviv</Address>
     <Latitude>32.081</Latitude>
     <Longitude>34.781</Longitude>
     <CustomerName>Nitzan Tzur</CustomerName>
@@ -470,7 +470,7 @@
   </Order>
   <Order>
     <Id>37</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -483,7 +483,7 @@
   </Order>
   <Order>
     <Id>38</Id>
-    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Address>Yigal Alon 90, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.794</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -496,7 +496,7 @@
   </Order>
   <Order>
     <Id>39</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -509,7 +509,7 @@
   </Order>
   <Order>
     <Id>40</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -522,7 +522,7 @@
   </Order>
   <Order>
     <Id>41</Id>
-    <AdderssOfOrder>Allenby 40, Tel Aviv</AdderssOfOrder>
+    <Address>Allenby 40, Tel Aviv</Address>
     <Latitude>32.063</Latitude>
     <Longitude>34.771</Longitude>
     <CustomerName>Adi Ben</CustomerName>
@@ -535,7 +535,7 @@
   </Order>
   <Order>
     <Id>42</Id>
-    <AdderssOfOrder>Namir 122, Tel Aviv</AdderssOfOrder>
+    <Address>Namir 122, Tel Aviv</Address>
     <Latitude>32.095</Latitude>
     <Longitude>34.789</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -548,7 +548,7 @@
   </Order>
   <Order>
     <Id>43</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -561,7 +561,7 @@
   </Order>
   <Order>
     <Id>44</Id>
-    <AdderssOfOrder>Yigal Alon 90, Tel Aviv</AdderssOfOrder>
+    <Address>Yigal Alon 90, Tel Aviv</Address>
     <Latitude>32.072</Latitude>
     <Longitude>34.794</Longitude>
     <CustomerName>Noa Tal</CustomerName>
@@ -574,7 +574,7 @@
   </Order>
   <Order>
     <Id>45</Id>
-    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Address>Dizengoff 150, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Itai Mor</CustomerName>
@@ -587,7 +587,7 @@
   </Order>
   <Order>
     <Id>46</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Yossi Bar</CustomerName>
@@ -600,7 +600,7 @@
   </Order>
   <Order>
     <Id>47</Id>
-    <AdderssOfOrder>HaYarkon 200, Tel Aviv</AdderssOfOrder>
+    <Address>HaYarkon 200, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.769</Longitude>
     <CustomerName>Dana Regev</CustomerName>
@@ -613,7 +613,7 @@
   </Order>
   <Order>
     <Id>48</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Adi Ben</CustomerName>
@@ -626,7 +626,7 @@
   </Order>
   <Order>
     <Id>49</Id>
-    <AdderssOfOrder>Dizengoff 150, Tel Aviv</AdderssOfOrder>
+    <Address>Dizengoff 150, Tel Aviv</Address>
     <Latitude>32.089</Latitude>
     <Longitude>34.776</Longitude>
     <CustomerName>Adi Ben</CustomerName>
@@ -639,7 +639,7 @@
   </Order>
   <Order>
     <Id>50</Id>
-    <AdderssOfOrder>Rothschild Blvd 1, Tel Aviv</AdderssOfOrder>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
     <Latitude>32.062</Latitude>
     <Longitude>34.77</Longitude>
     <CustomerName>Roni Katz</CustomerName>
@@ -649,5 +649,32 @@
     <Weight>10</Weight>
     <Volume>3</Volume>
     <OrderType>Walking</OrderType>
+  </Order>
+  <Order>
+    <Id>48</Id>
+    <Address>Rothschild Blvd 1, Tel Aviv</Address>
+    <Latitude>32.062</Latitude>
+    <Longitude>34.77</Longitude>
+    <CustomerName>Adi Ben</CustomerName>
+    <CustomerPhone>052-8897952</CustomerPhone>
+    <CreatedAt>2026-01-10T20:14:09.3437855+02:00</CreatedAt>
+    <Fragile>true</Fragile>
+    <Weight>5</Weight>
+    <Volume>9</Volume>
+    <OrderType>Bike</OrderType>
+  </Order>
+  <Order>
+    <Id>51</Id>
+    <Address>יטקובסקי פתח תקווה</Address>
+    <Latitude>32.0777854</Latitude>
+    <Longitude>34.8780602</Longitude>
+    <CustomerName>דשג</CustomerName>
+    <CustomerPhone>213213</CustomerPhone>
+    <CreatedAt>2026-01-15T16:18:38.6246989+02:00</CreatedAt>
+    <Fragile>false</Fragile>
+    <Weight>1</Weight>
+    <Volume>1</Volume>
+    <OrderType>Car</OrderType>
+    <Description />
   </Order>
 </ArrayOfOrder>

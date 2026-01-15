@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <config>
-  <NextOrderId>51</NextOrderId>
-  <NextDeliveryId>23</NextDeliveryId>
+  <NextOrderId>52</NextOrderId>
+  <NextDeliveryId>24</NextDeliveryId>
   <Clock>2026-01-14T20:22:08.4480120+02:00</Clock>
   <ManagerId>10003</ManagerId>
   <ManagerPassword></ManagerPassword>
-  <CompanyAddress>הוועד הלאומי 21 ירושלים</CompanyAddress>
-  <CompanyLatitude>31.7663948</CompanyLatitude>
-  <CompanyLongitude>35.1922532</CompanyLongitude>
+  <CompanyAddress>ויצמן 20 פתח תקווה</CompanyAddress>
+  <CompanyLatitude>32.0799069</CompanyLatitude>
+  <CompanyLongitude>34.8728704</CompanyLongitude>
   <MaxDeliveryDistance>100</MaxDeliveryDistance>
   <AverageCarSpeed>50</AverageCarSpeed>
   <AverageMotorcycleSpeed>40</AverageMotorcycleSpeed>

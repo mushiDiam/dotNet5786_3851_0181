@@ -79,17 +79,20 @@ namespace PL.Login
         }
         private void LoginWindow_Closing(object? sender, CancelEventArgs e)
         {
-            // If this is the LAST visible window → exit app
-            if (Application.Current.Windows
+            // Count OTHER visible windows (excluding this one)
+            int otherVisibleWindows = Application.Current.Windows
                 .OfType<Window>()
-                .All(w => w == this || !w.IsVisible))
+                .Count(w => w != this && w.IsVisible);
+
+            // If no other windows are visible → allow real close (app will shutdown)
+            if (otherVisibleWindows == 0)
             {
-                // real shutdown
-                Application.Current.Shutdown();
+                // Don't cancel - let the window actually close
+                // ShutdownMode="OnLastWindowClose" will then exit the app
                 return;
             }
 
-            // otherwise: this is a logout flow → hide
+            // Otherwise: this is a logout flow → hide instead of close
             e.Cancel = true;
             Hide();
         }

@@ -3,7 +3,7 @@
 ///  Student Entity represents a student with all its props
 ///  </summary>
 ///  <param name="Id">Personal unique ID of the order </param>
-///  <param name="AdderssOfOrder"> Where to ship the items </param>
+///  <param name="Address"> Where to ship the items </param>
 ///  <param name="Latitude">Coordinates </param>
 ///  <param name="Longitude">Coordinates </param>
 ///  <param name="CustomerName">The name of the customer</param>
@@ -20,7 +20,7 @@ public record Order
     int Id,                                                     
 
     //Shipment
-    string AdderssOfOrder,                                    
+    string Address,                                    
     double Latitude,                                            
     double Longitude,
 

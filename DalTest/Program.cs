@@ -656,7 +656,7 @@ namespace DalTest
         {
             Console.WriteLine("=== Order ===");
             Console.WriteLine($"Id: {o.Id}");
-            Console.WriteLine($"AddressOfOrder: {o.AdderssOfOrder}");
+            Console.WriteLine($"AddressOfOrder: {o.Address}");
             Console.WriteLine($"Latitude: {o.Latitude}");
             Console.WriteLine($":{o.Longitude}");
             Console.WriteLine($"CustomerName: {o.CustomerName}");
@@ -741,8 +741,8 @@ namespace DalTest
                         PrintOrder(existingOrder);
                         Console.WriteLine("--- Enter new values (empty = keep current) ---");
 
-                        string address = ReadString($"Address [{existingOrder.AdderssOfOrder}]: ", allowEmpty: true);
-                        if (string.IsNullOrWhiteSpace(address)) address = existingOrder.AdderssOfOrder;
+                        string address = ReadString($"Address [{existingOrder.Address}]: ", allowEmpty: true);
+                        if (string.IsNullOrWhiteSpace(address)) address = existingOrder.Address;
 
                         double latitude = ReadNullableDouble($"Latitude [{existingOrder.Latitude}]: ", existingOrder.Latitude);
                         double longitude = ReadNullableDouble($"Longitude [{existingOrder.Longitude}]: ", existingOrder.Longitude);

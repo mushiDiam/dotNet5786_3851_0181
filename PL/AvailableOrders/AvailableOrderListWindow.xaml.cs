@@ -45,14 +45,14 @@ namespace PL
         public SortOption SelectedSort
         {
             get => _selectedSort;
-            set { _selectedSort = value; OnPropertyChanged(); RefreshList(); }
+            set { _selectedSort = value; OnPropertyChanged(); _ = RefreshListAsync(); }
         }
 
         private BO.OrderStatus? _selectedFilterStatus;
         public BO.OrderStatus? SelectedFilterStatus
         {
             get => _selectedFilterStatus;
-            set { _selectedFilterStatus = value; OnPropertyChanged(); RefreshList(); }
+            set { _selectedFilterStatus = value; OnPropertyChanged(); _ = RefreshListAsync(); }
         }
 
         // --- Visibility Properties ---
@@ -109,9 +109,9 @@ namespace PL
             Closed += AvailableOrderListWindow_Closed;
         }
 
-        private void AvailableOrderListWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void AvailableOrderListWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            RefreshList();
+            await RefreshListAsync();
             try { s_bl.Order.AddObserver(OrderObserver); } catch { }
         }
 
@@ -120,7 +120,7 @@ namespace PL
             try { s_bl.Order.RemoveObserver(OrderObserver); } catch { }
         }
 
-        private void OrderObserver() => Dispatcher.Invoke(RefreshList);
+        private void OrderObserver() => Dispatcher.Invoke(async () => await RefreshListAsync());
 
         private void BtnClearFilters_Click(object sender, RoutedEventArgs e)
         {
@@ -129,30 +129,46 @@ namespace PL
             SelectedFilterStatus = null;
         }
 
-        private void RefreshList()
+        // ✅ NEW: Async version that uses GetOrdersAsync
+        private async Task RefreshListAsync()
         {
             try
             {
+                Mouse.OverrideCursor = Cursors.Wait;
+
                 IEnumerable<OrderView> list;
 
                 if (IsManager)
                 {
-                    var orders = s_bl.Order.GetOrders(_managerId, null, null, null)?.ToList() ?? new List<BO.OrderInList>();
+                    // 1. Create a filter based on current UI selection
+                    BO.OrderInListOptions? blFilter = null;
+                    object? blFilterValue = null;
 
-                    // For managers, only show Open and InProgress orders
-                    orders = orders.Where(o => o.OrderStatus == BO.OrderStatus.Open ||
-                                       o.OrderStatus == BO.OrderStatus.InProgress).ToList();
+                    if (SelectedFilterStatus.HasValue)
+                    {
+                        blFilter = BO.OrderInListOptions.OrderStatus;
+                        blFilterValue = SelectedFilterStatus.Value;
+                    }
 
-                    // Filter
+                    // 2. Call BL WITH the filter - gets real driving distance!
+                    var orders = (await s_bl.Order.GetOrdersAsync(_managerId, blFilter, blFilterValue, null))?.ToList()
+                                 ?? new List<BO.OrderInList>();
+
+                    // 3. For managers, only show Open and InProgress orders
+                    //    (unless a specific status filter was already applied)
+                    if (!SelectedFilterStatus.HasValue)
+                    {
+                        orders = orders.Where(o => o.OrderStatus == BO.OrderStatus.Open ||
+                                                   o.OrderStatus == BO.OrderStatus.InProgress).ToList();
+                    }
+
+                    // 4. Apply constructor-level filters (if any)
                     var filtered = orders.Where(o =>
-                        (!SelectedFilterStatus.HasValue || o.OrderStatus == SelectedFilterStatus.Value) &&
                         (!_filterOrderStatus.HasValue || o.OrderStatus == _filterOrderStatus.Value) &&
                         (!_filterScheduleStatus.HasValue || o.ScheduleStatus == _filterScheduleStatus.Value))
                         .ToList();
 
-                    
-
-                    // Fetch full BO.Order details per order and cache them to avoid duplicate calls
+                    // 5. Fetch full BO.Order details per order
                     var detailsCache = new Dictionary<int, BO.Order?>(filtered.Count);
                     list = filtered.Select(o =>
                     {
@@ -167,7 +183,6 @@ namespace PL
                         }
                         catch
                         {
-                            // swallow - if details can't be loaded, show empty name/address
                             boOrder = null;
                             detailsCache[o.OrderId] = null;
                         }
@@ -177,7 +192,7 @@ namespace PL
                             OrderId = o.OrderId,
                             CustomerName = boOrder?.CustomerName ?? string.Empty,
                             FullAddress = boOrder?.FullAddress ?? string.Empty,
-                            AirDistance = o.AirDistance,
+                            AirDistance = o.AirDistance, // ✅ Now contains real driving distance!
                             ScheduleStatus = o.ScheduleStatus,
                             RemainingTime = o.RemainingTime,
                             OrderStatus = o.OrderStatus
@@ -186,7 +201,9 @@ namespace PL
                 }
                 else
                 {
-                    var openFromBl = s_bl.Order.GetOpenOrder(_managerId, _requesterId, null, null)?.ToList() ?? new List<BO.OpenOrderInList>();
+                    // Courier view - uses GetOpenOrder (still sync)
+                    var openFromBl = s_bl.Order.GetOpenOrder(_managerId, _requesterId, null, null)?.ToList() 
+                                     ?? new List<BO.OpenOrderInList>();
 
                     var filtered = openFromBl.Where(o =>
                         (!SelectedFilterStatus.HasValue || SelectedFilterStatus.Value == OrderStatus.Open) &&
@@ -202,28 +219,19 @@ namespace PL
                         ScheduleStatus = o.ScheduleStatus,
                         RemainingTime = o.RemainingTime,
                         OrderStatus = OrderStatus.Open,
-                        CustomerName = ""           
+                        CustomerName = ""
                     });
                 }
 
                 // Sort
-                switch (SelectedSort)
+                list = SelectedSort switch
                 {
-                    case SortOption.OrderId:
-                        list = list.OrderBy(o => o.OrderId);
-                        break;
-                    case SortOption.Status:
-                        list = list.OrderBy(o => o.OrderStatus);
-                        break;
-                    case SortOption.Distance:
-                        list = list.OrderBy(o => o.AirDistance);
-                        break;
-                    default:
-                        list = list.OrderByDescending(o => o.OrderId);
-                        break;
-                }
+                    SortOption.OrderId => list.OrderBy(o => o.OrderId),
+                    SortOption.Status => list.OrderBy(o => o.OrderStatus),
+                    SortOption.Distance => list.OrderBy(o => o.AirDistance),
+                    _ => list.OrderByDescending(o => o.OrderId)
+                };
 
-                // Update the Bound Property (No direct UI access)
                 OrdersList = list.ToList();
             }
             catch (Exception ex)
@@ -231,9 +239,13 @@ namespace PL
                 MessageBox.Show($"Failed loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 OrdersList = new List<OrderView>();
             }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
         }
 
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e) => RefreshList();
+        private async void BtnRefresh_Click(object sender, RoutedEventArgs e) => await RefreshListAsync();
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -257,7 +269,7 @@ namespace PL
             Close();
         }
 
-        private void BtnChoose_Click(object sender, RoutedEventArgs e)
+        private async void BtnChoose_Click(object sender, RoutedEventArgs e)
         {
             // Use Bound Property instead of accessing DataGrid
             if (SelectedOrder == null)
@@ -277,7 +289,7 @@ namespace PL
                 int orderId = SelectedOrder.OrderId;
                 s_bl.Order.ChooseOrder(_requesterId, _requesterId, orderId);
                 MessageBox.Show($"You chose order #{orderId}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                RefreshList();
+                await RefreshListAsync();
             }
             catch (Exception ex)
             {
@@ -285,7 +297,7 @@ namespace PL
             }
         }
 
-        private void CancelOrder_Click(object sender, RoutedEventArgs e)
+        private async void CancelOrder_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn) return;
             if (btn.DataContext is not OrderView view) return;
@@ -303,13 +315,14 @@ namespace PL
             {
                 s_bl.Order.Cancel(_managerId, view.OrderId);
                 MessageBox.Show("Order cancelled.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                RefreshList();
+                await RefreshListAsync();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         // Add Order Button Click (Manager Only)
         private void BtnAddOrder_Click(object sender, RoutedEventArgs e)
         {

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Threading.Tasks;
 using BlApi;
 using BO;
+using System.Windows.Input; // Add this using directive at the top of the file
 
 namespace PL.AvailableOrders
 {
@@ -124,45 +125,23 @@ namespace PL.AvailableOrders
             // Add-mode should be editable
             IsEditable = true;
             // Update button is not relevant in add-mode; remain collapsed
+
+            // Add-mode doesn't need observers (no _orderId), but for consistency:
+            // Don't register Loaded/Closed here since _orderId is 0
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!IsAddMode)
-            {
-                try { s_bl.Order.AddObserver(SingleOrderObserver); } catch { }
-            }
+            try { s_bl.Order.AddObserver(_orderId, OrderObserver); } catch { }
         }
 
         private void Window_Closed(object? sender, EventArgs e)
         {
-            if (!IsAddMode)
-            {
-                try { s_bl.Order.RemoveObserver(SingleOrderObserver); } catch { }
-            }
+            try { s_bl.Order.RemoveObserver(_orderId, OrderObserver); } catch { }
         }
-        private void SingleOrderObserver()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                try
-                {
-                    // Reload the specific order details
-                    var updatedOrder = s_bl.Order.Details(_managerId, _orderId);
 
-                    // Update the DataContext so the UI reflects the new status/courier
-                    DataContext = updatedOrder;
+        private void OrderObserver() => Dispatcher.Invoke(LoadOrderDetails);
 
-                    // Re-run logic to determine if buttons should be enabled/visible
-                    LoadOrderDetails();
-                }
-                catch (Exception)
-                {
-                    // Handle case where order might have been deleted while viewing
-                    MessageBox.Show("This order is no longer available.", "Order Deleted", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    Close();
-                }
-            });
-        }
         private void LoadOrderDetails()
         {
             try
@@ -250,75 +229,80 @@ namespace PL.AvailableOrders
         // Save new order handler (Add mode). Validates minimal fields then calls BL.Add
         private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAddMode) return;
+            if (DataContext is not BO.Order newOrder)
+            {
+                MessageBox.Show("Invalid order data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Basic validation
+            if (string.IsNullOrWhiteSpace(newOrder.FullAddress))
+            {
+                MessageBox.Show("Address is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(newOrder.CustomerName))
+            {
+                MessageBox.Show("Customer name is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Mouse.OverrideCursor = Cursors.Wait;
             try
             {
-                if (!IsAddMode) return;
-                if (DataContext is not BO.Order newOrder)
-                {
-                    MessageBox.Show("Invalid order data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                // Basic validation (leave coordinates/distance resolution to BL)
-                if (string.IsNullOrWhiteSpace(newOrder.FullAddress))
-                {
-                    MessageBox.Show("Address is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(newOrder.CustomerName))
-                {
-                    MessageBox.Show("Customer name is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                // Call BL — BL will resolve coordinates and compute air distance
-                // Offload the synchronous BL call to the threadpool and await it.
-                await Task.Run(() => s_bl.Order.Add(_requesterId, newOrder));
+                // ✅ Direct async call - no Task.Run needed
+                await s_bl.Order.Add(_requesterId, newOrder);
 
                 MessageBox.Show("Order added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 Close();
             }
+            catch (DO.BlInvalidValueException ex)
+            {
+                MessageBox.Show($"Address Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to add order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
             }
         }
 
         // Update (manager) - validate and call BL.UpdateDetails
         private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsEditable)
+            if (!IsEditable) return;
+            if (DataContext is not BO.Order boOrder) return;
+
+            if (string.IsNullOrWhiteSpace(boOrder.FullAddress))
             {
-                MessageBox.Show("לא ניתן לעדכן — ההזמנה סגורה או אין הרשאות.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Address is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (DataContext is not BO.Order boOrder)
-            {
-                MessageBox.Show("Invalid order data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
+            Mouse.OverrideCursor = Cursors.Wait;
             try
             {
-                // Minimal validation example
-                if (string.IsNullOrWhiteSpace(boOrder.FullAddress))
-                {
-                    MessageBox.Show("Address is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                // Call BL. Use manager id to authorize update.
                 await s_bl.Order.UpdateDetails(_managerId, boOrder);
 
-                MessageBox.Show("העדכון בוצע בהצלחה", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Reload to reflect recalculated fields/status
+                MessageBox.Show("Order updated successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadOrderDetails();
+            }
+            catch (DO.BlInvalidValueException ex)
+            {
+                MessageBox.Show($"Address Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to update order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Update Failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                // ✅ Always resets cursor, even on exception
+                Mouse.OverrideCursor = null;
             }
         }
 

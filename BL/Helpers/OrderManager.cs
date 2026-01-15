@@ -2,12 +2,14 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using BlApi;
 using BlImplementation;
 using BO;
 using DalApi;
 using DO;
+using System.Collections.Concurrent;
 namespace Helpers;
 
 internal static class OrderManager{
@@ -24,6 +26,8 @@ internal static class OrderManager{
         // OSRM requires a User-Agent. Setting it here ensures it's always present.
         s_client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "StudentProject/1.0");
     }
+    private record DistanceKey(double SrcLat, double SrcLon, double DstLat, double DstLon, BO.Transportation Mode);
+    private static readonly ConcurrentDictionary<DistanceKey, double> s_distanceCache = new();
     public static BO.Order ConvertToBO(DO.Order doOrder)
     {
         // 1. Calculate Expected Delivery Time (ETA) based on Pickup Time
@@ -53,7 +57,7 @@ internal static class OrderManager{
         {
             Id = doOrder.Id,
             OrderType = (BO.OrderTypes)doOrder.OrderType,
-            FullAddress = doOrder.AdderssOfOrder,
+            FullAddress = doOrder.Address,
             CustomerName = doOrder.CustomerName,
             CustomerPhone = doOrder.CustomerPhone,
             Description = doOrder.Description,
@@ -92,7 +96,7 @@ internal static class OrderManager{
             CreatedAt = boOrder.CreatedAt,
             CustomerName = boOrder.CustomerName,
             CustomerPhone = boOrder.CustomerPhone,
-            AdderssOfOrder = boOrder.FullAddress,
+            Address = boOrder.FullAddress,
             Description = boOrder.Description,
         };
         return doOrder;
@@ -334,50 +338,92 @@ internal static class OrderManager{
 
         return deliveries;
     }
-    internal static async void CreateOrder(BO.Order order)
+    // In OrderManager.cs (Internal Static Class)
+
+    /// <summary>
+    /// Validates logic, calculates internal metrics (Distance), and saves to DAL.
+    /// Note: This method is Synchronous. The Async network coordinates resolution 
+    /// MUST happen in OrderImplementation before calling this.
+    /// </summary>
+    internal static void CreateOrder(BO.Order order)
     {
+        // 1. Validation: Ensure object is not null
         if (order is null)
             throw new BlInvalidValueException("Order cannot be null.");
 
+        // 2. Validation: Ensure address string exists
         if (string.IsNullOrWhiteSpace(order.FullAddress))
             throw new BlInvalidValueException("Order address is required.");
 
-        // Resolve coordinates from address if not provided
-        if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude) || (order.Latitude == 0 && order.Longitude == 0))
-        {
-            // reuse the geocoding helper already in this class (async) synchronously
-            var coords = await GetCoordinatesFromAddressAsync(order.FullAddress);
-            if (coords.Lat == null || coords.Lon == null)
-                throw new BlInvalidValueException("Unable to resolve address coordinates.");
+        // 3. Validation: Verify Coordinates
+        // We expect OrderImplementation to have already resolved these via the Network.
+        // If they are still NaN or 0, it means the async part failed or wasn't called.
+        if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude))
+            throw new BlInvalidValueException("Coordinates missing (Async resolution failed).");
 
-            order.Latitude = coords.Lat.Value;
-            order.Longitude = coords.Lon.Value;
+        // 4. Calculate Air Distance (CPU-bound calculation, safe to be synchronous)
+        // Fetch company coordinates from DAL Configuration
+        double? companyLat = s_dal.Config.CompanyLatitude;
+        double? companyLon = s_dal.Config.CompanyLongitude;
+
+        if (companyLat != null && companyLon != null)
+        {
+            order.AirDistance = GetAirDistance(order.Latitude, order.Longitude, companyLat.Value, companyLon.Value);
         }
 
-        // Validate coordinates are now set
-        if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude))
-            throw new BlInvalidValueException("Order coordinates are invalid.");
 
-        // compute air distance using company coordinates from DAL config
-        var companyLat = s_dal.Config.CompanyLatitude ?? double.NaN;
-        var companyLon = s_dal.Config.CompanyLongitude ?? double.NaN;
-        if (double.IsNaN(companyLat) || double.IsNaN(companyLon))
-            throw new BlInvalidValueException("Company coordinates are not configured.");
+        // 5. Convert BO entity to DO (DAL) entity
+        // (Ensure you have this mapping logic either here or in an extension method)
+        DO.Order doOrder = new DO.Order
+        {
+            // If ID is 0, DAL usually auto-increments it
+            Id = order.Id,
+            CustomerName = order.CustomerName,
+            Address = order.FullAddress,
+            CustomerPhone = order.CustomerPhone, // Assuming this field exists
+            Latitude = order.Latitude,
+            Longitude = order.Longitude,
+            Weight = order.Weight,
+            Volume = order.Volume,
+            Fragile = order.Fragile,
+            // Cast Enum if necessary
+            OrderType = (DO.OrderType)order.OrderType,
+            CreatedAt = order.CreatedAt == default ? DateTime.Now : order.CreatedAt,
+            Description = order.Description
+        };
 
-        // Use existing helper GetAirDistance (returns km)
-        order.AirDistance = GetAirDistance(order.Latitude, order.Longitude, companyLat, companyLon);
-
-        // convert and persist
-        DO.Order doOrder = ConvertToDal(order);
+        // 6. Persist to Data Layer
         try
         {
+            // Dal.Order.Add returns the new ID (int)
             s_dal.Order.Create(doOrder);
+
+            // Update the BO object with the new ID generated by DAL
+            if (doOrder.Id != 0)
+            {
+                order.Id = doOrder.Id;
+            }
+            else
+            {
+                // Option B: The "Black Box" DAL Fallback
+                // If DAL didn't update our object, we ask the DB: "What is the latest order?"
+                // We assume the one with the highest ID is the one we just added.
+                var allOrders = s_dal.Order.ReadAll();
+                if (allOrders.Any())
+                {
+                    // Get the ID of the order created most recently (Max ID)
+                    order.Id = allOrders.Max(o => o.Id);
+                }
+            }
         }
-        catch (DalAlreadyExistsException ex)
+        catch (DO.DalAlreadyExistsException ex)
         {
             throw new BlAlreadyExistsException($"Order ID {order.Id} already exists.", ex);
         }
-        Observers.NotifyListUpdated(); //stage 5
+
+        // 7. Notify Observers (Stage 5 Requirement)
+        // This updates the PL windows listening to list changes
+        Observers.NotifyListUpdated();
     }
     internal static BO.Order? Read(int orderId)
     {
@@ -394,11 +440,11 @@ internal static class OrderManager{
             return null;
         return ConvertToBO(doOrder);
     }
-    internal static async Task Update(BO.Order order)
+    internal static void Update(BO.Order order)
     {
-        if (order is null)
-            throw new BlInvalidValueException("Order cannot be null.");
+        if (order is null) throw new BlInvalidValueException("Order cannot be null.");
 
+        // 1. Get Existing Order
         DO.Order existingDoOrder;
         try
         {
@@ -409,16 +455,40 @@ internal static class OrderManager{
             throw new BlDoesNotExistException($"Order ID {order.Id} does not exist.", ex);
         }
 
-        // Determine current BO order status (Open/InProgress => editable; others => closed)
+        // 2. Status Check
         var currentStatus = CalculateOrderStatus(order.Id);
         if (currentStatus == OrderStatus.Closed || currentStatus == OrderStatus.Denied || currentStatus == OrderStatus.Cancelled)
             throw new BlInvalidOperationException("Cannot update a closed order.");
 
-        // Whitelist: only these fields may be updated
-        // Adjust the list below if business requires different fields
+        // 3. Merge Logic (With Data Integrity Check)
+        // If input address is valid and DIFFERENT from existing, we MUST use input coordinates.
+        // We cannot fallback to existing coordinates if the address changed.
+
+        bool addressChanged = !string.IsNullOrWhiteSpace(order.FullAddress) &&
+                              !order.FullAddress.Equals(existingDoOrder.Address); // Check spelling of Address property in DO
+
+        double newLat, newLon;
+
+        if (addressChanged)
+        {
+            // If address changed, we REQUIRE valid new coordinates from the input
+            if (double.IsNaN(order.Latitude) || double.IsNaN(order.Longitude))
+                throw new BlInvalidValueException("Address changed but coordinates are missing.");
+
+            newLat = order.Latitude;
+            newLon = order.Longitude;
+        }
+        else
+        {
+            // Address didn't change, so we keep existing coordinates (safe)
+            newLat = existingDoOrder.Latitude;
+            newLon = existingDoOrder.Longitude;
+        }
+
+        // 4. Update the DO Record
         var updatedDoOrder = existingDoOrder with
         {
-            AdderssOfOrder = string.IsNullOrWhiteSpace(order.FullAddress) ? existingDoOrder.AdderssOfOrder : order.FullAddress,
+            Address = string.IsNullOrWhiteSpace(order.FullAddress) ? existingDoOrder.Address : order.FullAddress,
             CustomerName = string.IsNullOrWhiteSpace(order.CustomerName) ? existingDoOrder.CustomerName : order.CustomerName,
             CustomerPhone = string.IsNullOrWhiteSpace(order.CustomerPhone) ? existingDoOrder.CustomerPhone : order.CustomerPhone,
             Description = order.Description ?? existingDoOrder.Description,
@@ -426,22 +496,11 @@ internal static class OrderManager{
             Volume = order.Volume,
             Fragile = order.Fragile,
             OrderType = (DO.OrderType)order.OrderType,
-            Latitude = double.IsNaN(order.Latitude) ? existingDoOrder.Latitude : order.Latitude,
-            Longitude = double.IsNaN(order.Longitude) ? existingDoOrder.Longitude : order.Longitude,
-            // Keep CreatedAt and Id unchanged
+            Latitude = newLat,
+            Longitude = newLon
         };
 
-        // If address changed and coordinates are invalid, try resolving coordinates
-        if (!string.Equals(existingDoOrder.AdderssOfOrder, updatedDoOrder.AdderssOfOrder, StringComparison.OrdinalIgnoreCase) &&
-            (updatedDoOrder.Latitude == 0 && updatedDoOrder.Longitude == 0))
-        {
-            var coords = await GetCoordinatesFromAddressAsync(updatedDoOrder.AdderssOfOrder);
-            if (coords.Lat.HasValue && coords.Lon.HasValue)
-            {
-                updatedDoOrder = updatedDoOrder with { Latitude = coords.Lat.Value, Longitude = coords.Lon.Value };
-            }
-        }
-
+        // 5. Save
         try
         {
             s_dal.Order.Update(updatedDoOrder);
@@ -484,13 +543,23 @@ internal static class OrderManager{
     }
     public static async Task<double?> GetActualDistanceAsync(double latitude, double longitude, BO.Transportation transport)
     {
-        // --- Validation (Your code is good here) ---
+        double? companyLat = s_dal.Config.CompanyLatitude;
+        double? companyLon = s_dal.Config.CompanyLongitude;
+
+        // --- Validation ---
+        if (companyLat == null || companyLon == null)
+            throw new BlInvalidValueException("Company coordinates are not configured.");
+
         if (double.IsNaN(latitude) || double.IsNaN(longitude) ||
             latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
             throw new BlInvalidValueException("Order coordinates are invalid.");
 
-        if (double.IsNaN((double)s_dal.Config.CompanyLatitude) || double.IsNaN((double)s_dal.Config.CompanyLongitude))
-            throw new BlInvalidValueException("Company coordinates are not configured.");
+        // --- Cache Check ---
+        var key = NormalizeKey(latitude, longitude, companyLat.Value, companyLon.Value, transport);
+        if (s_distanceCache.TryGetValue(key, out double cachedDistance))
+        {
+            return cachedDistance;
+        }
 
         // --- Profile Mapping ---
         string profile = transport switch
@@ -498,49 +567,43 @@ internal static class OrderManager{
             BO.Transportation.Car => "car",
             BO.Transportation.Motorcycle => "car",
             BO.Transportation.Bike => "bike",
-            BO.Transportation.Walking => "walking",
+            BO.Transportation.Walking => "foot", 
             _ => throw new BlInvalidValueException("Invalid transportation type")
         };
 
         // --- URL Construction ---
-        string coordinates =
-            $"{longitude.ToString(CultureInfo.InvariantCulture)},{latitude.ToString(CultureInfo.InvariantCulture)};" +
-            $"{Convert.ToDouble(s_dal.Config.CompanyLongitude).ToString(CultureInfo.InvariantCulture)},{Convert.ToDouble(s_dal.Config.CompanyLatitude).ToString(CultureInfo.InvariantCulture)}";
+        string strLon1 = Convert.ToDouble(s_dal.Config.CompanyLongitude).ToString(CultureInfo.InvariantCulture);
+        string strLat1 = Convert.ToDouble(s_dal.Config.CompanyLatitude).ToString(CultureInfo.InvariantCulture);
+        string strLon2 = longitude.ToString(CultureInfo.InvariantCulture);
+        string strLat2 = latitude.ToString(CultureInfo.InvariantCulture);
 
-        string url = $"https://router.project-osrm.org/table/v1/{profile}/{coordinates}?annotations=distance";
+        string coordinates = $"{strLon1},{strLat1};{strLon2},{strLat2}";
+        string url = $"https://router.project-osrm.org/route/v1/{profile}/{coordinates}?overview=false";
 
         try
         {
-            // 3. REUSE the static client (Do NOT use 'using' here)
-            string json = await s_client.GetStringAsync(url).ConfigureAwait(false);
+            string json = await s_client.GetStringAsync(url);
 
-            using JsonDocument doc = JsonDocument.Parse(json);
+            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
             var root = doc.RootElement;
 
             if (root.TryGetProperty("code", out var codeProp) && codeProp.GetString() != "Ok")
                 return null;
 
-            var distances = root.GetProperty("distances");
+            var routes = root.GetProperty("routes");
+            if (routes.GetArrayLength() == 0) return null;
 
-            if (distances.GetArrayLength() == 0 || distances[0].GetArrayLength() < 2)
-                return null;
+            double meters = routes[0].GetProperty("distance").GetDouble();
+            double km = Math.Round(meters / 1000.0, 2);
 
-            double meters = distances[0][1].GetDouble();
-            return Math.Round(meters / 1000.0, 2);
+            // Cache Update
+            s_distanceCache.TryAdd(key, km);
+
+            return km;
         }
-        catch (HttpRequestException)
-        {
-            return null;
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-        catch (TaskCanceledException)
-        {
-            // This catches the Timeout
-            return null;
-        }
+        catch (HttpRequestException) { return null; }
+        catch (JsonException) { return null; }
+        catch (TaskCanceledException) { return null; }
     }
     public static async Task<(double? Lat, double? Lon)> GetCoordinatesFromAddressAsync(string address)
     {
@@ -756,7 +819,7 @@ internal static class OrderManager{
 
         return lastCompleted?.TimeOfDelivery!.Value - createdAt;
     }
-    private static OrderInList ConvertToOrderInListCached(BO.Order order, List<DO.Delivery> deliveries, Dictionary<int, List<DO.Delivery>> cache) // Pass cache if needed for helper reuse
+    internal static OrderInList ConvertToOrderInListCached(BO.Order order, List<DO.Delivery> deliveries, Dictionary<int, List<DO.Delivery>> cache) // Pass cache if needed for helper reuse
     {
         var latestDelivery = deliveries
             .OrderByDescending(d => d.StartOfDelivery)
@@ -804,5 +867,15 @@ internal static class OrderManager{
         // Notify courier observers (courierId) so courier detail UI updates
         try { if (updatedDelivery.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updatedDelivery.CourierId); } catch { }
         
+    }
+
+    // Option: Normalize key so A→B and B→A use the same cache entry
+    private static DistanceKey NormalizeKey(double lat1, double lon1, double lat2, double lon2, BO.Transportation mode)
+    {
+        // Always put the "smaller" coordinate pair first
+        if (lat1 < lat2 || (lat1 == lat2 && lon1 < lon2))
+            return new DistanceKey(lat1, lon1, lat2, lon2, mode);
+        else
+            return new DistanceKey(lat2, lon2, lat1, lon1, mode);
     }
 }
