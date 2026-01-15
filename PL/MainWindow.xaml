@@ -217,13 +217,37 @@
                             Click="BtnAllDeliveries_Click"
                             Style="{StaticResource ModernButton}"
                             Margin="0,0,0,8"/>
-                            
+
+                    <!-- Simulator Section -->
+                    <TextBlock Text="⚡ Simulator" 
+                               FontSize="14" 
+                               FontWeight="SemiBold" 
+                               Margin="0,10,0,8"
+                               Foreground="#333333"/>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Interval (min):" 
+                                   FontSize="12" 
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBox x:Name="txtSimulatorInterval" 
+                                 Text="1" 
+                                 Width="50" 
+                                 Style="{StaticResource ModernTextBox}"
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Button x:Name="btnSimulator"
+                            Content="▶ Start Simulator" 
+                            Click="BtnSimulator_Click"
+                            Style="{StaticResource SuccessButton}"
+                            Margin="0,0,0,8"/>
 
                     <!-- LOGOUT button added -->
                     <Button Content="Logout"
                             Click="BtnLogout_Click"
                             Style="{StaticResource DangerButton}"
-                            Margin="0,140,0,0"/>
+                            Margin="0,40,0,0"/>
                 </StackPanel>
             </Border>
 

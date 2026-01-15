@@ -22,6 +22,9 @@ namespace PL
         // Changed from static field to instance property to get current value
         private int ManagerId => s_bl.Admin.GetConfig().ManagerId;
 
+        // Stage 7: Track simulator state
+        private bool _isSimulatorRunning = false;
+
         #region Dependency Properties
 
         public BO.Config Configuration
@@ -74,6 +77,12 @@ namespace PL
         /// </summary>
         private void Window_Closed(object? sender, EventArgs e)
         {
+            // Stage 7: Stop simulator if running when window closes
+            if (_isSimulatorRunning)
+            {
+                try { s_bl.Admin.StopSimulator(); } catch { }
+            }
+
             UnregisterObservers();
         }
 
@@ -141,6 +150,58 @@ namespace PL
         private void btnAddOneYear_Click(object sender, RoutedEventArgs e)
         {
             s_bl.Admin.ForwardClock(BO.Times.Year);
+        }
+
+        #endregion
+
+        #region Stage 7: Simulator Control
+
+        /// <summary>
+        /// Handles the Start/Stop Simulator button click.
+        /// Toggles between starting and stopping the simulator.
+        /// </summary>
+        private void BtnSimulator_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!_isSimulatorRunning)
+                {
+                    // Validate interval input
+                    if (!int.TryParse(txtSimulatorInterval.Text, out int interval) || interval <= 0)
+                    {
+                        MessageBox.Show("Please enter a valid positive integer for the interval.", 
+                                        "Invalid Interval", 
+                                        MessageBoxButton.OK, 
+                                        MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Start the simulator
+                    s_bl.Admin.StartSimulator(interval);
+                    _isSimulatorRunning = true;
+
+                    // Update UI
+                    btnSimulator.Content = "⏹ Stop Simulator";
+                    txtSimulatorInterval.IsEnabled = false;
+                }
+                else
+                {
+                    // Stop the simulator
+                    s_bl.Admin.StopSimulator();
+                    _isSimulatorRunning = false;
+
+                    // Update UI
+                    btnSimulator.Content = "▶ Start Simulator";
+                    txtSimulatorInterval.IsEnabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Simulator error: {ex.Message}", 
+                                "Error", 
+                                MessageBoxButton.OK, 
+                                MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -280,6 +341,17 @@ namespace PL
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
+            // Stage 7: Stop simulator before logout
+            if (_isSimulatorRunning)
+            {
+                try 
+                { 
+                    s_bl.Admin.StopSimulator();
+                    _isSimulatorRunning = false;
+                } 
+                catch { }
+            }
+
             LoginWindow.ShowSingle();
             Close(); // close ONLY MainWindow
         }

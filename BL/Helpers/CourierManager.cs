@@ -15,7 +15,7 @@ internal static class CourierManager
     private static readonly AsyncMutex s_periodicMutex = new(); //stage 7
     private static readonly AsyncMutex s_simulationMutex = new(); //stage 7
     internal static ObserverManager Observers = new();
-
+    private static readonly Random s_rand = new();
     internal static void CreateCourier(BO.Courier courier){
         lock (AdminManager.BlMutex) { 
             try
@@ -66,7 +66,7 @@ internal static class CourierManager
     internal static IEnumerable<DO.Courier> ReadAll()
     {
         lock (AdminManager.BlMutex)
-            return s_dal.Courier.ReadAll();
+            return s_dal.Courier.ReadAll().ToList(); // Forces immediate execution
     }
     internal static void Update(BO.Courier courier)
     {
@@ -123,51 +123,65 @@ internal static class CourierManager
     }
     public static void UpdateCourierActivity(DateTime oldClock, DateTime newClock)
     {
+        // Check and prevent double entry into the method (re-entry protection)
         if (s_periodicMutex.CheckAndSetInProgress())
             return;
-        // Read all couriers snapshot outside the lock
-        List<DO.Courier> couriers;
-        lock (AdminManager.BlMutex)
-        {
-            couriers = s_dal.Courier.ReadAll().ToList();
-        }
 
-        // Process each courier with individual locks
-        foreach (var courier in couriers)
+        List<int> couriersChanged = new();
+
+        try
         {
-            try
+            lock (AdminManager.BlMutex)
             {
-                // Only attempt deactivation when courier is currently active and time threshold exceeded
-                if (!courier.Active || (newClock - oldClock).TotalDays <= 30)
-                    continue;
+                // 1. Retrieve inactivity time threshold from configuration
+                // The value is of type TimeSpan (e.g., 30 days)
+                TimeSpan inactiveThreshold = s_dal.Config.InactiveTime;
 
-                lock (AdminManager.BlMutex)
+                // 2. Fetch all currently active couriers
+                List<DO.Courier> activeCouriers = s_dal.Courier.ReadAll(c => c.Active).ToList();
+
+                foreach (var courier in activeCouriers)
                 {
-                    // Re-read courier to get latest state
-                    DO.Courier currentCourier = s_dal.Courier.Read(c => c.Id == courier.Id);
-                    if (currentCourier == null || !currentCourier.Active)
-                        continue;
+                    // Check A: Is the courier currently in the middle of a delivery? 
+                    // If so, do not touch them (we can't deactivate a working courier)
+                    bool isCurrentlyWorking = s_dal.Delivery.ReadAll(d =>
+                        d.CourierId == courier.Id && d.EndOfOrder == null).Any();
 
-                    // Prevent deactivation if courier currently has an active delivery (EndOfOrder == null)
-                    bool hasActiveDelivery = s_dal.Delivery.ReadAll(d => d.CourierId == courier.Id && d.EndOfOrder == null).Any();
-                    if (hasActiveDelivery)
-                        continue;
+                    if (isCurrentlyWorking) continue;
 
-                    // Safe to deactivate
-                    DO.Courier updated = currentCourier with { Active = false };
-                    s_dal.Courier.Update(updated);
+                    // Check B: Find the time of the last delivery performed by the courier
+                    var lastDeliveryDate = s_dal.Delivery.ReadAll(d => d.CourierId == courier.Id && d.EndOfOrder != null && d.TimeOfDelivery.HasValue)
+                                     .Max(d => d.TimeOfDelivery);
+
+                    // If the courier has never worked, we skip them (or you can decide to deactivate them)
+                    if (lastDeliveryDate == null) continue;
+
+                    // Check C: Has enough time passed since the last delivery?
+                    // Comparison: (Time passed since last delivery) > (Threshold defined in configuration)
+                    if ((newClock - lastDeliveryDate.Value) > inactiveThreshold)
+                    {
+                        // Deactivate the courier
+                        DO.Courier updated = courier with { Active = false };
+                        s_dal.Courier.Update(updated);
+
+                        couriersChanged.Add(courier.Id);
+                    }
                 }
             }
-            catch
-            {
-                // Swallow per-existing pattern — do not interrupt the loop on single failure.
-                // Logging can be added here if desired.
-            }
+        }
+        catch (Exception)
+        {
+            // Ignore specific errors to avoid stopping the loop for all couriers
+        }
+        finally
+        {
+            // Release the mutex
+            s_periodicMutex.UnsetInProgress();
         }
 
-        Observers.NotifyListUpdated(); //stage 5
-
-        s_periodicMutex.UnsetInProgress();
+        // Update the display (observers) if there were any changes
+        if (couriersChanged.Any())
+            Observers.NotifyListUpdated();
     }
     internal static void Delete(int id)
     {
@@ -339,7 +353,7 @@ internal static class CourierManager
     internal static IEnumerable<BO.Courier> ConvertToBOList(IEnumerable<DO.Courier> dalCouriers)
     {
         lock (AdminManager.BlMutex)
-            return dalCouriers.Select(dalCourier => ConvertToBO(dalCourier));
+            return dalCouriers.Select(dalCourier => ConvertToBO(dalCourier)).ToList();
     }
     internal static bool Exists(int id)
     {
@@ -359,15 +373,106 @@ internal static class CourierManager
         };
     }
 
-    internal static async Task SimulateInactiveCouriersAsync()
+    internal static async Task SimulateInactiveCouriersAsync() //stage 7
     {
-        // If the previous simulation is still in progress, exit immediately
+        // Check and prevent double entry into the method
         if (s_simulationMutex.CheckAndSetInProgress())
             return;
 
-        //ToDo : read the general document about simulation
+        // Lists to save IDs for observer updates
+        List<int> couriersChanged = new();
+        List<int> ordersChanged = new();
 
+        try
+        {
+            // REMOVED: await Task.Run(...) - Not needed, we are already on a background thread
 
-        s_simulationMutex.UnsetInProgress();
+            List<DO.Courier> availableCouriers;
+            List<DO.Order> pendingOrders;
+
+            // Fetching data under lock
+            lock (AdminManager.BlMutex)
+            {
+                // 1. Fetch all Deliveries to understand the current state
+                var allDeliveries = s_dal.Delivery.ReadAll();
+
+                // 2. Find Busy Couriers (Couriers with active deliveries)
+                var busyCourierIds = allDeliveries
+                    .Where(d => d.EndOfOrder == null)
+                    .Select(d => d.CourierId)
+                    .ToHashSet();
+
+                // 3. Find Taken Orders (Orders already assigned/in delivery)
+                var takenOrderIds = allDeliveries
+                    .Select(d => d.OrderId)
+                    .ToHashSet();
+
+                // 4. Get Available Couriers
+                availableCouriers = s_dal.Courier.ReadAll()
+                    .Where(c => !busyCourierIds.Contains(c.Id))
+                    .ToList();
+
+                // 5. Get Pending Orders
+                pendingOrders = s_dal.Order.ReadAll()
+                    .Where(o => !takenOrderIds.Contains(o.Id))
+                    .ToList();
+            }
+
+            // Simulation Loop
+            foreach (var courier in availableCouriers)
+            {
+                // If no orders left, stop
+                if (!pendingOrders.Any()) break;
+
+                // 50% chance to assign an order
+                if (s_rand.NextDouble() < 0.5)
+                {
+                    DO.Order orderToAssign;
+
+                    lock (AdminManager.BlMutex)
+                    {
+                        // Double check if orders are still available (safe guard)
+                        if (!pendingOrders.Any()) break;
+
+                        orderToAssign = pendingOrders.First();
+
+                        var newDelivery = new DO.Delivery
+                        {
+                            CourierId = courier.Id,
+                            OrderId = orderToAssign.Id,
+                            StartOfDelivery = s_dal.Config.Clock, // EXCELLENT CHANGE
+                            EndOfOrder = null // Active delivery
+                        };
+
+                        s_dal.Delivery.Create(newDelivery);
+                    }
+
+                    pendingOrders.Remove(orderToAssign);
+                    couriersChanged.Add(courier.Id);
+                    ordersChanged.Add(orderToAssign.Id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error if needed
+        }
+        finally
+        {
+            s_simulationMutex.UnsetInProgress();
+        }
+
+        // Notify observers outside the lock
+        if (couriersChanged.Any())
+        {
+            foreach (var id in couriersChanged) Observers.NotifyItemUpdated(id);
+            Observers.NotifyListUpdated();
+        }
+
+        if (ordersChanged.Any())
+        {
+            foreach (var id in ordersChanged) OrderManager.Observers.NotifyItemUpdated(id);
+            OrderManager.Observers.NotifyListUpdated();
+        }
     }
 }

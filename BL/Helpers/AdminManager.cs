@@ -242,21 +242,15 @@ internal static class AdminManager //stage 4
         }
     }
 
-    private static Task? _simulateTask = null;
-
     private static void clockRunner()
     {
         while (!s_stop)
         {
             UpdateClock(Now.AddMinutes(s_interval));
 
-            //TO_DO: //stage 7
-            //Add calls here to any logic simulation that was required in stage 7
-            //for example: course registration simulation
-            /*if (_simulateTask is null || _simulateTask.IsCompleted)//stage 7
-                _simulateTask = Task.Run(() => StudentManager.SimulateCourseRegistrationAndGrade());
-            */
-            //etc...
+            //stage 7: Call simulation method asynchronously
+            //The AsyncMutex inside the method prevents overlapping executions
+            _ = Task.Run(() => CourierManager.SimulateInactiveCouriersAsync());
 
             try
             {
