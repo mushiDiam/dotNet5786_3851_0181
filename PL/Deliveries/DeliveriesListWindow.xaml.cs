@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using BlApi;
 using BO;
 using PL.AvailableOrders;
+using PL.Helpers;
 
 namespace PL.Deliveries
 {
@@ -18,6 +19,9 @@ namespace PL.Deliveries
         private readonly int _requesterId;
         private readonly bool _isManager;
         private readonly int _managerIdConfig;
+
+        // Stage 7: Add mutex
+        private readonly ObserverMutex _deliveryListMutex = new();
 
         // --- Binding Properties ---
 
@@ -121,9 +125,23 @@ namespace PL.Deliveries
             try { s_bl.Order.RemoveObserver(DeliveryListObserver); } catch { }
         }
 
+        // Stage 7: Updated observer
         private void DeliveryListObserver()
         {
-            Dispatcher.Invoke(() => RefreshList());
+            // Check and prevent double entry
+            if (_deliveryListMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue work on UI thread
+            Dispatcher.BeginInvoke(async () =>
+            {
+                // The actual work
+                RefreshList();
+
+                // Check if restart needed
+                if (await _deliveryListMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    DeliveryListObserver();
+            });
         }
 
         // --- Main Logic ---

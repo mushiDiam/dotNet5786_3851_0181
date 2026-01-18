@@ -6,6 +6,7 @@ using System.Windows.Input;
 using BlApi;
 using BO;
 using PL.Login;
+using PL.Helpers;
 
 namespace PL.Courier.ForCourier
 {
@@ -17,6 +18,10 @@ namespace PL.Courier.ForCourier
         private static readonly IBl s_bl = Factory.Get();
         private readonly int _courierId;
         private readonly int _managerId;
+
+        // Stage 7: Add mutexes
+        private readonly ObserverMutex _courierMutex = new();
+        private readonly ObserverMutex _clockMutex = new();
 
         public BO.Courier CurrentCourier
         {
@@ -74,9 +79,38 @@ namespace PL.Courier.ForCourier
             try { s_bl.Admin.RemoveClockObserver(ClockObserver); } catch { }
         }
 
-        private void CourierObserver() => Dispatcher.Invoke(RefreshCourier);
-        private void ClockObserver() => Dispatcher.Invoke(() => CurrentClock = s_bl.Admin.GetClock());
+        private void CourierObserver()
+        {
+            // Check and prevent double entry
+            if (_courierMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
 
+            Dispatcher.BeginInvoke(async () =>
+            {
+                RefreshCourier();
+
+                // Check if restart needed
+                if (await _courierMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    CourierObserver();
+            });
+        }
+  
+        private void ClockObserver() {
+            // Check and prevent double entry
+            if (_clockMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue work on UI thread
+            Dispatcher.Invoke(async() =>{
+
+                CurrentClock = s_bl.Admin.GetClock();
+
+                // Check if restart needed
+                if (await _clockMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    ClockObserver();
+
+            });
+}
         private void RefreshAll()
         {
             RefreshCourier();

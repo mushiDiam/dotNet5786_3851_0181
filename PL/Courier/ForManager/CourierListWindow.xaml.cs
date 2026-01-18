@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Linq;
 using BO;
 using BlApi;
+using PL.Helpers;
 
 namespace PL.Courier.ForManager
 {
@@ -13,6 +14,10 @@ namespace PL.Courier.ForManager
     {
         static readonly IBl s_bl = Factory.Get();
         static readonly int AdminId = s_bl.Admin.GetConfig().ManagerId;
+
+        // Stage 7: Add mutex
+        private readonly ObserverMutex _courierListMutex = new();
+
 
         public CourierListWindow()
         {
@@ -56,9 +61,19 @@ namespace PL.Courier.ForManager
             try { s_bl.Courier.RemoveObserver(CourierListObserver); } catch { }
         }
 
+        // Stage 7: Updated observer
         private void CourierListObserver()
         {
-            Dispatcher.Invoke(() => RefreshList());
+            // Check and prevent double entry
+            if (_courierListMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;        // Queue work on UI thread
+            Dispatcher.BeginInvoke(async () =>
+            {
+                // The actual work
+                RefreshList();            // Check if restart needed
+                if (await _courierListMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    CourierListObserver();
+            });
         }
 
         private void RefreshList()

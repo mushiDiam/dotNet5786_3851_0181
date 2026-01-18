@@ -1,9 +1,10 @@
-﻿using System;
-using System.Windows;
-using System.Threading.Tasks;
-using BlApi;
+﻿using BlApi;
 using BO;
+using System;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input; // Add this using directive at the top of the file
+using PL.Helpers;
 
 namespace PL.AvailableOrders
 {
@@ -18,6 +19,9 @@ namespace PL.AvailableOrders
         private readonly int _orderId;
         private readonly bool _isManager;
         private readonly int _managerId;
+
+        // Stage 7: Add mutex
+        private readonly ObserverMutex _orderDetailsMutex = new();
 
         // Bindable visibility properties (no x:Name usage in XAML)
         public Visibility DeleteVisibility
@@ -140,7 +144,24 @@ namespace PL.AvailableOrders
             try { s_bl.Order.RemoveObserver(_orderId, OrderObserver); } catch { }
         }
 
-        private void OrderObserver() => Dispatcher.Invoke(LoadOrderDetails);
+        // Stage 7: Updated observer
+        private void OrderObserver()
+        {
+            // Check and prevent double entry
+            if (_orderDetailsMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue work on UI thread
+            Dispatcher.BeginInvoke(async () =>
+            {
+                // The actual work
+                LoadOrderDetails();
+
+                // Check if restart needed
+                if (await _orderDetailsMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    OrderObserver();
+            });
+        }
 
         private void LoadOrderDetails()
         {

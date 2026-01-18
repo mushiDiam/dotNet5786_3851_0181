@@ -1,13 +1,14 @@
-﻿using System;
+﻿using BlApi;
+using BO;
+using PL.Courier;
+using PL.Courier.ForManager;
+using PL.Helpers;
+using PL.Login;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input; // Required for Cursors
-using BlApi;
-using BO;
-using PL.Courier;
-using PL.Login;
-using PL.Courier.ForManager;
 
 namespace PL
 {
@@ -105,21 +106,35 @@ namespace PL
         }
 
         #region Observers
-
+        private readonly ObserverMutex _clockMutex = new();
+        private readonly ObserverMutex _configMutex = new();
         private void clockObserver()
         {
-            Dispatcher.Invoke(() =>
+            // Check if already loading - if yes, mark restart needed and return
+            if (_clockMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue the work on the UI thread (async)
+            Dispatcher.BeginInvoke(async () =>
             {
                 // Pulling the new time from BL
                 CurrentClock = s_bl.Admin.GetClock();
+                if (await _clockMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    clockObserver(); // Restart if needed
             });
         }
 
         private void configObserver()
         {
-            Dispatcher.Invoke(() =>
+            // Check if already loading - if yes, mark restart needed and return
+            if (_configMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+            // Queue the work on the UI thread (async)
+            Dispatcher.BeginInvoke(async() =>
             {
                 Configuration = s_bl.Admin.GetConfig();
+                if (await _configMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    configObserver(); // Restart if needed
             });
         }
 

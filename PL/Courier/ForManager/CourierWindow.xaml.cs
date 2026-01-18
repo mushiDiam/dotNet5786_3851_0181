@@ -3,12 +3,15 @@ using System.Windows;
 using BlApi;
 using BO;
 using PL.AvailableOrders;
+using PL.Helpers;
 
 namespace PL.Courier.ForManager
 {
     public partial class CourierWindow : Window
     {
         private static readonly IBl s_bl = Factory.Get();
+        // Stage 7: Add mutex
+        private readonly ObserverMutex _courierDetailsMutex = new();
 
         // ---------------------------------------------------------
         // Dependency Properties
@@ -100,10 +103,15 @@ namespace PL.Courier.ForManager
         /// <summary>
         /// This method is called automatically by the BL whenever the specific courier changes.
         /// </summary>
+                // Stage 7: Updated observer
         private void CourierObserver()
         {
-            // Must use Dispatcher because the BL event comes from a background thread
-            Dispatcher.Invoke(() =>
+            // Check and prevent double entry
+            if (_courierDetailsMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue work on UI thread
+            Dispatcher.BeginInvoke(async () =>
             {
                 try
                 {
@@ -119,6 +127,10 @@ namespace PL.Courier.ForManager
                     MessageBox.Show("This courier was deleted by another user.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     Close();
                 }
+
+                // Check if restart needed
+                if (await _courierDetailsMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    CourierObserver();
             });
         }
 

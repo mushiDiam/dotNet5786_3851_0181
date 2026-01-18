@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Controls;
-using BlApi;
+﻿using BlApi;
 using BO;
 using PL.AvailableOrders;
+using PL.Helpers;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PL
 {
@@ -20,6 +21,8 @@ namespace PL
 
         private readonly OrderStatus? _filterOrderStatus;
         private readonly ScheduleStatus? _filterScheduleStatus;
+        // Stage 7: Add mutex
+        private readonly ObserverMutex _orderListMutex = new();
 
         // --- Data Sources for Binding ---
         public enum SortOption { None, OrderId, Status, Distance }
@@ -120,7 +123,24 @@ namespace PL
             try { s_bl.Order.RemoveObserver(OrderObserver); } catch { }
         }
 
-        private void OrderObserver() => Dispatcher.Invoke(async () => await RefreshListAsync());
+        // Stage 7: Updated observer
+        private void OrderObserver()
+        {
+            // Check and prevent double entry
+            if (_orderListMutex.CheckAndSetLoadInProgressOrRestartRequired())
+                return;
+
+            // Queue work on UI thread
+            Dispatcher.BeginInvoke(async () =>
+            {
+                // The actual work
+                await RefreshListAsync();
+
+                // Check if restart needed
+                if (await _orderListMutex.UnsetLoadInProgressAndCheckRestartRequested())
+                    OrderObserver();
+            });
+        }
 
         private void BtnClearFilters_Click(object sender, RoutedEventArgs e)
         {
@@ -129,7 +149,7 @@ namespace PL
             SelectedFilterStatus = null;
         }
 
-        // ✅ NEW: Async version that uses GetOrdersAsync
+        // NEW: Async version that uses GetOrdersAsync
         private async Task RefreshListAsync()
         {
             try
