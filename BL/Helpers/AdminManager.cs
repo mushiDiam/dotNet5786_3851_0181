@@ -21,11 +21,16 @@ internal static class AdminManager //stage 4
     internal static event Action? ConfigUpdatedObservers; //stage 5 - for config update observers
     internal static event Action? ClockUpdatedObservers; //stage 5 - for clock update observers
 
+    // ✅ NEW: simulator state observers (stage 7)
+    internal static event Action? SimulatorUpdatedObservers;
+
+    // ✅ NEW: expose simulator running state (stage 7)
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    internal static bool IsSimulatorRunning() => s_thread is not null;
 
     /// <summary>
     /// Method to update application's clock from any BL class as may be required
     /// </summary>
-    /// <param name="newClock">updated clock value</param>
     internal static void UpdateClock(DateTime newClock) //stage 4-7
     {
         var oldClock = s_dal.Config.Clock; //stage 4
@@ -218,7 +223,7 @@ internal static class AdminManager //stage 4
             throw new BlTemporaryNotAvailableException("Cannot perform the operation since Simulator is running");
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)] //stage 7                                                 
+    [MethodImpl(MethodImplOptions.Synchronized)] //stage 7
     internal static void Start(int interval)
     {
         if (s_thread is null)
@@ -227,10 +232,13 @@ internal static class AdminManager //stage 4
             s_stop = false;
             s_thread = new(clockRunner) { Name = "ClockRunner" };
             s_thread.Start();
+
+            // notify: simulator is now running
+            SimulatorUpdatedObservers?.Invoke();
         }
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)] //stage 7                                                 
+    [MethodImpl(MethodImplOptions.Synchronized)] //stage 7
     internal static void Stop()
     {
         if (s_thread is not null)
@@ -239,6 +247,9 @@ internal static class AdminManager //stage 4
             s_thread.Interrupt(); //awake a sleeping thread
             s_thread.Name = "ClockRunner stopped";
             s_thread = null;
+
+            // notify: simulator is now stopped
+            SimulatorUpdatedObservers?.Invoke();
         }
     }
 

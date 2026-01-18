@@ -76,8 +76,15 @@ internal class AdminImplementation : IAdmin
         AdminManager.Start(interval);
     }
 
-    public void StopSimulator()
-    => AdminManager.Stop();
+    public void StopSimulator() => AdminManager.Stop();
+
+    public bool IsSimulatorRunning() => AdminManager.IsSimulatorRunning();
+
+    public void AddSimulatorObserver(Action simulatorObserver) =>
+        AdminManager.SimulatorUpdatedObservers += simulatorObserver;
+
+    public void RemoveSimulatorObserver(Action simulatorObserver) =>
+        AdminManager.SimulatorUpdatedObservers -= simulatorObserver;
 
     #endregion stage 7
 }

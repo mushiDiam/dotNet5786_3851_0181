@@ -18,5 +18,7 @@
         <local:ModeToVisibilityConverter x:Key="ConvertUpdateToVisibleKey"/>
         <local:StatusToIconConverter x:Key="StatusToIconKey"/>
 
+        <local:BoolToVisibilityInverseConverter x:Key="InverseBoolToVis"/>
+        <local:InverseBoolConverter x:Key="InverseBool"/>
     </Application.Resources>
 </Application>

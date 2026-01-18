@@ -23,9 +23,6 @@ namespace PL
         // Changed from static field to instance property to get current value
         private int ManagerId => s_bl.Admin.GetConfig().ManagerId;
 
-        // Stage 7: Track simulator state
-        private bool _isSimulatorRunning = false;
-
         #region Dependency Properties
 
         public BO.Config Configuration
@@ -78,10 +75,15 @@ namespace PL
         /// </summary>
         private void Window_Closed(object? sender, EventArgs e)
         {
-            // Stage 7: Stop simulator if running when window closes
-            if (_isSimulatorRunning)
+            //  Stop simulator on window close
+            if (IsSimulatorRunning)
             {
-                try { s_bl.Admin.StopSimulator(); } catch { }
+                try
+                {
+                    s_bl.Admin.StopSimulator();
+                    IsSimulatorRunning = false;
+                }
+                catch { }
             }
 
             UnregisterObservers();
@@ -94,6 +96,7 @@ namespace PL
         {
             s_bl.Admin.AddClockObserver(clockObserver);
             s_bl.Admin.AddConfigObserver(configObserver);
+            s_bl.Admin.AddSimulatorObserver(simulatorObserver);
         }
 
         /// <summary>
@@ -103,6 +106,7 @@ namespace PL
         {
             s_bl.Admin.RemoveClockObserver(clockObserver);
             s_bl.Admin.RemoveConfigObserver(configObserver);
+            s_bl.Admin.RemoveSimulatorObserver(simulatorObserver);
         }
 
         #region Observers
@@ -138,33 +142,61 @@ namespace PL
             });
         }
 
+        private void simulatorObserver()
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                IsSimulatorRunning = s_bl.Admin.IsSimulatorRunning();
+            });
+        }
+
         #endregion
 
         #region Time Simulation Buttons
 
         private void btnAddOneMinute_Click(object sender, RoutedEventArgs e)
         {
-            s_bl.Admin.ForwardClock(BO.Times.Minute);
+            try { s_bl.Admin.ForwardClock(BO.Times.Minute); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Operation blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void btnAddOneHour_Click(object sender, RoutedEventArgs e)
         {
-            s_bl.Admin.ForwardClock(BO.Times.Hour);
+            try { s_bl.Admin.ForwardClock(BO.Times.Hour); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Operation blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void btnAddOneDay_Click(object sender, RoutedEventArgs e)
         {
-            s_bl.Admin.ForwardClock(BO.Times.Day);
+            try { s_bl.Admin.ForwardClock(BO.Times.Day); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Operation blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void btnAddOneMonth_Click(object sender, RoutedEventArgs e)
         {
-            s_bl.Admin.ForwardClock(BO.Times.Month);
+            try { s_bl.Admin.ForwardClock(BO.Times.Month); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Operation blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void btnAddOneYear_Click(object sender, RoutedEventArgs e)
         {
-            s_bl.Admin.ForwardClock(BO.Times.Year);
+            try { s_bl.Admin.ForwardClock(BO.Times.Year); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Operation blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         #endregion
@@ -179,42 +211,33 @@ namespace PL
         {
             try
             {
-                if (!_isSimulatorRunning)
+                if (!IsSimulatorRunning)
                 {
-                    // Validate interval input
-                    if (!int.TryParse(txtSimulatorInterval.Text, out int interval) || interval <= 0)
+                    //  Start Simulator
+                    if (Interval <= 0)
                     {
-                        MessageBox.Show("Please enter a valid positive integer for the interval.", 
-                                        "Invalid Interval", 
-                                        MessageBoxButton.OK, 
+                        MessageBox.Show("Please enter a valid positive interval.",
+                                        "Invalid Interval",
+                                        MessageBoxButton.OK,
                                         MessageBoxImage.Warning);
                         return;
                     }
 
-                    // Start the simulator
-                    s_bl.Admin.StartSimulator(interval);
-                    _isSimulatorRunning = true;
-
-                    // Update UI
-                    btnSimulator.Content = "⏹ Stop Simulator";
-                    txtSimulatorInterval.IsEnabled = false;
+                    s_bl.Admin.StartSimulator(Interval);
+                    // do not set IsSimulatorRunning here; observer will do it when actually started
                 }
                 else
                 {
-                    // Stop the simulator
+                    //  Stop Simulator
                     s_bl.Admin.StopSimulator();
-                    _isSimulatorRunning = false;
-
-                    // Update UI
-                    btnSimulator.Content = "▶ Start Simulator";
-                    txtSimulatorInterval.IsEnabled = true;
+                    // do not set IsSimulatorRunning here; observer will do it when actually stopped
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Simulator error: {ex.Message}", 
-                                "Error", 
-                                MessageBoxButton.OK, 
+                MessageBox.Show($"Simulator error: {ex.Message}",
+                                "Error",
+                                MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
         }
@@ -357,27 +380,48 @@ namespace PL
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             // Stage 7: Stop simulator before logout
-            if (_isSimulatorRunning)
+            if (IsSimulatorRunning)
             {
-                try 
-                { 
+                try
+                {
                     s_bl.Admin.StopSimulator();
-                    _isSimulatorRunning = false;
-                } 
+                    IsSimulatorRunning = false;
+                }
                 catch { }
             }
 
             LoginWindow.ShowSingle();
             Close(); // close ONLY MainWindow
         }
-
-
-        #endregion
-
         private void BtnAllDeliveries_Click(object sender, RoutedEventArgs e)
         {
             var wnd = new PL.Deliveries.DeliveriesListWindow(ManagerId, true);
             wnd.ShowDialog();
         }
+
+        #endregion
+
+        #region Simulator Properties (Stage 7)
+
+        // Dependency Property for Interval
+        public int Interval
+        {
+            get { return (int)GetValue(IntervalProperty); }
+            set { SetValue(IntervalProperty, value); }
+        }
+        public static readonly DependencyProperty IntervalProperty =
+            DependencyProperty.Register(nameof(Interval), typeof(int), typeof(MainWindow), new PropertyMetadata(1));
+
+        // Dependency Property for IsSimulatorRunning (Flag)
+        public bool IsSimulatorRunning
+        {
+            get { return (bool)GetValue(IsSimulatorRunningProperty); }
+            set { SetValue(IsSimulatorRunningProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsSimulatorRunningProperty =
+            DependencyProperty.Register(nameof(IsSimulatorRunning), typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        #endregion
     }
 }

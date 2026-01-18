@@ -61,6 +61,37 @@ namespace PL.Helpers
             throw new NotImplementedException();
         }
     }
+    //  Inverse Bool Converter (true -> false, false -> true)
+    public class InverseBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b) return !b;
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b) return !b;
+            return false;
+        }
+    }
+
+    //  Inverse Bool to Visibility (true -> Collapsed, false -> Visible)
+    public class BoolToVisibilityInverseConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b)
+                return b ? Visibility.Collapsed : Visibility.Visible;
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
     public class EnumToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -111,4 +142,5 @@ namespace PL.Helpers
             throw new NotSupportedException();
         }
     }
+
 }

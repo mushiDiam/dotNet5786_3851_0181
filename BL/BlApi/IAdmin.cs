@@ -26,5 +26,8 @@ public interface IAdmin{
     void StartSimulator(int interval);
     void StopSimulator();
 
+    bool IsSimulatorRunning();
+    void AddSimulatorObserver(Action simulatorObserver);
+    void RemoveSimulatorObserver(Action simulatorObserver);
     #endregion Stage 7
 }
