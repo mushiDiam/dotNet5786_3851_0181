@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <config>
-  <NextOrderId>51</NextOrderId>
-  <NextDeliveryId>54</NextDeliveryId>
-  <Clock>2026-01-20T00:45:58.1831801+02:00</Clock>
+  <NextOrderId>68</NextOrderId>
+  <NextDeliveryId>70</NextDeliveryId>
+  <Clock>2026-01-20T10:47:10.3297383+02:00</Clock>
   <ManagerId>10003</ManagerId>
   <ManagerPassword></ManagerPassword>
   <CompanyAddress>מגדל המטכ"ל</CompanyAddress>
