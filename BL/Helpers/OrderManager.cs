@@ -886,10 +886,11 @@ internal static class OrderManager{
             DO.Delivery delivery = s_dal.Delivery.Read(d => d.Id == deliveryId);
             if (delivery == null)
                 throw new BlDoesNotExistException($"Delivery {deliveryId} not found");
+
             updatedDelivery = delivery with
             {
                 EndOfOrder = DO.EndOfOrder.Completed,
-                TimeOfDelivery = DateTime.Now
+                TimeOfDelivery = s_dal.Config.Clock // was DateTime.Now
             };
 
             s_dal.Delivery.Update(updatedDelivery);
