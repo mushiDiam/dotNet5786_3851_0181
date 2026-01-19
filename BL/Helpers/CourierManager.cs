@@ -385,18 +385,25 @@ internal static class CourierManager
 
         try
         {
-            // REMOVED: await Task.Run(...) - Not needed, we are already on a background thread
-
             List<DO.Courier> availableCouriers;
             List<DO.Order> pendingOrders;
+            List<DO.Delivery> activeDeliveries;
+            DateTime currentClock;
+            double carSpeed, motorcycleSpeed, bikeSpeed, walkingSpeed;
 
             // Fetching data under lock
             lock (AdminManager.BlMutex)
             {
-                // 1. Fetch all Deliveries to understand the current state
-                var allDeliveries = s_dal.Delivery.ReadAll();
+                currentClock = s_dal.Config.Clock;
+                carSpeed = s_dal.Config.AverageCarSpeed;
+                motorcycleSpeed = s_dal.Config.AverageMotorcycleSpeed;
+                bikeSpeed = s_dal.Config.AverageBikeSpeed;
+                walkingSpeed = s_dal.Config.AverageWalkingSpeed;
 
-                // 2. Find Busy Couriers (Couriers with active deliveries)
+                // 1. Fetch all Deliveries to understand the current state
+                var allDeliveries = s_dal.Delivery.ReadAll().ToList();
+
+                // 2. Find Busy Couriers (Couriers with active deliveries - EndOfOrder is null)
                 var busyCourierIds = allDeliveries
                     .Where(d => d.EndOfOrder == null)
                     .Select(d => d.CourierId)
@@ -407,40 +414,106 @@ internal static class CourierManager
                     .Select(d => d.OrderId)
                     .ToHashSet();
 
-                // 4. Get Available Couriers
+                // 4. Get Available Couriers - ONLY ACTIVE couriers without active orders
                 availableCouriers = s_dal.Courier.ReadAll()
-                    .Where(c => !busyCourierIds.Contains(c.Id))
+                    .Where(c => c.Active && !busyCourierIds.Contains(c.Id))
                     .ToList();
 
-                // 5. Get Pending Orders
+                // 5. Get Pending Orders (orders not yet assigned to any courier)
                 pendingOrders = s_dal.Order.ReadAll()
                     .Where(o => !takenOrderIds.Contains(o.Id))
                     .ToList();
+
+                // 6. Get active deliveries (in progress) to check for completion
+                activeDeliveries = allDeliveries
+                    .Where(d => d.EndOfOrder == null)
+                    .ToList();
             }
 
-            // Simulation Loop
+            // --- PHASE 1: Complete deliveries that have reached their destination ---
+            foreach (var delivery in activeDeliveries)
+            {
+                // Calculate expected travel time based on distance and courier speed
+                double speed = delivery.OrderType switch
+                {
+                    DO.OrderType.Car => carSpeed,
+                    DO.OrderType.Motorcycle => motorcycleSpeed,
+                    DO.OrderType.Bike => bikeSpeed,
+                    DO.OrderType.Walking => walkingSpeed,
+                    _ => 1
+                };
+
+                // Get distance (use actual distance if available, otherwise estimate)
+                double distanceKm = delivery.ActualDistance ?? 5.0; // default 5km if unknown
+
+                // Calculate travel time in hours, then convert to TimeSpan
+                double travelHours = distanceKm / speed;
+                TimeSpan travelTime = TimeSpan.FromHours(travelHours).Add(TimeSpan.FromMinutes(5)); // +5 min buffer
+
+                DateTime expectedArrival = delivery.StartOfDelivery.Add(travelTime);
+
+                // If current clock time has passed the expected arrival, complete the delivery
+                if (currentClock >= expectedArrival)
+                {
+                    lock (AdminManager.BlMutex)
+                    {
+                        var updatedDelivery = delivery with
+                        {
+                            EndOfOrder = DO.EndOfOrder.Completed,
+                            TimeOfDelivery = currentClock
+                        };
+                        s_dal.Delivery.Update(updatedDelivery);
+                    }
+
+                    couriersChanged.Add(delivery.CourierId);
+                    ordersChanged.Add(delivery.OrderId);
+                }
+            }
+
+            // --- PHASE 2: Assign new orders to available active couriers ---
             foreach (var courier in availableCouriers)
             {
                 // If no orders left, stop
                 if (!pendingOrders.Any()) break;
 
-                // 50% chance to assign an order
+                // 50% chance to assign an order (simulates courier choosing to work)
                 if (s_rand.NextDouble() < 0.5)
                 {
-                    DO.Order orderToAssign;
+                    DO.Order? orderToAssign = null;
+                    double? actualDistance = null;
 
                     lock (AdminManager.BlMutex)
                     {
-                        // Double check if orders are still available (safe guard)
+                        // Double check if orders are still available
                         if (!pendingOrders.Any()) break;
 
-                        orderToAssign = pendingOrders.First();
+                        // Find an order within courier's max distance preference
+                        var companyLat = s_dal.Config.CompanyLatitude ?? 32.0853;
+                        var companyLon = s_dal.Config.CompanyLongitude ?? 34.7818;
+
+                        orderToAssign = pendingOrders.FirstOrDefault(o =>
+                        {
+                            double airDist = GetAirDistance(o.Latitude, o.Longitude, companyLat, companyLon);
+                            return courier.MaxDeliveryDistance == null || airDist <= courier.MaxDeliveryDistance;
+                        });
+
+                        if (orderToAssign == null) continue;
+
+                        // Calculate actual distance for the delivery
+                        actualDistance = GetAirDistance(
+                            orderToAssign.Latitude,
+                            orderToAssign.Longitude,
+                            companyLat,
+                            companyLon);
 
                         var newDelivery = new DO.Delivery
                         {
+                            Id = 0, // Auto-generated
                             CourierId = courier.Id,
                             OrderId = orderToAssign.Id,
-                            StartOfDelivery = s_dal.Config.Clock, // EXCELLENT CHANGE
+                            OrderType = courier.OrderType,
+                            StartOfDelivery = s_dal.Config.Clock,
+                            ActualDistance = actualDistance,
                             EndOfOrder = null // Active delivery
                         };
 
@@ -456,6 +529,7 @@ internal static class CourierManager
         catch (Exception ex)
         {
             // Log error if needed
+            System.Diagnostics.Debug.WriteLine($"Simulation error: {ex.Message}");
         }
         finally
         {
@@ -465,14 +539,28 @@ internal static class CourierManager
         // Notify observers outside the lock
         if (couriersChanged.Any())
         {
-            foreach (var id in couriersChanged) Observers.NotifyItemUpdated(id);
+            foreach (var id in couriersChanged.Distinct()) Observers.NotifyItemUpdated(id);
             Observers.NotifyListUpdated();
         }
 
         if (ordersChanged.Any())
         {
-            foreach (var id in ordersChanged) OrderManager.Observers.NotifyItemUpdated(id);
+            foreach (var id in ordersChanged.Distinct()) OrderManager.Observers.NotifyItemUpdated(id);
             OrderManager.Observers.NotifyListUpdated();
         }
+    }
+
+    // Helper method for air distance calculation (add if not already in class)
+    private static double GetAirDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 6371; // Radius of the earth in km
+        double dLat = (lat2 - lat1) * Math.PI / 180.0;
+        double dLon = (lon2 - lon1) * Math.PI / 180.0;
+        double a =
+            Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+            Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0) *
+            Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
     }
 }

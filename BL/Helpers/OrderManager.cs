@@ -266,22 +266,31 @@ internal static class OrderManager{
                     DO.OrderType.Motorcycle => s_dal.Config.AverageMotorcycleSpeed,
                     DO.OrderType.Bike => s_dal.Config.AverageBikeSpeed,
                     DO.OrderType.Walking => s_dal.Config.AverageWalkingSpeed,
-                    _ => 1 // avoid division by zero
+                    _ => 1
                 };
 
-                double distance = del.ActualDistance ?? 0;
-                double hours = distance / delSpeed;
+                // FIX: if ActualDistance isn't set, fall back to air distance (company -> order)
+                double distanceKm;
+                if (del.ActualDistance.HasValue && del.ActualDistance.Value > 0)
+                {
+                    distanceKm = del.ActualDistance.Value;
+                }
+                else
+                {
+                    var order = s_dal.Order.Read(orderId);
+                    distanceKm = GetAirDistance(
+                        order.Latitude,
+                        order.Longitude,
+                        (double)s_dal.Config.CompanyLatitude!,
+                        (double)s_dal.Config.CompanyLongitude!);
+                }
 
-                // Total expected duration (+ 5 mins buffer)
+                double hours = distanceKm / delSpeed;
+
                 TimeSpan totalDuration = TimeSpan.FromHours(hours).Add(TimeSpan.FromMinutes(5));
-
-                // Calculate exact ETA
                 DateTime eta = del.StartOfDelivery.Add(totalDuration);
 
-                // Remaining = ETA - Current Simulator Time
                 TimeSpan remaining = eta - s_dal.Config.Clock;
-
-                // Return the remaining time (ensure it doesn't show negative)
                 return remaining < TimeSpan.Zero ? TimeSpan.Zero : remaining;
             }
 
