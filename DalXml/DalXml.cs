@@ -12,7 +12,8 @@ namespace Dal;
 sealed internal class DalXml : IDal
 {
     private DalXml() { }
-    public static IDal Instance { get; } = new DalXml();
+    private static readonly Lazy<IDal> _instance = new(() => new DalXml());
+    public static IDal Instance => _instance.Value;
     public IOrder Order { get; } = new OrderImplementation();
 	public ICourier Courier { get; } = new CourierImplementation();
 	public IDelivery Delivery { get; } = new DeliveryImplementation();

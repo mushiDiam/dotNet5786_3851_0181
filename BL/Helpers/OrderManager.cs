@@ -165,7 +165,6 @@ internal static class OrderManager{
         DO.Delivery? del = DeliveryManager.GetDelivery(orderId);
         if (del == null)
         {
-            Debug.WriteLine($"Order {orderId} has no delivery record; treating as Open.");
             return OrderStatus.Open;
         }
 

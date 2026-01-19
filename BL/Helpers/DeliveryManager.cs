@@ -195,7 +195,7 @@ internal static class DeliveryManager
         lock (AdminManager.BlMutex)
         {
             DO.Delivery delivery = s_dal.Delivery.Read(d => d.OrderId == orderId && d.EndOfOrder == null);
-            if (delivery == null) return;
+            if (delivery is null) return;
 
             updated = delivery with
             {
@@ -205,12 +205,12 @@ internal static class DeliveryManager
 
             s_dal.Delivery.Update(updated);
         }
-            Observers.NotifyListUpdated();
-            Observers.NotifyItemUpdated(updated.Id);
+        Observers.NotifyItemUpdated(updated.Id);
+        Observers.NotifyListUpdated();
 
-            // notify order observers and courier observers
-            try { OrderManager.Observers.NotifyItemUpdated(updated.OrderId); } catch { }
-            try { if (updated.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updated.CourierId); } catch { }
+        // notify order observers and courier observers
+        try { OrderManager.Observers.NotifyItemUpdated(updated.OrderId); } catch { }
+        try { if (updated.CourierId != 0) CourierManager.Observers.NotifyItemUpdated(updated.CourierId); } catch { }
         
     }
 }

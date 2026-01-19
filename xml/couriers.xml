@@ -188,17 +188,6 @@
     <Password>1234</Password>
   </Courier>
   <Courier>
-    <Id>252015951</Id>
-    <Active>true</Active>
-    <MaxDeliveryDistance>1.0452054627250136</MaxDeliveryDistance>
-    <JoinDate>2024-07-27T16:36:34.2846875+03:00</JoinDate>
-    <OrderType>Walking</OrderType>
-    <Name>Omer Lavi</Name>
-    <Phone>050-3612107</Phone>
-    <Email>omer.lavi@mail.com</Email>
-    <Password>1234</Password>
-  </Courier>
-  <Courier>
     <Id>271276212</Id>
     <Active>false</Active>
     <MaxDeliveryDistance>23.78623131058962</MaxDeliveryDistance>
@@ -218,6 +207,17 @@
     <Name>David Levi</Name>
     <Phone>050-5004663</Phone>
     <Email>david.levi@mail.com</Email>
+    <Password>1234</Password>
+  </Courier>
+  <Courier>
+    <Id>252015951</Id>
+    <Active>true</Active>
+    <MaxDeliveryDistance>76</MaxDeliveryDistance>
+    <JoinDate>2024-07-27T16:36:34.2846875+03:00</JoinDate>
+    <OrderType>Bike</OrderType>
+    <Name>Omer Lavi</Name>
+    <Phone>050-3612107</Phone>
+    <Email>omer.lavi@mail.com</Email>
     <Password>1234</Password>
   </Courier>
 </ArrayOfCourier>

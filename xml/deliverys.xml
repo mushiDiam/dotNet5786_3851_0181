@@ -261,16 +261,6 @@
     <TimeOfDelivery xsi:nil="true" />
   </Delivery>
   <Delivery>
-    <Id>27</Id>
-    <OrderId>27</OrderId>
-    <CourierId>252015951</CourierId>
-    <OrderType>Car</OrderType>
-    <StartOfDelivery>2026-01-18T16:38:34.1554563+02:00</StartOfDelivery>
-    <ActualDistance xsi:nil="true" />
-    <EndOfOrder xsi:nil="true" />
-    <TimeOfDelivery xsi:nil="true" />
-  </Delivery>
-  <Delivery>
     <Id>28</Id>
     <OrderId>28</OrderId>
     <CourierId>271276212</CourierId>
@@ -329,5 +319,25 @@
     <ActualDistance xsi:nil="true" />
     <EndOfOrder xsi:nil="true" />
     <TimeOfDelivery xsi:nil="true" />
+  </Delivery>
+  <Delivery>
+    <Id>27</Id>
+    <OrderId>27</OrderId>
+    <CourierId>252015951</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2026-01-18T16:38:34.1554563+02:00</StartOfDelivery>
+    <ActualDistance xsi:nil="true" />
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2026-01-19T16:57:05.3355494+02:00</TimeOfDelivery>
+  </Delivery>
+  <Delivery>
+    <Id>34</Id>
+    <OrderId>37</OrderId>
+    <CourierId>252015951</CourierId>
+    <OrderType>Car</OrderType>
+    <StartOfDelivery>2026-01-19T10:13:34.1554563+02:00</StartOfDelivery>
+    <ActualDistance xsi:nil="true" />
+    <EndOfOrder>Completed</EndOfOrder>
+    <TimeOfDelivery>2026-01-19T16:59:41.2689705+02:00</TimeOfDelivery>
   </Delivery>
 </ArrayOfDelivery>
