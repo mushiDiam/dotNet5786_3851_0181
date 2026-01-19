@@ -105,7 +105,7 @@ public static class Initialization
         {
             var addr = addresses[s_rand.Next(addresses.Length)];
             var cust = customers[s_rand.Next(customers.Length)];
-            var createdAt = DateTime.Now.AddDays(-s_rand.Next(1, 5));
+            var createdAt = DateTime.Now.AddMinutes(-s_rand.Next(0,80));
 
             var order = new Order(
                 Id: 0,
