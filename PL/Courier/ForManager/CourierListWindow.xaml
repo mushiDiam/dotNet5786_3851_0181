@@ -10,6 +10,7 @@
         mc:Ignorable="d"
         Title="Courier Management" Height="500" Width="900"
         WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         Loaded="Window_Loaded"
         Closed="Window_Closed">
 

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:PL.Deliveries"
         mc:Ignorable="d"
         Title="Delivery List" Height="560" Width="900"
-        WindowStartupLocation="CenterScreen" 
+        WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         Background="#F5F5F5">
 
     <Window.Resources>

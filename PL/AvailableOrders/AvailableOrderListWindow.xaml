@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Available Orders" Height="560" Width="820"
-        WindowStartupLocation="CenterOwner" 
+        WindowStartupLocation="CenterOwner"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
         Background="#F5F5F5">
 

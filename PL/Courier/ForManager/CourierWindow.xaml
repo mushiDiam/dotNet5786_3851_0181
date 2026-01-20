@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="580" Width="450"
         WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Loaded="Window_Loaded"
         Closed="Window_Closed">

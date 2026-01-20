@@ -257,6 +257,8 @@ namespace PL
                 {
                     Mouse.OverrideCursor = null;
                     MessageBox.Show("Address cannot be empty.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Refresh to show last valid configuration
+                    Configuration = s_bl.Admin.GetConfig();
                     return;
                 }
 
@@ -272,6 +274,8 @@ namespace PL
                                     "Invalid Address",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
+                    // Refresh to show last valid configuration
+                    Configuration = s_bl.Admin.GetConfig();
                     return;
                 }
 
@@ -288,6 +292,8 @@ namespace PL
             {
                 Mouse.OverrideCursor = null;
                 MessageBox.Show("Error saving configuration: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Refresh to show last valid configuration
+                Configuration = s_bl.Admin.GetConfig();
             }
         }
 

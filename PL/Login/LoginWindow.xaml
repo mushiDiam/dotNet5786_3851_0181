@@ -5,6 +5,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="#F5F5F5"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Window.Resources>

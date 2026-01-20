@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Title="Courier Dashboard" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/PL;component/Helpers/app.ico"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Background="#F5F5F5">
 
