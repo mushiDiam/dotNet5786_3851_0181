@@ -138,18 +138,18 @@ The system supports two roles:
 
 | Category | Bonus | Points | Implementation |
 |----------|-------|--------|----------------|
-| **Development Environment** | Proper TryParse usage with return value validation | 1 | [BlTest/Program.cs#L304-L310](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BlTest/Program.cs#L304-L310), [DalTest/Program.cs#L218-L226](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalTest/Program.cs#L218-L226) |
-| **DAL** | Password property for Courier entity | 2 | [DalFacade/DO/Courier.cs#L19](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalFacade/DO/Courier.cs#L19) |
-| **DAL** | Singleton with Thread Safety + Lazy Initialization | 2 | [DalList/DalList.cs#L8-L9](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalList/DalList%20.cs#L8-L9), [DalXml/DalXml.cs#L13-L14](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalXml/DalXml.cs#L13-L14) |
-| **BL** | Initial password set by manager + user update capability | 1 | [PL/Login/ChangePasswordWindow.xaml.cs#L44-L50](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/ChangePasswordWindow.xaml.cs#L44-L50) |
-| **PL - WPF** | Property Triggers (IsMouseOver effects) | 1 | [PL/Login/LoginWindow.xaml#L28-L31](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L28-L31) |
-| **PL - WPF** | Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L73-L77](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L73-L77) |
-| **PL - WPF** | Multi Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L142-L152](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L142-L152) |
-| **PL - WPF** | ControlTemplate usage | 1 | [PL/Login/LoginWindow.xaml#L17-L26](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L17-L26) |
-| **PL - Project** | Password hidden with asterisks (PasswordBox) | 1 | [PL/Login/LoginWindow.xaml#L112](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L112) |
-| **PL - Project** | Smart delete button (visible only when deletion is allowed) | 2 | [PL/Courier/ForManager/CourierListWindow.xaml#L136-L155](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L136-L155) |
-| **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L224-L232](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L224-L232) |
-| **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L210](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L210) |
+| **Development Environment** | Proper TryParse usage with return value validation | 1 | [BlTest/Program.cs#L304-L311](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BlTest/Program.cs#L304-L311), [DalTest/Program.cs#L331-L340](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalTest/Program.cs#L331-L340) |
+| **DAL** | Password property for Courier entity | 2 | [DalFacade/DO/Courier.cs#L28](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalFacade/DO/Courier.cs#L28) |
+| **DAL** | Singleton with Thread Safety + Lazy Initialization | 2 | [DalList/DalList .cs#L8-L9](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalList/DalList%20.cs#L8-L9), [DalXml/DalXml.cs#L13-L14](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalXml/DalXml.cs#L13-L14) |
+| **BL** | Initial password set by manager + user update capability | 1 | [PL/Login/ChangePasswordWindow.xaml.cs#L51-L55](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/ChangePasswordWindow.xaml.cs#L51-L55) |
+| **PL - WPF** | Property Triggers (IsMouseOver effects) | 1 | [PL/Login/LoginWindow.xaml#L31-L33](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L31-L33) |
+| **PL - WPF** | Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L88-L91](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L88-L91) |
+| **PL - WPF** | Multi Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L147-L155](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L147-L155) |
+| **PL - WPF** | ControlTemplate usage | 1 | [PL/Login/LoginWindow.xaml#L21-L26](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L21-L26) |
+| **PL - Project** | Password hidden with asterisks (PasswordBox) | 1 | [PL/Login/LoginWindow.xaml#L148](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L148) |
+| **PL - Project** | Smart delete button (visible only when deletion is allowed) | 2 | [PL/Courier/ForManager/CourierListWindow.xaml#L141-L159](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L141-L159) |
+| **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L228-L236](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L228-L236) |
+| **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L212](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L212) |
 
 ### Total Bonus Points: 17
 
