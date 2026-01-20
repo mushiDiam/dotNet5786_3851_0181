@@ -11,7 +11,6 @@ namespace Helpers;
 internal static class CourierManager
 {
     private static IDal s_dal = Factory.Get;
-
     private static readonly AsyncMutex s_periodicMutex = new(); //stage 7
     private static readonly AsyncMutex s_simulationMutex = new(); //stage 7
     internal static ObserverManager Observers = new();
@@ -26,6 +25,10 @@ internal static class CourierManager
             catch (DalAlreadyExistsException ex)
             {
                 throw new BlAlreadyExistsException("Courier with this ID already exists.", ex);
+            }
+            catch (DalInvalidValueException ex)
+            {
+                throw new BlInvalidValueException("Invalid value provided for courier.", ex);
             }
         }
         Observers.NotifyListUpdated(); //stage 5

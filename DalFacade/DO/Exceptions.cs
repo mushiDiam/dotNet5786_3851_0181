@@ -31,3 +31,7 @@ public class DalXMLFileLoadCreateException : Exception
 {
     public DalXMLFileLoadCreateException(string? message) : base(message) { }
 }
+public class DalInvalidValueException : Exception
+{
+    public DalInvalidValueException(string? message) : base(message) { }
+}
