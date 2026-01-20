@@ -385,18 +385,25 @@ internal static class CourierManager
 
         try
         {
-            // REMOVED: await Task.Run(...) - Not needed, we are already on a background thread
-
             List<DO.Courier> availableCouriers;
             List<DO.Order> pendingOrders;
+            List<DO.Delivery> activeDeliveries;
+            DateTime currentClock;
+            double carSpeed, motorcycleSpeed, bikeSpeed, walkingSpeed;
 
             // Fetching data under lock
             lock (AdminManager.BlMutex)
             {
-                // 1. Fetch all Deliveries to understand the current state
-                var allDeliveries = s_dal.Delivery.ReadAll();
+                currentClock = s_dal.Config.Clock;
+                carSpeed = s_dal.Config.AverageCarSpeed;
+                motorcycleSpeed = s_dal.Config.AverageMotorcycleSpeed;
+                bikeSpeed = s_dal.Config.AverageBikeSpeed;
+                walkingSpeed = s_dal.Config.AverageWalkingSpeed;
 
-                // 2. Find Busy Couriers (Couriers with active deliveries)
+                // 1. Fetch all Deliveries to understand the current state
+                var allDeliveries = s_dal.Delivery.ReadAll().ToList();
+
+                // 2. Find Busy Couriers (Couriers with active deliveries - EndOfOrder is null)
                 var busyCourierIds = allDeliveries
                     .Where(d => d.EndOfOrder == null)
                     .Select(d => d.CourierId)
@@ -407,40 +414,127 @@ internal static class CourierManager
                     .Select(d => d.OrderId)
                     .ToHashSet();
 
-                // 4. Get Available Couriers
+                // 4. Get Available Couriers - ONLY ACTIVE couriers without active orders
                 availableCouriers = s_dal.Courier.ReadAll()
-                    .Where(c => !busyCourierIds.Contains(c.Id))
+                    .Where(c => c.Active && !busyCourierIds.Contains(c.Id))
                     .ToList();
 
-                // 5. Get Pending Orders
+                // 5. Get Pending Orders (orders not yet assigned to any courier)
                 pendingOrders = s_dal.Order.ReadAll()
                     .Where(o => !takenOrderIds.Contains(o.Id))
                     .ToList();
+
+                // 6. Get active deliveries (in progress) to check for completion
+                activeDeliveries = allDeliveries
+                    .Where(d => d.EndOfOrder == null)
+                    .ToList();
             }
 
-            // Simulation Loop
-            foreach (var courier in availableCouriers)
+            // --- PHASE 1: Complete or cancel deliveries ---
+            foreach (var delivery in activeDeliveries)
             {
-                // If no orders left, stop
-                if (!pendingOrders.Any()) break;
-
-                // 50% chance to assign an order
-                if (s_rand.NextDouble() < 0.5)
+                double speed = delivery.OrderType switch
                 {
-                    DO.Order orderToAssign;
+                    DO.OrderType.Car => carSpeed,
+                    DO.OrderType.Motorcycle => motorcycleSpeed,
+                    DO.OrderType.Bike => bikeSpeed,
+                    DO.OrderType.Walking => walkingSpeed,
+                    _ => 1
+                };
+
+                double distanceKm = delivery.ActualDistance ?? 5.0;
+                double travelHours = distanceKm / speed;
+                
+                // Add random buffer (5-20 minutes) for variety
+                int randomBufferMinutes = s_rand.Next(5, 21);
+                TimeSpan travelTime = TimeSpan.FromHours(travelHours).Add(TimeSpan.FromMinutes(randomBufferMinutes));
+
+                DateTime expectedArrival = delivery.StartOfDelivery.Add(travelTime);
+
+                if (currentClock >= expectedArrival)
+                {
+                    // Variety in end types: 90% Completed, 10% other outcomes
+                    DO.EndOfOrder endType = s_rand.NextDouble() < 0.9 
+                        ? DO.EndOfOrder.Completed 
+                        : DO.EndOfOrder.Unreached; // or other valid enum value
 
                     lock (AdminManager.BlMutex)
                     {
-                        // Double check if orders are still available (safe guard)
+                        var updatedDelivery = delivery with
+                        {
+                            EndOfOrder = endType,
+                            TimeOfDelivery = currentClock
+                        };
+                        s_dal.Delivery.Update(updatedDelivery);
+                    }
+                    couriersChanged.Add(delivery.CourierId);
+                    ordersChanged.Add(delivery.OrderId);
+                }
+                else
+                {
+                    // 10% chance manager cancels the delivery
+                    if (s_rand.NextDouble() < 0.10)
+                    {
+                        lock (AdminManager.BlMutex)
+                        {
+                            var cancelledDelivery = delivery with
+                            {
+                                EndOfOrder = DO.EndOfOrder.Canceled // or appropriate enum
+                            };
+                            s_dal.Delivery.Update(cancelledDelivery);
+                        }
+                        couriersChanged.Add(delivery.CourierId);
+                        ordersChanged.Add(delivery.OrderId);
+                    }
+                }
+            }
+
+            // --- PHASE 2: Assign new orders to available active couriers ---
+            foreach (var courier in availableCouriers)
+            {
+                if (!pendingOrders.Any()) break;
+
+                // 15% chance courier is available at all (per instructions)
+                if (s_rand.NextDouble() >= 0.15) continue;
+
+                // Then 50% chance they actually pick an order
+                if (s_rand.NextDouble() < 0.5)
+                {
+                    DO.Order? orderToAssign = null;
+                    double? actualDistance = null;
+
+                    lock (AdminManager.BlMutex)
+                    {
+                        // Double check if orders are still available
                         if (!pendingOrders.Any()) break;
 
-                        orderToAssign = pendingOrders.First();
+                        // Find an order within courier's max distance preference
+                        var companyLat = s_dal.Config.CompanyLatitude ?? 32.0853;
+                        var companyLon = s_dal.Config.CompanyLongitude ?? 34.7818;
+
+                        orderToAssign = pendingOrders.FirstOrDefault(o =>
+                        {
+                            double airDist = GetAirDistance(o.Latitude, o.Longitude, companyLat, companyLon);
+                            return courier.MaxDeliveryDistance == null || airDist <= courier.MaxDeliveryDistance;
+                        });
+
+                        if (orderToAssign == null) continue;
+
+                        // Calculate actual distance for the delivery
+                        actualDistance = GetAirDistance(
+                            orderToAssign.Latitude,
+                            orderToAssign.Longitude,
+                            companyLat,
+                            companyLon);
 
                         var newDelivery = new DO.Delivery
                         {
+                            Id = 0, // Auto-generated
                             CourierId = courier.Id,
                             OrderId = orderToAssign.Id,
-                            StartOfDelivery = s_dal.Config.Clock, // EXCELLENT CHANGE
+                            OrderType = courier.OrderType,
+                            StartOfDelivery = s_dal.Config.Clock,
+                            ActualDistance = actualDistance,
                             EndOfOrder = null // Active delivery
                         };
 
@@ -456,6 +550,7 @@ internal static class CourierManager
         catch (Exception ex)
         {
             // Log error if needed
+            System.Diagnostics.Debug.WriteLine($"Simulation error: {ex.Message}");
         }
         finally
         {
@@ -465,14 +560,103 @@ internal static class CourierManager
         // Notify observers outside the lock
         if (couriersChanged.Any())
         {
-            foreach (var id in couriersChanged) Observers.NotifyItemUpdated(id);
+            foreach (var id in couriersChanged.Distinct()) Observers.NotifyItemUpdated(id);
             Observers.NotifyListUpdated();
         }
 
         if (ordersChanged.Any())
         {
-            foreach (var id in ordersChanged) OrderManager.Observers.NotifyItemUpdated(id);
+            foreach (var id in ordersChanged.Distinct()) OrderManager.Observers.NotifyItemUpdated(id);
             OrderManager.Observers.NotifyListUpdated();
+        }
+    }
+
+    // Helper method for air distance calculation (add if not already in class)
+    private static double GetAirDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 6371; // Radius of the earth in km
+        double dLat = (lat2 - lat1) * Math.PI / 180.0;
+        double dLon = (lon2 - lon1) * Math.PI / 180.0;
+        double a =
+            Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+            Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0) *
+            Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
+    }
+
+    /// <summary>
+    /// Simulates creation of new random orders during simulator run.
+    /// Uses pre-defined addresses from initialization data (no network calls).
+    /// </summary>
+    internal static void SimulateNewOrders()
+    {
+        // 10% chance to create a new order each simulation tick
+        if (s_rand.NextDouble() >= 0.10)
+            return;
+
+        // Same addresses as in Initialization.cs (with pre-calculated coordinates)
+        var addresses = new (string Address, double Lat, double Lon)[] {
+            ("Rothschild Blvd 1, Tel Aviv", 32.062, 34.770),
+            ("Ibn Gabirol 50, Tel Aviv", 32.081, 34.781),
+            ("Dizengoff 150, Tel Aviv", 32.089, 34.776),
+            ("Namir 122, Tel Aviv", 32.095, 34.789),
+            ("Yigal Alon 90, Tel Aviv", 32.072, 34.794),
+            ("Arlozorov 100, Tel Aviv", 32.084, 34.782),
+            ("HaYarkon 200, Tel Aviv", 32.089, 34.769),
+            ("Allenby 40, Tel Aviv", 32.063, 34.771),
+            ("King George 30, Tel Aviv", 32.072, 34.776),
+            ("HaMasger 9, Tel Aviv", 32.062, 34.781)
+        };
+
+        // Same customer names as in Initialization.cs
+        var customers = new[] {
+            "Noa Tal", "Avi Gold", "Dana Regev", "Itai Mor", "Yasmin Levi",
+            "Yossi Bar", "Roni Katz", "Adi Ben", "Eli Rahamim", "Nitzan Tzur"
+        };
+
+        try
+        {
+            // Select random data (same pattern as Initialization.cs)
+            var addr = addresses[s_rand.Next(addresses.Length)];
+            var customerName = customers[s_rand.Next(customers.Length)];
+            var orderType = (DO.OrderType)s_rand.Next(0, 4);
+
+            DateTime currentClock;
+            double companyLat, companyLon;
+
+            lock (AdminManager.BlMutex)
+            {
+                currentClock = s_dal.Config.Clock;
+                companyLat = s_dal.Config.CompanyLatitude ?? 32.0853;
+                companyLon = s_dal.Config.CompanyLongitude ?? 34.7818;
+
+                // Create order directly in DAL (same as Initialization.cs)
+                var order = new DO.Order(
+                    Id: 0, // Auto-generated
+                    Address: addr.Address,
+                    Latitude: addr.Lat,
+                    Longitude: addr.Lon,
+                    CustomerName: customerName,
+                    CustomerPhone: "052-" + s_rand.Next(1000000, 9999999),
+                    CreatedAt: currentClock,
+                    Fragile: s_rand.Next(2) == 0,
+                    OrderType: orderType,
+                    Weight: s_rand.Next(1, 20),
+                    Volume: s_rand.Next(1, 10)
+                );
+
+                s_dal.Order.Create(order);
+            }
+
+            // Notify observers that a new order was added
+            OrderManager.Observers.NotifyListUpdated();
+
+            System.Diagnostics.Debug.WriteLine($"Simulator: Created new order for {customerName} at {addr.Address}");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Simulator: Failed to create order - {ex.Message}");
         }
     }
 }

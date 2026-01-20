@@ -259,9 +259,12 @@ internal static class AdminManager //stage 4
         {
             UpdateClock(Now.AddMinutes(s_interval));
 
-            //stage 7: Call simulation method asynchronously
+            //stage 7: Call simulation methods asynchronously
             //The AsyncMutex inside the method prevents overlapping executions
             _ = Task.Run(() => CourierManager.SimulateInactiveCouriersAsync());
+
+            // NEW: Simulate creation of new orders
+            _ = Task.Run(() => CourierManager.SimulateNewOrders());
 
             try
             {
