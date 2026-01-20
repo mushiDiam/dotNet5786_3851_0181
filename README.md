@@ -17,16 +17,16 @@ This project is a multi-layered delivery management system that handles orders, 
 The solution follows a **3-tier architecture**:
 
 ```
-???????????????????????????????????????
-?      PL (Presentation Layer)        ?
-?         WPF Application             ?
-???????????????????????????????????????
-?      BL (Business Logic Layer)      ?
-?    Order, Courier, Admin Services   ?
-???????????????????????????????????????
-?      DAL (Data Access Layer)        ?
-?       DalList / DalXml              ?
-???????????????????????????????????????
+---------------------------------------
+|      PL (Presentation Layer)        |
+|         WPF Application             |
+|-------------------------------------|
+|      BL (Business Logic Layer)      |
+|    Order, Courier, Admin Services   |
+|-------------------------------------|
+|      DAL (Data Access Layer)        |
+|       DalList / DalXml              |
+|-------------------------------------|
 ```
 
 ## Project Structure
@@ -138,18 +138,18 @@ The system supports two roles:
 
 | Category | Bonus | Points | Implementation |
 |----------|-------|--------|----------------|
-| **Development Environment** | Proper TryParse usage with return value validation | 1 | [BlTest/Program.cs#L304-L311](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BlTest/Program.cs#L304-L311), [DalTest/Program.cs#L331-L340](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalTest/Program.cs#L331-L340) |
+| **Development Environment** | Proper TryParse usage with return value validation | 1 | [BlTest/Program.cs#L351-L359](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BlTest/Program.cs#L351-L359), [BlTest/Program.cs#L361-L369](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BlTest/Program.cs#L361-L369) |
 | **DAL** | Password property for Courier entity | 2 | [DalFacade/DO/Courier.cs#L28](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalFacade/DO/Courier.cs#L28) |
 | **DAL** | Singleton with Thread Safety + Lazy Initialization | 2 | [DalList/DalList .cs#L8-L9](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalList/DalList%20.cs#L8-L9), [DalXml/DalXml.cs#L13-L14](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/DalXml/DalXml.cs#L13-L14) |
-| **BL** | Initial password set by manager + user update capability | 1 | [PL/Login/ChangePasswordWindow.xaml.cs#L51-L55](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/ChangePasswordWindow.xaml.cs#L51-L55) |
+| **BL** | Initial password set by manager + user update capability | 1 | [BL/BlImplementation/CourierImplementation.cs#L43-L52](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BL/BlImplementation/CourierImplementation.cs#L43-L52) |
 | **PL - WPF** | Property Triggers (IsMouseOver effects) | 1 | [PL/Login/LoginWindow.xaml#L31-L33](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L31-L33) |
-| **PL - WPF** | Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L88-L91](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L88-L91) |
-| **PL - WPF** | Multi Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L147-L155](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L147-L155) |
-| **PL - WPF** | ControlTemplate usage | 1 | [PL/Login/LoginWindow.xaml#L21-L26](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L21-L26) |
-| **PL - Project** | Password hidden with asterisks (PasswordBox) | 1 | [PL/Login/LoginWindow.xaml#L148](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L148) |
-| **PL - Project** | Smart delete button (visible only when deletion is allowed) | 2 | [PL/Courier/ForManager/CourierListWindow.xaml#L141-L159](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L141-L159) |
-| **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L228-L236](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L228-L236) |
-| **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L212](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L212) |
+| **PL - WPF** | Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L119-L121](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L119-L121) |
+| **PL - WPF** | Multi Data Triggers | 1 | [PL/Courier/ForManager/CourierListWindow.xaml#L202-L209](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L202-L209) |
+| **PL - WPF** | ControlTemplate usage | 1 | [PL/Login/LoginWindow.xaml#L22-L28](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L22-L28) |
+| **PL - Project** | Password hidden with asterisks (PasswordBox) | 1 | [PL/Courier/ForCourier.MainCourierWindow#L133-L140](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForCourier.MainCourierWindow.xaml#L133-L140) |
+| **PL - Project** | Smart delete button (visible only when deletion is allowed) | 2 | [PL/Courier/ForManager/CourierListWindow.xaml#L193-L216](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L193-L216) |
+| **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L271-L280](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L271-L280) |
+| **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L326-L362](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L326-L362) |
 
 ### Total Bonus Points: 17
 
