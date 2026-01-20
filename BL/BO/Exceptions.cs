@@ -51,6 +51,8 @@ public class BlUnauthorizedAccessException : Exception
 public class BlInvalidValueException : Exception
 {
     public BlInvalidValueException(string? message) : base(message) { }
+
+    public BlInvalidValueException(string message, Exception inner) : base(message, inner) { }
 }
 [Serializable]
 public class BlEmptyListException : Exception
