@@ -16,6 +16,10 @@ internal static class CourierManager
     internal static ObserverManager Observers = new();
     private static readonly Random s_rand = new();
     internal static void CreateCourier(BO.Courier courier){
+        // Validate max distance is not 0
+        if (courier.MaxDistancePreference <= 0)
+            throw new BlInvalidValueException("Max delivery distance must be greater than 0 km.");
+
         lock (AdminManager.BlMutex) { 
             try
             {
@@ -28,7 +32,7 @@ internal static class CourierManager
             }
             catch (DalInvalidValueException ex)
             {
-                throw new BlInvalidValueException("Invalid value provided for courier.", ex);
+                throw new BlInvalidValueException(ex.Message, ex);
             }
         }
         Observers.NotifyListUpdated(); //stage 5
@@ -76,6 +80,10 @@ internal static class CourierManager
         if (courier is null)
             throw new BlInvalidValueException("Courier cannot be null.");
 
+        // Validate max distance is not 0
+        if (courier.MaxDistancePreference <= 0)
+            throw new BlInvalidValueException("Max delivery distance must be greater than 0 km.");
+
         // Ensure courier exists and get current state
         BO.Courier existing;
         try
@@ -119,6 +127,10 @@ internal static class CourierManager
             catch (DalDoesNotExistException ex)
             {
                 throw new BlDoesNotExistException("Courier with this ID Doesn't exists.", ex);
+            }
+            catch (DalInvalidValueException ex)
+            {
+                throw new BlInvalidValueException(ex.Message, ex);
             }
         }
         Observers.NotifyItemUpdated(courier.Id); //stage 5

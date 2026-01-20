@@ -25,6 +25,8 @@ public static class Initialization
         //s_dal = dal ?? throw new DalCannotBeNullException("DAL object cannot be null!");
         s_dal = DalApi.Factory.Get; //stage 4
         s_dal.resetDB();
+        s_dal.Config.ManagerId = 214633851; //set manager id
+        s_dal.Config.ManagerPassword = "10"; //set manager password
         DataInit();
 
     }

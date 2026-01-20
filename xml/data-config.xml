@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <config>
-  <NextOrderId>68</NextOrderId>
-  <NextDeliveryId>70</NextDeliveryId>
-  <Clock>2026-01-20T10:47:10.3297383+02:00</Clock>
-  <ManagerId>10003</ManagerId>
-  <ManagerPassword></ManagerPassword>
+  <NextOrderId>51</NextOrderId>
+  <NextDeliveryId>21</NextDeliveryId>
+  <Clock>2026-01-20T15:49:13.7301248+02:00</Clock>
+  <ManagerId>214633851</ManagerId>
+  <ManagerPassword>10</ManagerPassword>
   <CompanyAddress>מגדל המטכ"ל</CompanyAddress>
   <CompanyLatitude>32.0752394</CompanyLatitude>
   <CompanyLongitude>34.7898125</CompanyLongitude>

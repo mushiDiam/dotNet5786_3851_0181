@@ -37,14 +37,14 @@ namespace PL
                     else
                     {
                         // Set manager credentials using first courier's ID and the default password from initialization
-                        dal.Config.ManagerId = 10003;
-                        dal.Config.ManagerPassword = "1234";
+                        dal.Config.ManagerId = 214633851;
+                        dal.Config.ManagerPassword = "10";
 
                         // Show diagnostic info (you can comment this out after confirming it works)
                         MessageBox.Show($"In-memory DAL initialized successfully!\n\n" +
                                         $"Couriers created: {couriers.Count}\n" +
                                         $"Manager ID: {dal.Config.ManagerId}\n" +
-                                        $"Manager Password: 1234\n\n" +
+                                        $"Manager Password: {dal.Config.ManagerPassword}\n\n" +
                                         $"You can also log in as any courier ID with password '1234'",
                                         "DAL Initialization", MessageBoxButton.OK, MessageBoxImage.Information);
                     }

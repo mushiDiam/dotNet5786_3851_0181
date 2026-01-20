@@ -11,6 +11,13 @@ internal static class Config
     internal const string s_orders_xml = "orders.xml";
     internal const string s_deliveries_xml = "deliverys.xml";
 
+    // --- Validation Helpers ---
+    private static bool IsValidId(int id)
+    {
+        // ID must be between 100000000 and 999999999 (exactly 9 digits)
+        return id >= 100000000 && id <= 999999999;
+    }
+
     internal static int NextOrderId{
         //get => XMLTools.GetAndIncreaseConfigIntVal(s_data_config_xml, "NextOrderId");
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -62,7 +69,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToIntNullable("ManagerId") ?? 0;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "ManagerId", value.ToString());
+        set
+        {
+            if (!IsValidId(value))
+                throw new DO.DalInvalidValueException("Manager ID must be exactly 9 digits");
+            SetConfigStringVal(s_data_config_xml, "ManagerId", value.ToString());
+        }
     }
 
     internal static string ManagerPassword
@@ -74,7 +86,12 @@ internal static class Config
             return s ?? string.Empty;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "ManagerPassword", value ?? string.Empty);
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new DO.DalInvalidValueException("Manager password cannot be empty");
+            SetConfigStringVal(s_data_config_xml, "ManagerPassword", value);
+        }
     }
 
     internal static string? CompanyAddress
@@ -106,7 +123,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("MaxDeliveryDistance");
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryDistance", value?.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            if (value.HasValue && value.Value < 0)
+                throw new DO.DalInvalidValueException("Max delivery distance cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "MaxDeliveryDistance", value?.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     internal static double AverageCarSpeed
@@ -114,7 +136,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageCarSpeed") ?? 0.0;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "AverageCarSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            if (value < 0)
+                throw new DO.DalInvalidValueException("Average car speed cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "AverageCarSpeed", value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     internal static double AverageMotorcycleSpeed
@@ -122,7 +149,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageMotorcycleSpeed") ?? 0.0;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "AverageMotorcycleSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            if (value < 0)
+                throw new DO.DalInvalidValueException("Average motorcycle speed cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "AverageMotorcycleSpeed", value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     internal static double AverageBikeSpeed
@@ -130,7 +162,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageBikeSpeed") ?? 0.0;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "AverageBikeSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            if (value < 0)
+                throw new DO.DalInvalidValueException("Average bike speed cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "AverageBikeSpeed", value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     internal static double AverageWalkingSpeed
@@ -138,7 +175,12 @@ internal static class Config
         [MethodImpl(MethodImplOptions.Synchronized)]
         get => XMLTools.LoadListFromXMLElement(s_data_config_xml).ToDoubleNullable("AverageWalkingSpeed") ?? 0.0;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "AverageWalkingSpeed", value.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            if (value < 0)
+                throw new DO.DalInvalidValueException("Average walking speed cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "AverageWalkingSpeed", value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     internal static TimeSpan MaxDeliveryTime
@@ -152,7 +194,12 @@ internal static class Config
             return TimeSpan.Zero;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "MaxDeliveryTime", value.ToString());
+        set
+        {
+            if (value < TimeSpan.Zero)
+                throw new DO.DalInvalidValueException("Max delivery time cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "MaxDeliveryTime", value.ToString());
+        }
     }
 
     internal static TimeSpan RiskRange
@@ -166,7 +213,12 @@ internal static class Config
             return TimeSpan.Zero;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "RiskRange", value.ToString());
+        set
+        {
+            if (value < TimeSpan.Zero)
+                throw new DO.DalInvalidValueException("Risk range cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "RiskRange", value.ToString());
+        }
     }
 
     internal static TimeSpan InactiveTime
@@ -180,15 +232,18 @@ internal static class Config
             return TimeSpan.Zero;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        set => SetConfigStringVal(s_data_config_xml, "InactiveTime", value.ToString());
+        set
+        {
+            if (value < TimeSpan.Zero)
+                throw new DO.DalInvalidValueException("Inactive time cannot be negative");
+            SetConfigStringVal(s_data_config_xml, "InactiveTime", value.ToString());
+        }
     }
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal static void Reset(){
-        //NextDeliveryId = 1;
-        // NextOrderId = 1;
-        SetConfigStringVal(s_data_config_xml, "NextDeliveryId", "1");   //changed back to 1
-        SetConfigStringVal(s_data_config_xml, "NextOrderId", "1");  //changed back to 1
+        SetConfigStringVal(s_data_config_xml, "NextDeliveryId", "1");
+        SetConfigStringVal(s_data_config_xml, "NextOrderId", "1");
         Clock = DateTime.Now;
-        ManagerPassword = string.Empty;
+        SetConfigStringVal(s_data_config_xml, "ManagerPassword", "10"); // Reset to default password
     }
 }

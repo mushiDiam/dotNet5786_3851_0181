@@ -89,6 +89,39 @@ internal static class AdminManager //stage 4
     [MethodImpl(MethodImplOptions.Synchronized)] //stage 7
     internal static void SetConfig(BO.Config configuration) //stage 4
     {
+        // --- Validations ---
+        // Validate ManagerId (must be exactly 9 digits)
+        if (configuration.ManagerId < 100000000 || configuration.ManagerId > 999999999)
+            throw new BlInvalidValueException("Manager ID must be exactly 9 digits");
+
+        // Validate ManagerPassword (cannot be empty)
+        if (string.IsNullOrWhiteSpace(configuration.ManagerPassword))
+            throw new BlInvalidValueException("Manager password cannot be empty");
+
+        // Validate MaxDeliveryDistance (cannot be negative)
+        if (configuration.MaximumAirRange < 0)
+            throw new BlInvalidValueException("Maximum air range cannot be negative");
+        if (configuration.MaxiumDistance < 0)
+            throw new BlInvalidValueException("Maximum distance cannot be negative");
+
+        // Validate speed values (must be 0 or positive)
+        if (configuration.AverageCarSpeed < 0)
+            throw new BlInvalidValueException("Average car speed cannot be negative");
+        if (configuration.AverageMotorbikeSpeed < 0)
+            throw new BlInvalidValueException("Average motorbike speed cannot be negative");
+        if (configuration.AverageBikeSpeed < 0)
+            throw new BlInvalidValueException("Average bike speed cannot be negative");
+        if (configuration.AverageWalkingSpeed < 0)
+            throw new BlInvalidValueException("Average walking speed cannot be negative");
+
+        // Validate time constraints (cannot be negative)
+        if (configuration.DeliveryWindow < TimeSpan.Zero)
+            throw new BlInvalidValueException("Delivery window cannot be negative");
+        if (configuration.RiskRange < TimeSpan.Zero)
+            throw new BlInvalidValueException("Risk range cannot be negative");
+        if (configuration.InactiveTime < TimeSpan.Zero)
+            throw new BlInvalidValueException("Inactive time cannot be negative");
+
         bool configChanged = false; // stage 5
 
         if (s_dal.Config.MaxDeliveryTime != configuration.DeliveryWindow) //stage 4
