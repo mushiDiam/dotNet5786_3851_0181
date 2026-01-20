@@ -149,9 +149,10 @@ The system supports two roles:
 | **PL - Project** | Password hidden with asterisks (PasswordBox) | 1 | [PL/Courier/ForCourier.MainCourierWindow#L133-L140](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForCourier.MainCourierWindow.xaml#L133-L140) |
 | **PL - Project** | Smart delete button (visible only when deletion is allowed) | 2 | [PL/Courier/ForManager/CourierListWindow.xaml#L193-L216](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Courier/ForManager/CourierListWindow.xaml#L193-L216) |
 | **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L271-L280](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L271-L280) |
+| **PL - Project** | Default button behavior (Enter key triggers login) | 1 | [PL/Login/LoginWindow.xaml#L172](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L172) |
 | **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L326-L362](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L326-L362) |
 
-### Total Bonus Points: 17
+### Total Bonus Points: 18
 
 ---
 

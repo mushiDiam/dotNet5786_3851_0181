@@ -169,7 +169,7 @@
                 <!-- Buttons: below the password box, smaller -->
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
                     <Button Content="Leave" Width="84" Height="32" Margin="0,0,8,0" Click="BtnLeave_Click" Style="{StaticResource DangerButton}"/>
-                    <Button Content="Sign In" Width="96" Height="32" Click="BtnLogin_Click" Style="{StaticResource ModernButton}"/>
+                    <Button Content="Sign In" IsDefault="True" Width="96" Height="32" Click="BtnLogin_Click" Style="{StaticResource ModernButton}"/>
                 </StackPanel>
 
                 <TextBlock Grid.Row="6" x:Name="txtStatus" Foreground="Red" Visibility="Collapsed" TextWrapping="Wrap" Margin="0,8,0,0"/>
