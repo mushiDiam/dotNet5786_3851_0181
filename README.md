@@ -151,8 +151,8 @@ The system supports two roles:
 | **PL - Project** | Address error handling with clear reason display | 2 | [PL/Config/MainWindow.xaml.cs#L271-L280](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L271-L280) |
 | **PL - Project** | Default button behavior (Enter key triggers login) | 1 | [PL/Login/LoginWindow.xaml#L172](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Login/LoginWindow.xaml#L172) |
 | **Simulator** | Loading indicator (Cursors.Wait) | 1 | [PL/Config/MainWindow.xaml.cs#L326-L362](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/PL/Config/MainWindow.xaml.cs#L326-L362) |
-
-### Total Bonus Points: 18
+| **Simulator** | Automatic Generating of Orders | ? | [BL/Helpers/CourierManager.cs#L649-L662](https://github.com/mushiDiam/dotNet5786_3851_0181/blob/main/BL/Helpers/CourierManager.cs#L649-L662) |
+### Total Bonus Points: 18 + ?
 
 ---
 
