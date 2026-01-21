@@ -201,7 +201,9 @@
                             <DataTemplate>
                                 <Border Background="#FAFAFA" CornerRadius="4" Padding="8" Margin="0,4">
                                     <StackPanel>
+                                        <TextBlock Text="{Binding CourierName, StringFormat='Courier: {0}'}" />
                                         <TextBlock Text="{Binding DeliveryId, StringFormat='Delivery #{0}'}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding CourierId, StringFormat='Courier ID: {0}'}" />
                                         <TextBlock Text="{Binding StartDeliveryTime, StringFormat='Started: {0:dd/MM/yyyy HH:mm}'}" />
                                         <TextBlock Text="{Binding EndTime, StringFormat='Ended: {0:dd/MM/yyyy HH:mm}'}" />
                                         <TextBlock Text="{Binding OrderStatus, StringFormat='Status: {0}'}" />
@@ -239,7 +241,7 @@
                     Margin="8,0,0,0"
                     IsEnabled="{Binding IsEditable, RelativeSource={RelativeSource AncestorType=Window}}"
                     Visibility="Collapsed"
-                    ToolTip="לא ניתן לעדכן — ההזמנה סגורה"/>
+                    ToolTip="Cannot update - delivery is closed"/>
 
             <Button Content="Add Order" 
                     Click="BtnSave_Click" 
