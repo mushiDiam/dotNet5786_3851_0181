@@ -356,6 +356,24 @@ namespace PL.AvailableOrders
             {
                 MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                try
+                {
+                    Application.Current?.Dispatcher?.BeginInvoke(new Action(() =>
+                    {
+                        foreach (var win in Application.Current.Windows.OfType<PL.Courier.ForManager.CourierListWindow>())
+                        {
+                            try { win.Refresh(); }
+                            catch { /* ignore per-window errors */ }
+                        }
+                    }));
+                }
+                catch
+                {
+                    // ignore overall failures - best-effort only
+                }
+            }
         }
 
     }

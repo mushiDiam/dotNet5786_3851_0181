@@ -17,7 +17,7 @@ namespace PL.Courier.ForManager
 
         // Stage 7: Add mutex
         private readonly ObserverMutex _courierListMutex = new();
-
+        public void Refresh() => RefreshList();
 
         public CourierListWindow()
         {
